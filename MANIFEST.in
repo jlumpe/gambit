@@ -1,0 +1,3 @@
+# Alembic
+include gambit/db/migrate/alembic.ini
+recursive-include gambit/db/migrate *.py
