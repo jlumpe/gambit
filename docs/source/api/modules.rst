@@ -1,5 +1,5 @@
-gambit
-======
+Python API
+==========
 
 .. toctree::
    :maxdepth: 4
