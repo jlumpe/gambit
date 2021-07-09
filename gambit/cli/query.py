@@ -32,10 +32,11 @@ from gambit.query import runquery
 	nargs=-1,
 	type=click.Path(exists=True, dir_okay=False),
 	required=True,
+	metavar='GENOMES...',
 )
 @click.pass_obj
 def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str):
-	"""Query database."""
+	"""Predict taxonomy of microbial samples from genome sequences."""
 	gset = ctxobj.genomeset()
 	sigs = ctxobj.signatures()
 	db = GAMBITDatabase(gset, sigs)
