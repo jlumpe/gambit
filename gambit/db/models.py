@@ -245,7 +245,7 @@ class Taxon(Base):
 	"""A taxon used for classifying genomes.
 
 	Taxa are specific to a :class:`.ReferenceGenomeSet` and form a tree/forest structure through the
-	:attr:`parent` and :attr`children` relationships.
+	:attr:`parent` and :attr:`children` relationships.
 
 	Attributes
 	----------
