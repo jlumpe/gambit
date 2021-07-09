@@ -1,5 +1,6 @@
 # GAMBIT
 [![Build Status](https://github.com/hesslab-gambit/gambit/actions/workflows/ci.yml/badge.svg)](https://github.com/hesslab-gambit/gambit/actions/workflows/ci.yml)
+[![Documentation Status](https://readthedocs.org/projects/hesslab-gambit/badge/?version=latest)](https://hesslab-gambit.readthedocs.io/en/latest/?badge=latest)
 
 GAMBIT (Genomic Approximation Method for Bacterial Identification and Tracking) is a tool for rapid taxonomic identification of microbial pathogens.
 It uses an extremely efficient genomic distance metric along with a curated database of over 50,000 reference genomes (derived from NCBI [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/))
