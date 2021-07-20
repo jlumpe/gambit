@@ -5,7 +5,7 @@ import numpy as np
 
 from gambit import kmers
 from gambit._cython.kmers import reverse_complement
-import gambit.io.json as mjson
+import gambit.io.json as gjson
 from gambit.test import fill_bytearray, make_kmer_seq
 
 
@@ -120,14 +120,14 @@ class TestKmerSpec:
 		"""Test conversion to/from JSON."""
 
 		kspec = kmers.KmerSpec(11, 'ATGAC')
-		data = mjson.to_json(kspec)
+		data = gjson.to_json(kspec)
 
 		assert data == dict(
 			k=kspec.k,
 			prefix=kspec.prefix.decode('ascii'),
 		)
 
-		assert mjson.from_json(data, kmers.KmerSpec) == kspec
+		assert gjson.from_json(data, kmers.KmerSpec) == kspec
 
 
 def test_dense_sparse_conversion():

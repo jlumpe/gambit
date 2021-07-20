@@ -7,7 +7,7 @@ import pytest
 import numpy as np
 from attr import attrs, attrib
 
-import gambit.io.json as mjson
+import gambit.io.json as gjson
 
 
 def roundtrip(obj, cls=None, checktype=True):
@@ -15,8 +15,8 @@ def roundtrip(obj, cls=None, checktype=True):
 	if cls is None:
 		cls = type(obj)
 
-	encoded = mjson.dumps(obj)
-	obj2 = mjson.loads(encoded, cls)
+	encoded = gjson.dumps(obj)
+	obj2 = gjson.loads(encoded, cls)
 
 	if checktype:
 		assert isinstance(obj2, cls)
@@ -44,8 +44,8 @@ class TestNumpy:
 	"""Test serialization of numpy types."""
 
 	def test_scalar(self):
-		assert mjson.dumps(np.int64(1)) == '1'
-		assert mjson.dumps(np.float64(1)) == '1.0'
+		assert gjson.dumps(np.int64(1)) == '1'
+		assert gjson.dumps(np.float64(1)) == '1.0'
 
 	def test_array(self):
 		# TODO
@@ -58,7 +58,7 @@ def test_jsonable(custom_to, custom_from):
 	"""Test the Jsonable mixin class."""
 
 	@attrs()
-	class TestCls(mjson.Jsonable):
+	class TestCls(gjson.Jsonable):
 		a: int = attrib()
 		b: str = attrib()
 
@@ -81,9 +81,9 @@ def test_jsonable(custom_to, custom_from):
 	data_custom = dict(a=4, b='FOO')
 
 	data_to = data_custom if custom_to else data_standard
-	assert mjson.to_json(obj1) == data_to
-	assert mjson.to_json(obj2) == dict(x=data_to, y=10)
+	assert gjson.to_json(obj1) == data_to
+	assert gjson.to_json(obj2) == dict(x=data_to, y=10)
 
 	data_from = data_custom if custom_from else data_standard
-	assert mjson.from_json(data_from, TestCls) == obj1
-	assert mjson.from_json(dict(x=data_from, y=10), TestCls2) == obj2
+	assert gjson.from_json(data_from, TestCls) == obj1
+	assert gjson.from_json(dict(x=data_from, y=10), TestCls2) == obj2
