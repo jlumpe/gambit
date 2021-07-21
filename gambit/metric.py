@@ -1,28 +1,22 @@
 """Calculate the Jaccard index/distance between sets."""
 
 from collections.abc import Set
+from typing import Iterable
 
 import numpy as np
 
 from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard_sparse, jaccarddist_sparse, \
 	_jaccard_sparse_parallel
+from gambit.kmers import KmerSignature
+from gambit.signatures import SignatureArray
 
 
-def jaccard_generic(set1, set2):
+def jaccard_generic(set1: Iterable, set2: Iterable) -> float:
 	"""Get the Jaccard index of of two arbitrary sets.
 
 	This is primarily used as a slow, pure-Python alternative to :func:`.jaccard_sparse` to be used
 	for testing, but can also be used as a generic way to calculate the Jaccard index which works
 	with any collection or element type.
-
-	Parameters
-	----------
-	set1 : Collection
-	set2 : Collection
-
-	Returns
-	-------
-	float
 
 	See Also
 	--------
@@ -40,19 +34,8 @@ def jaccard_generic(set1, set2):
 	return 0 if union == 0 else intersection / union
 
 
-def jaccard_bits(bits1, bits2):
+def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
 	"""Calculate the Jaccard index between two sets represented as bit arrays ("dense" format for k-mer sets).
-
-	Parameters
-	----------
-	bits1 : np.ndarray
-		Boolean Numpy array.
-	bits2 : np.ndarray
-		Boolean Numpy array.
-
-	Returns
-	-------
-	float
 
 	See Also
 	--------
@@ -65,7 +48,7 @@ def jaccard_bits(bits1, bits2):
 	return 0 if union == 0 else intersection / union
 
 
-def jaccard_sparse_array(query, refs, out=None, distance=False):
+def jaccard_sparse_array(query: KmerSignature, refs: SignatureArray, out: np.ndarray = None, distance: bool = False) -> np.ndarray:
 	"""
 	Calculate Jaccard scores between a query k-mer signature and an array of reference signatures in
 	``SignatureArray`` format.
