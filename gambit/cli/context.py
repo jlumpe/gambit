@@ -2,6 +2,7 @@ from typing import Optional
 from pathlib import Path
 
 import click
+from attr import attrs, attrib
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
@@ -12,6 +13,7 @@ from gambit.db.sqla import ReadOnlySession
 from gambit.signatures.hdf5 import HDF5Signatures
 
 
+@attrs
 class CLIContext:
 	"""Click context object for GAMBIT CLI.
 
@@ -20,10 +22,9 @@ class CLIContext:
 	db_path
 		Path to directory containing database files, specified in root command group.
 	"""
-	db_path: Optional[Path]
+	db_path: Optional[Path] = attrib(default=None)
 
-	def __init__(self, db_path):
-		self.db_path = db_path
+	def __attrs_post_init__(self):
 
 		self._db_found = False
 		self._genomes_path = None
