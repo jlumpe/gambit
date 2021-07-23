@@ -122,3 +122,9 @@ def type_singledispatchmethod(func: Callable):
 	wrapper.register = dispatcher.register
 	wrapper.dispatch = dispatcher.dispatch
 	return wrapper
+
+
+def is_importable(module: str) -> bool:
+	"""Check if the specified module is importable, without actually importing it."""
+	from importlib.util import find_spec
+	return find_spec(module) is not None

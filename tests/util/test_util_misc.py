@@ -1,7 +1,7 @@
 import pytest
 from string import ascii_letters
 
-from gambit.util.misc import zip_strict, chunk_slices
+from gambit.util.misc import zip_strict, chunk_slices, is_importable
 
 
 class TestZipStrict:
@@ -52,3 +52,11 @@ def test_chunk_slices():
 			assert s.stop == s.start + size if i < ns - 1 else n
 
 	assert list(chunk_slices(0, 10)) == []
+
+
+def test_is_importable():
+	"""Test the is_importable() function."""
+	assert is_importable('urllib')
+	assert is_importable('urllib.request')
+	assert not is_importable('aklhaskhdkslkdjahkdf')
+	assert not is_importable('urllib.aklhaskhdkslkdjahkdf')
