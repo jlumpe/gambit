@@ -26,14 +26,10 @@ def load_test_coords_col(test_data):
 
 
 @pytest.fixture(params=[
-	(4, 'u2'),
-	(4, 'i2'),
 	(7, 'u2'),
-	(7, 'i2'),
 	(9, 'u4'),
 	(9, 'i4'),
 	(9, 'u8'),
-	(9, 'i8'),
 	None,
 ])
 def coords_params(request, load_test_coords_col):
@@ -49,7 +45,7 @@ def coords_params(request, load_test_coords_col):
 		k, dtype = request.param
 
 		np.random.seed(0)
-		sigs = make_signatures(k, 25, dtype)
+		sigs = make_signatures(k, 40, dtype)
 
 	return k, sigs
 
@@ -202,7 +198,7 @@ def test_different_dtypes():
 	"""Test metric on sparse arrays with different dtypes."""
 
 	np.random.seed(0)
-	dtypes = ['i2', 'u2', 'i4', 'u4', 'i8', 'u8']
+	dtypes = ['u2', 'i4', 'u4', 'u8']
 
 	# Test all pairs of dtypes
 	for i, dt1 in enumerate(dtypes):
