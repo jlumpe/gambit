@@ -1,6 +1,6 @@
 """Data classes to represent query results."""
 
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Dict, Any
 from datetime import datetime
 
 from attr import attrs, attrib
@@ -8,6 +8,7 @@ from attr import attrs, attrib
 from gambit.io.seq import SequenceFile
 from gambit.db.models import ReferenceGenomeSet, Taxon, AnnotatedGenome
 from gambit.signatures import SignaturesMeta
+from gambit import __version__ as GAMBIT_VERSION
 
 
 @attrs()
@@ -107,10 +108,16 @@ class QueryResults:
 		Genome set used.
 	signaturesmeta
 		Metadata for signatures set used.
+	gambit_version
+		Version of GAMBIT command/library used to generate the results.
 	timestamp
 		Time query was completed.
+	extra
+		JSON-able dict containing additional arbitrary metadata.
 	"""
 	items: List[QueryResultItem] = attrib()
 	genomeset: Optional[ReferenceGenomeSet] = attrib(default=None)
 	signaturesmeta: Optional[SignaturesMeta] = attrib(default=None)
+	gambit_version: str = attrib(default=GAMBIT_VERSION)
 	timestamp: datetime = attrib(factory=datetime.now)
+	extra: Dict[str, Any] = attrib(factory=dict)
