@@ -11,6 +11,7 @@ from gambit.io.seq import SequenceFile, find_kmers_parse, find_kmers_in_file, fi
 import gambit.io.util as ioutil
 from gambit.kmers import KmerSpec, dense_to_sparse, sparse_to_dense
 from gambit.signatures import sigarray_eq
+from gambit.util.misc import zip_strict
 from gambit.test import make_kmer_seq, random_seq
 
 
@@ -229,7 +230,7 @@ class TestSequenceFile:
 		# Check they match
 		assert len(parsed) == len(seqrecords)
 
-		for parsed_req, orig_req in zip(parsed, seqrecords):
+		for parsed_req, orig_req in zip_strict(parsed, seqrecords):
 			assert isinstance(parsed_req, SeqIO.SeqRecord)
 			assert parsed_req.seq == orig_req.seq
 			assert parsed_req.id == orig_req.id
@@ -275,7 +276,7 @@ class TestSequenceFile:
 
 		assert len(paths) == len(infos)
 
-		for path, info in zip(paths, infos):
+		for path, info in zip_strict(paths, infos):
 			assert isinstance(info, SequenceFile)
 			assert str(info.path) == path
 			assert info.format == format

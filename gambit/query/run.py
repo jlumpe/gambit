@@ -8,6 +8,7 @@ from gambit.db.gambitdb import GAMBITDatabase
 from gambit.kmers import KmerSignature
 from gambit.io.seq import SequenceFile
 from gambit.metric import jaccard_sparse_array
+from gambit.util.misc import zip_strict
 from .classify import find_matches, consensus_taxon, reportable_taxon, matching_taxon
 from .results import QueryInput, GenomeMatch, QueryResultItem, QueryResults
 
@@ -46,13 +47,13 @@ def runquery(db: GAMBITDatabase,
 	else:
 		inputs = [QueryInput(str(i + 1)) for i in range(len(queries))]
 
-	items = [_query_single(db, query, input) for query, input in zip(queries, inputs)]
+	items = [_query_single(db, query, input) for query, input in zip_strict(queries, inputs)]
 	return QueryResults(items=items, genomeset=db.genomeset, signaturesmeta=db.signatures_meta)
 
 
 def _query_single(db: GAMBITDatabase, sig: np.ndarray, input: QueryInput):
 	dists = jaccard_sparse_array(sig, db.genome_signatures, distance=True)
-	matches = find_matches(zip(db.genomes, dists))
+	matches = find_matches(zip_strict(db.genomes, dists))
 	consensus, others = consensus_taxon(matches.keys())
 
 	# Find closest match

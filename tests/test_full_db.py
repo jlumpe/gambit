@@ -20,6 +20,7 @@ from gambit.db.gambitdb import GAMBITDatabase
 from gambit.db.models import ReferenceGenomeSet
 from gambit.query import runquery
 from gambit.cli import cli
+from gambit.util.misc import zip_strict
 
 
 @pytest.fixture(autouse=True, scope='module')
@@ -95,7 +96,7 @@ def test_query_python(testdb, query_data):
 
 	assert len(results.items) == len(query_files)
 
-	for item, file, expected_key in zip(results.items, query_files, expected_taxa):
+	for item, file, expected_key in zip_strict(results.items, query_files, expected_taxa):
 		expected_taxon = testdb.genomeset.taxa.filter_by(key=expected_key).one() if expected_key else None
 
 		assert item.input.file == file
@@ -150,7 +151,7 @@ def _check_results_json(results_file, testdb, query_files, expected_taxa):
 	assert isinstance(items, list)
 	assert len(items) == len(query_files)
 
-	for item, file, expected in zip(items, query_files, expected_taxa):
+	for item, file, expected in zip_strict(items, query_files, expected_taxa):
 		assert item['input']['label'] == file.path.name
 		assert item['success'] is True
 

@@ -1,6 +1,54 @@
 """Utility code that doesn't fit anywhere else."""
 
-from typing import Iterator
+from typing import Iterator, Tuple
+
+
+def zip_strict(*iterables: Iterator) -> Iterator[Tuple]:
+	"""Like the builtin ``zip`` function but raises an error if any argument is exhausted before the others.
+
+	Parameters
+	----------
+	iterables
+		Any number of iterable objects.
+
+	Raises
+	------
+	ValueError
+	"""
+	# Builtin zip gives empty output on empty input
+	if not iterables:
+		return
+
+	itrs = list(map(iter, iterables))
+	n = len(itrs)
+
+	while True:
+		# Try to get next item of first iterator
+		try:
+			first = next(itrs[0])
+		except StopIteration:
+			# First ran out, make sure others do too
+			for i in range(1, n):
+				try:
+					next(itrs[i])
+				except StopIteration:
+					pass
+				else:
+					raise ValueError(f'Iterable {i} yielded more items than previous iterables')
+
+			return
+
+		# First iterator not done, get rest
+		out = [first]
+		for i in range(1, n):
+			try:
+				value = next(itrs[i])
+			except StopIteration:
+				raise ValueError(f'Iterable {i} exhausted before previous iterables')
+
+			out.append(value)
+
+		yield tuple(out)
 
 
 def chunk_slices(n: int, size: int) -> Iterator[slice]:
