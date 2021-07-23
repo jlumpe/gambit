@@ -43,7 +43,7 @@ def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str):
 
 	# Parse files
 	files = SequenceFile.from_paths(files, seqfmt)
-	sigs = find_kmers_in_files(db.kmerspec, files)
+	sigs = find_kmers_in_files(db.signatures.kmerspec, files)
 
 	# Run query
 	results = runquery(db, sigs, inputs=files)

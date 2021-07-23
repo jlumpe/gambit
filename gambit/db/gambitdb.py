@@ -1,8 +1,6 @@
 from typing import Sequence
 
-from gambit.kmers import KmerSpec
 from .models import ReferenceGenomeSet, AnnotatedGenome, genomes_by_id_subset
-from gambit.signatures import SignatureArray, SignaturesMeta
 from gambit.signatures.base import ReferenceSignatures
 
 
@@ -13,39 +11,39 @@ class GAMBITDatabase:
 
 	Attributes
 	----------
-	kmerspec
-		``KmerSpec`` used to calculate k-mer signatures.
 	genomeset
-		Genome set containing genomes.
-	signatures_meta
-		Metadata for reference genome signatures.
+		Genome set containing reference genomes.
 	genomes
-		Reference genomes.
-	genome_signatures
-		K-mer signatures for each genome.
+		List of reference genomes.
+	signatures
+		K-mer signatures for each genome. A subtype of ``ReferenceSignatures``, so contains metadata
+		on signatures as well as the signatures themselves. Type may represent signatures stored on
+		disk (e.g. :class:`HDF5Signatures`) instead of in memory. OK to contain additional
+		signatures not corresponding to any genome in ``genomes``.
+	sig_indices
+		Index of signature in ``signatures`` corresponding to each genome in ``genomes``.
+		In sorted order to improve performance when iterating over them (improve locality if in
+		memory and avoid seeking if in file).
 
 	Parameters
 	----------
 	genomeset
 	signatures
 	"""
-	kmerspec: KmerSpec
 	genomeset: ReferenceGenomeSet
-	signatures_meta: SignaturesMeta
 	genomes: Sequence[AnnotatedGenome]
-	genome_signatures: SignatureArray
+	signatures: ReferenceSignatures
+	sig_indices: Sequence[int]
 
 	def __init__(self, genomeset: ReferenceGenomeSet, signatures: ReferenceSignatures):
 		self.genomeset = genomeset
-		self.kmerspec = signatures.kmerspec
-		self.signatures_meta = signatures.meta
+		self.signatures = signatures
 
 		id_attr = signatures.meta.id_attr
 		if id_attr is None:
 			raise TypeError('id_attr field of signatures metadata cannot be None')
 
-		self.genomes, sig_indices = genomes_by_id_subset(genomeset, id_attr, signatures.ids)
-		self.genome_signatures = signatures[sig_indices]
+		self.genomes, self.sig_indices = genomes_by_id_subset(genomeset, id_attr, signatures.ids)
 
 		n = genomeset.genomes.count()
 		if len(self.genomes) != n:

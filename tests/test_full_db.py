@@ -90,7 +90,7 @@ def test_query_python(testdb, query_data):
 	"""Run a full query using the Python API."""
 
 	query_files, expected_taxa = query_data
-	query_sigs = find_kmers_in_files(testdb.kmerspec, query_files)
+	query_sigs = find_kmers_in_files(testdb.signatures.kmerspec, query_files)
 
 	results = runquery(testdb, query_sigs, query_files)
 
@@ -145,7 +145,7 @@ def _check_results_json(results_file, testdb, query_files, expected_taxa):
 		results = json.load(f)
 
 	assert results['genomeset']['key'] == testdb.genomeset.key
-	assert results['signaturesmeta']['id'] == testdb.signatures_meta.id
+	assert results['signaturesmeta']['id'] == testdb.signatures.meta.id
 
 	items = results['items']
 	assert isinstance(items, list)
