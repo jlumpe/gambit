@@ -1,7 +1,7 @@
 """Calculate the Jaccard index/distance between sets."""
 
 from collections.abc import Set
-from typing import Iterable
+from typing import Iterable, Sequence, Optional
 
 import numpy as np
 
@@ -9,6 +9,8 @@ from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard_sparse, jac
 	_jaccard_sparse_parallel
 from gambit.kmers import KmerSignature
 from gambit.signatures import SignatureArray
+from gambit.signatures.base import AbstractSignatureArray
+from gambit.util.misc import chunk_slices
 
 
 def jaccard_generic(set1: Iterable, set2: Iterable) -> float:
@@ -93,5 +95,68 @@ def jaccard_sparse_array(query: KmerSignature, refs: SignatureArray, out: np.nda
 
 	if distance:
 		np.subtract(1, out, out=out)
+
+	return out
+
+
+def jaccard_sparse_matrix(queries: Sequence[KmerSignature],
+                          refs: AbstractSignatureArray,
+                          ref_indices: Optional[Sequence[int]] = None,
+                          out: Optional[np.ndarray] = None,
+                          distance: bool = False,
+                          chunksize: Optional[int] = None,
+                          ) -> np.ndarray:
+	"""
+	Calculate a Jaccard similarity/distance matrix between an array of query signatures and an
+	array of reference signatures.
+
+	The main purpose of this function is to improve querying performance when the reference
+	signatures are stored in a file (e.g. using :class:`gambit.signatures.hdf5.HDF5Signatures`)
+	by loading them in chunks (via the ``chunksize`` parameter) instead of all in one go.
+
+	Parameters
+	----------
+	queries
+		Query signatures in sparse coordinate format. May be any sequence type, e.g. ``list``.
+	refs
+		Reference signatures in sparse coordinate format. Must be a type which yields
+		``SignatureArray``\\ s when sliced.
+	ref_indices
+		Optional, indices of ``refs`` to use.
+	out
+		(Optional) pre-allocated array to write output to.
+	distance
+		Output Jaccard distances instead of similarities.
+	chunksize
+		Divide ``refs`` into chunks of this size.
+
+	Returns
+	-------
+	np.ndarray
+		Matrix of similarities/distances between query signatures in rows and reference signatures
+		in columns.
+	"""
+	nqueries = len(queries)
+	nrefs = len(refs) if ref_indices is None else len(ref_indices)
+
+	if out is None:
+		out = np.empty((nqueries, nrefs), SCORE_DTYPE)
+	elif out.shape != (nqueries, nrefs):
+		raise ValueError('Output array must have shape (nqueries, nrefs).')
+	elif out.dtype != SCORE_DTYPE:
+		raise ValueError(f'Output array dtype must be {SCORE_DTYPE}, got {out.dtype}')
+
+	if chunksize is None:
+		ref_slices = [slice(0, nrefs)]
+	else:
+		ref_slices = list(chunk_slices(nrefs, chunksize))
+
+	for ref_slice in ref_slices:
+		idx = ref_slice if ref_indices is None else ref_indices[ref_slice]
+		ref_chunk = refs[idx]
+		assert isinstance(ref_chunk, SignatureArray)
+
+		for (i, query) in enumerate(queries):
+			jaccard_sparse_array(query, ref_chunk, out=out[i, ref_slice], distance=distance)
 
 	return out

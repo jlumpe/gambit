@@ -6,7 +6,7 @@ import pytest
 import numpy as np
 
 from gambit.metric import jaccard_sparse, jaccarddist_sparse, jaccard_bits, \
-	jaccard_generic, jaccard_sparse_array, SCORE_DTYPE, BOUNDS_DTYPE
+	jaccard_generic, jaccard_sparse_array, jaccard_sparse_matrix, SCORE_DTYPE, BOUNDS_DTYPE
 from gambit.kmers import sparse_to_dense
 from gambit.signatures import SignatureArray
 from gambit.test import make_signatures
@@ -126,6 +126,78 @@ def test_jaccard_sparse_array(coords_params, alt_bounds_dtype):
 		jaccard_sparse_array(sigs[0], sigs, out3)
 
 
+class TestJaccardSparseMatrix:
+	"""Test the jaccard_sparse_matrix() function."""
+
+	def make_output_array(self, refs, queries, dtype=SCORE_DTYPE):
+		return np.empty((len(refs), len(queries)), dtype=dtype)
+
+	@pytest.fixture()
+	def queries(self, coords_params):
+		"""queries argument."""
+		k, sigs = coords_params
+		# Make it a little different than the reference signatures
+		return sigs[::2]
+
+	@pytest.fixture()
+	def refs_array(self, coords_params):
+		"""refs argument as SignatureArray."""
+		k, sigs = coords_params
+		# Make it a little different than the query signatures
+		return sigs[5:]
+
+	@pytest.fixture()
+	def refs(self, refs_array):
+		"""refs argument.
+		TODO: test other AbstractSignaturesArray types
+		"""
+		return refs_array
+
+	@pytest.fixture()
+	def expected(self, queries, refs):
+		"""Expected array of scores, calculated one at a time."""
+		scores = np.empty((len(queries), len(refs)), dtype=SCORE_DTYPE)
+
+		for i, q in enumerate(queries):
+			for j, r in enumerate(refs):
+				scores[i, j] = jaccard_sparse(queries[i], refs[j])
+
+		return scores
+
+	@pytest.mark.parametrize('use_ref_indices', [False, True])
+	@pytest.mark.parametrize('chunksize', [None, 10])
+	def test_basic(self, queries, refs, expected, use_ref_indices, chunksize):
+
+		if use_ref_indices:
+			ref_indices = [i for i in range(len(refs)) if i % 3 != 0]
+			expected = expected[:, ref_indices]
+		else:
+			ref_indices = None
+
+		scores = jaccard_sparse_matrix(queries, refs, ref_indices=ref_indices, chunksize=chunksize)
+		assert np.array_equal(scores, expected)
+
+	def test_distance(self, queries, refs, expected):
+		dists = jaccard_sparse_matrix(queries, refs, distance=True)
+		assert np.allclose(dists, 1 - expected)
+
+	def test_out(self, queries, refs, expected):
+		"""Test using pre-allocated output array."""
+		out = np.empty((len(queries), len(refs)), dtype=SCORE_DTYPE)
+		jaccard_sparse_matrix(queries, refs, out=out)
+		assert np.array_equal(out, expected)
+
+		# Wrong size
+		out2 = np.empty((len(refs) + 1, len(queries)), dtype=SCORE_DTYPE)
+		with pytest.raises(ValueError):
+			jaccard_sparse_matrix(queries, refs, out=out2)
+
+		# Wrong dtype
+		out3 = np.empty((len(refs) + 1, len(queries)), dtype=int)
+		with pytest.raises(ValueError):
+			jaccard_sparse_array(queries, refs, out3)
+
+
 def test_different_dtypes():
 	"""Test metric on sparse arrays with different dtypes."""
 
@@ -160,14 +232,18 @@ def test_different_dtypes():
 			assert sigs1.values.dtype == dt1
 			assert sigs2.values.dtype == dt2
 
+			# Expected all-by-all distance matrix from u8 signatures
+			expected = jaccard_sparse_matrix(sigs, sigs)
+
 			for k in range(len(sigs)):
 				# Test individually
 				for l in range(k + 1, len(sigs)):
-					expected = jaccard_sparse(sigs[k], sigs[l])
-					assert jaccard_sparse(sigs1[k], sigs2[l]) == expected
-					assert jaccard_sparse(sigs2[k], sigs1[l]) == expected
+					assert jaccard_sparse(sigs1[k], sigs2[l]) == expected[k, l]
+					assert jaccard_sparse(sigs2[k], sigs1[l]) == expected[k, l]
 
-				# Test against all of the other using jaccard_sparse_array
-				expected_all = jaccard_sparse_array(sigs[k], sigs)
-				assert np.array_equal(jaccard_sparse_array(sigs1[k], sigs2), expected_all)
-				assert np.array_equal(jaccard_sparse_array(sigs2[k], sigs1), expected_all)
+				# Test each against all of the others using jaccard_sparse_array
+				assert np.array_equal(jaccard_sparse_array(sigs1[k], sigs2), expected[k, :])
+				assert np.array_equal(jaccard_sparse_array(sigs2[k], sigs1), expected[k, :])
+
+			# Test full matrix using jaccard_sparse_matrix
+			assert np.array_equal(jaccard_sparse_matrix(sigs1, sigs2), expected)
