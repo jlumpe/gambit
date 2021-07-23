@@ -6,6 +6,7 @@ from gambit import __version__ as GAMBIT_VERSION
 from .common import CLIContext
 from .query import query_cmd
 from .signatures import signatures_group
+from .debug import debug_group
 
 
 # Top-level cli group
@@ -26,3 +27,4 @@ def cli(ctx: click.Context, db_path):
 # Add sub-commands
 cli.add_command(query_cmd)
 cli.add_command(signatures_group)
+cli.add_command(debug_group)
