@@ -119,7 +119,7 @@ def test_query_python(testdb, query_data):
 
 
 @pytest.mark.parametrize('out_fmt', ['json'])
-def test_query_cli(testdb_files, query_data, out_fmt, tmp_path):
+def test_query_cli(testdb_files, testdb, query_data, out_fmt, tmp_path):
 	"""Run a full query using the command line interface."""
 	results_file = tmp_path / 'results.json'
 	query_files, expected_taxa = query_data
@@ -135,13 +135,16 @@ def test_query_cli(testdb_files, query_data, out_fmt, tmp_path):
 	cli.main(args, standalone_mode=False)
 
 	if out_fmt == 'json':
-		_check_results_json(results_file, query_files, expected_taxa)
+		_check_results_json(results_file, testdb, query_files, expected_taxa)
 	else:
 		assert False
 
-def _check_results_json(results_file, query_files, expected_taxa):
+def _check_results_json(results_file, testdb, query_files, expected_taxa):
 	with results_file.open() as f:
 		results = json.load(f)
+
+	assert results['genomeset']['key'] == testdb.genomeset.key
+	assert results['signaturesmeta']['id'] == testdb.signatures_meta.id
 
 	items = results['items']
 	assert isinstance(items, list)
