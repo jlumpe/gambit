@@ -59,10 +59,9 @@ def signatures(testdb_files):
 def testdb(testdb_session, signatures):
 	"""Full GAMBITDatabase object for test db."""
 
-	session = testdb_session()
-	gset = session.query(ReferenceGenomeSet).one()
-
-	return GAMBITDatabase(gset, signatures)
+	with testdb_session() as session:
+		gset = session.query(ReferenceGenomeSet).one()
+		yield GAMBITDatabase(gset, signatures)
 
 
 @pytest.fixture(scope='module')
