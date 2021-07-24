@@ -193,6 +193,9 @@ class TestJaccardSparseMatrix:
 		with pytest.raises(ValueError):
 			jaccard_sparse_array(queries, refs, out3)
 
+	def test_progress(self, queries, refs, expected):
+		pass  # TODO
+
 
 def test_different_dtypes():
 	"""Test metric on sparse arrays with different dtypes."""

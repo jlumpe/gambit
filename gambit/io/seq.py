@@ -9,6 +9,7 @@ from attr import attrs, attrib
 
 from gambit.kmers import KmerSpec, find_kmers, dense_to_sparse, KmerSignature
 from .util import open_compressed, ClosingIterator
+from gambit.util.progress import iter_progress
 
 
 @attrs(frozen=True, slots=True)
@@ -196,7 +197,7 @@ def find_kmers_in_file(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool =
 		return find_kmers_parse(kspec, f, seqfile.format, sparse=sparse, dense_out=dense_out)
 
 
-def find_kmers_in_files(kspec: KmerSpec, files: Sequence[SequenceFile]) -> List[KmerSignature]:
+def find_kmers_in_files(kspec: KmerSpec, files: Sequence[SequenceFile], progress=None) -> List[KmerSignature]:
 	"""Parse and calculate k-mer signatures for multiple sequence files.
 
 	Currently calculates signature for each file in series, future implementation should run in
@@ -208,6 +209,8 @@ def find_kmers_in_files(kspec: KmerSpec, files: Sequence[SequenceFile]) -> List[
 		Spec for k-mer search.
 	seqfile
 		Files to read.
+	progress
+		Display a progress meter. See :func:`gambit.util.progress.get_progress` for allowed values.
 
 	Returns
 	-------
@@ -217,4 +220,9 @@ def find_kmers_in_files(kspec: KmerSpec, files: Sequence[SequenceFile]) -> List[
 	--------
 	.find_kmers_in_files
 	"""
-	return [find_kmers_in_file(kspec, file) for file in files]
+	kmers = []
+
+	for file in iter_progress(files, progress):
+		kmers.append(find_kmers_in_file(kspec, file))
+
+	return kmers

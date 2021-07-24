@@ -103,7 +103,10 @@ def test_find_kmers_in_file(format, compression, sparse, tmp_path):
 @pytest.mark.parametrize('format', ['fasta'])
 @pytest.mark.parametrize('compression', list(ioutil.COMPRESSED_OPENERS))
 def test_find_kmers_in_files(format, compression, tmp_path):
-	"""Test the find_kmers_in_files function."""
+	"""Test the find_kmers_in_files function.
+
+	TODO - test progress monitoring
+	"""
 
 	n = 5
 	kspec = KmerSpec(11, 'AGTAC')

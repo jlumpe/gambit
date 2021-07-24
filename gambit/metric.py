@@ -11,6 +11,7 @@ from gambit.kmers import KmerSignature
 from gambit.signatures import SignatureArray
 from gambit.signatures.base import AbstractSignatureArray
 from gambit.util.misc import chunk_slices
+from gambit.util.progress import get_progress
 
 
 def jaccard_generic(set1: Iterable, set2: Iterable) -> float:
@@ -105,6 +106,7 @@ def jaccard_sparse_matrix(queries: Sequence[KmerSignature],
                           out: Optional[np.ndarray] = None,
                           distance: bool = False,
                           chunksize: Optional[int] = None,
+                          progress = None,
                           ) -> np.ndarray:
 	"""
 	Calculate a Jaccard similarity/distance matrix between an array of query signatures and an
@@ -129,6 +131,9 @@ def jaccard_sparse_matrix(queries: Sequence[KmerSignature],
 		Output Jaccard distances instead of similarities.
 	chunksize
 		Divide ``refs`` into chunks of this size.
+	progress
+		Display a progress meter of the number of elements of the output array calculated so far.
+		See :func:`gambit.util.progress.get_progress` for a description of allowed values.
 
 	Returns
 	-------
@@ -151,12 +156,14 @@ def jaccard_sparse_matrix(queries: Sequence[KmerSignature],
 	else:
 		ref_slices = list(chunk_slices(nrefs, chunksize))
 
-	for ref_slice in ref_slices:
-		idx = ref_slice if ref_indices is None else ref_indices[ref_slice]
-		ref_chunk = refs[idx]
-		assert isinstance(ref_chunk, SignatureArray)
+	with get_progress(progress, nqueries * nrefs) as meter:
+		for ref_slice in ref_slices:
+			idx = ref_slice if ref_indices is None else ref_indices[ref_slice]
+			ref_chunk = refs[idx]
+			assert isinstance(ref_chunk, SignatureArray)
 
-		for (i, query) in enumerate(queries):
-			jaccard_sparse_array(query, ref_chunk, out=out[i, ref_slice], distance=distance)
+			for (i, query) in enumerate(queries):
+				jaccard_sparse_array(query, ref_chunk, out=out[i, ref_slice], distance=distance)
+				meter.increment(ref_slice.stop - ref_slice.start)
 
 	return out
