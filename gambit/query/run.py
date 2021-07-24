@@ -7,8 +7,8 @@ import numpy as np
 from gambit.db.gambitdb import GAMBITDatabase
 from gambit.kmers import KmerSignature
 from gambit.io.seq import SequenceFile
-from gambit.metric import jaccard_sparse_array
 from gambit.util.misc import zip_strict
+from gambit.metric import jaccard_sparse_matrix
 from .classify import find_matches, consensus_taxon, reportable_taxon, matching_taxon
 from .results import QueryInput, GenomeMatch, QueryResultItem, QueryResults
 
@@ -21,6 +21,7 @@ def _taxon_repr(taxon):
 def runquery(db: GAMBITDatabase,
              queries: Sequence[KmerSignature],
              inputs: Optional[Sequence[Union[QueryInput, SequenceFile, str]]],
+             chunksize: Optional[int] = 1000,
              ) -> QueryResults:
 	"""Predict the taxonomy of one or more query genomes using a given GAMBIT reference database.
 
@@ -34,6 +35,8 @@ def runquery(db: GAMBITDatabase,
 		Description for each input, converted to :class:`gambit.query.result.QueryInput` in results
 		object. Only used for reporting, does not any other aspect of results. Items can be
 		``QueryInput``, ``SequenceFile`` or ``str``.
+	chunksize
+		Number of reference signatures to process at a time. ``None`` means no chunking is performed.
 	"""
 	queries = list(queries)
 
@@ -47,12 +50,27 @@ def runquery(db: GAMBITDatabase,
 	else:
 		inputs = [QueryInput(str(i + 1)) for i in range(len(queries))]
 
-	items = [_query_single(db, query, input) for query, input in zip_strict(queries, inputs)]
-	return QueryResults(items=items, genomeset=db.genomeset, signaturesmeta=db.signatures_meta)
+	# Calculate distances
+	# (This will only be about 200kB per row/query [50k float32's] so having the whole thing in
+	# memory at once isn't a big deal).
+	dmat = jaccard_sparse_matrix(
+		queries,
+		db.signatures,
+		ref_indices=db.sig_indices,
+		distance=True,
+		chunksize=chunksize,
+	)
+
+	items = [classify_item(db, input, dmat[i, :]) for i, input in enumerate(inputs)]
+
+	return QueryResults(items=items, genomeset=db.genomeset, signaturesmeta=db.signatures.meta)
 
 
-def _query_single(db: GAMBITDatabase, sig: np.ndarray, input: QueryInput):
-	dists = jaccard_sparse_array(sig, db.genome_signatures, distance=True)
+def classify_item(db: GAMBITDatabase, input: QueryInput, dists: np.ndarray) -> QueryResultItem:
+	"""
+	Perform taxonomic classification of single input from distances to reference genomes and return
+	a results item object.
+	"""
 	matches = find_matches(zip_strict(db.genomes, dists))
 	consensus, others = consensus_taxon(matches.keys())
 
