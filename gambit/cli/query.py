@@ -6,6 +6,7 @@ from .context import CLIContext
 from gambit.db import GAMBITDatabase
 from gambit.io.seq import SequenceFile, find_kmers_in_files
 from gambit.query import runquery
+from gambit.util.progress import ClickProgressMeter
 
 
 @click.command()
@@ -43,10 +44,14 @@ def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str):
 
 	# Parse files
 	files = SequenceFile.from_paths(files, seqfmt)
-	sigs = find_kmers_in_files(db.signatures.kmerspec, files)
+	sigs = find_kmers_in_files(
+		db.signatures.kmerspec,
+		files,
+		progress=ClickProgressMeter.config(desc='Parsing input'),
+	)
 
 	# Run query
-	results = runquery(db, sigs, inputs=files)
+	results = runquery(db, sigs, inputs=files, progress=ClickProgressMeter)
 
 	# Export results
 	if outfmt == 'json':

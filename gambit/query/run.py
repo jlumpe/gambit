@@ -8,6 +8,7 @@ from gambit.db.gambitdb import GAMBITDatabase
 from gambit.kmers import KmerSignature
 from gambit.io.seq import SequenceFile
 from gambit.util.misc import zip_strict
+from gambit.util.progress import progress_config, iter_progress
 from gambit.metric import jaccard_sparse_matrix
 from .classify import find_matches, consensus_taxon, reportable_taxon, matching_taxon
 from .results import QueryInput, GenomeMatch, QueryResultItem, QueryResults
@@ -22,6 +23,7 @@ def runquery(db: GAMBITDatabase,
              queries: Sequence[KmerSignature],
              inputs: Optional[Sequence[Union[QueryInput, SequenceFile, str]]],
              chunksize: Optional[int] = 1000,
+             progress = None,
              ) -> QueryResults:
 	"""Predict the taxonomy of one or more query genomes using a given GAMBIT reference database.
 
@@ -37,8 +39,12 @@ def runquery(db: GAMBITDatabase,
 		``QueryInput``, ``SequenceFile`` or ``str``.
 	chunksize
 		Number of reference signatures to process at a time. ``None`` means no chunking is performed.
+	progress
+		Report progress for distance matrix calculation. See
+		:func:`gambit.util.progress.get_progress` for description of allowed values.
 	"""
 	queries = list(queries)
+	pconf = progress_config(progress)
 
 	if len(queries) == 0:
 		raise ValueError('Must supply at least one query.')
@@ -59,9 +65,11 @@ def runquery(db: GAMBITDatabase,
 		ref_indices=db.sig_indices,
 		distance=True,
 		chunksize=chunksize,
+		progress=pconf.update(desc='Calculating distances'),
 	)
 
-	items = [classify_item(db, input, dmat[i, :]) for i, input in enumerate(inputs)]
+	with iter_progress(inputs, pconf, desc='Classifying') as inputs_iter:
+		items = [classify_item(db, input, dmat[i, :]) for i, input in enumerate(inputs_iter)]
 
 	return QueryResults(items=items, genomeset=db.genomeset, signaturesmeta=db.signatures.meta)
 
