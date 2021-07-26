@@ -18,7 +18,7 @@ from gambit.io.seq import SequenceFile, find_kmers_in_files
 from gambit.signatures.hdf5 import HDF5Signatures
 from gambit.db.gambitdb import GAMBITDatabase
 from gambit.db.models import ReferenceGenomeSet
-from gambit.query import runquery
+from gambit.query import runquery_parse
 from gambit.cli import cli
 from gambit.util.misc import zip_strict
 
@@ -89,9 +89,8 @@ def test_query_python(testdb, query_data):
 	"""Run a full query using the Python API."""
 
 	query_files, expected_taxa = query_data
-	query_sigs = find_kmers_in_files(testdb.signatures.kmerspec, query_files)
 
-	results = runquery(testdb, query_sigs, query_files)
+	results = runquery_parse(testdb, query_files)
 
 	assert len(results.items) == len(query_files)
 

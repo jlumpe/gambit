@@ -4,8 +4,8 @@ import click
 
 from .context import CLIContext
 from gambit.db import GAMBITDatabase
-from gambit.io.seq import SequenceFile, find_kmers_in_files
-from gambit.query import runquery
+from gambit.query import runquery_parse
+from gambit.io.seq import SequenceFile
 from gambit.util.progress import ClickProgressMeter
 
 
@@ -39,19 +39,13 @@ from gambit.util.progress import ClickProgressMeter
 def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 	gset = ctxobj.genomeset()
-	sigs = ctxobj.signatures()
-	db = GAMBITDatabase(gset, sigs)
+	ref_sigs = ctxobj.signatures()
+	db = GAMBITDatabase(gset, ref_sigs)
 
-	# Parse files
 	files = SequenceFile.from_paths(files, seqfmt)
-	sigs = find_kmers_in_files(
-		db.signatures.kmerspec,
-		files,
-		progress=ClickProgressMeter.config(desc='Parsing input'),
-	)
 
 	# Run query
-	results = runquery(db, sigs, inputs=files, progress=ClickProgressMeter)
+	results = runquery_parse(db, files, progress=ClickProgressMeter)
 
 	# Export results
 	if outfmt == 'json':
