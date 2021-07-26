@@ -10,7 +10,7 @@ from gambit.io.seq import SequenceFile
 from gambit.util.misc import zip_strict
 from gambit.util.progress import progress_config, iter_progress
 from gambit.metric import jaccard_sparse_matrix
-from .classify import find_matches, consensus_taxon, reportable_taxon, matching_taxon
+from gambit.classify import find_matches, consensus_taxon, reportable_taxon, matching_taxon
 from .results import QueryInput, GenomeMatch, QueryResultItem, QueryResults
 
 

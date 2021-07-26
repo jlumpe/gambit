@@ -2,7 +2,7 @@
 
 import pytest
 
-from gambit.query.classify import matching_taxon, find_matches, consensus_taxon, reportable_taxon
+from gambit.classify import matching_taxon, find_matches, consensus_taxon, reportable_taxon
 from gambit.db.models import Taxon
 
 
