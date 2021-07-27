@@ -110,14 +110,14 @@ class QueryResults:
 	extra: Dict[str, Any] = attrib(factory=dict)
 
 
-def runquery(db: GAMBITDatabase,
-             queries: Sequence[KmerSignature],
-             params: Optional[QueryParams] = None,
-             *,
-             inputs: Optional[Sequence[Union[QueryInput, SequenceFile, str]]] = None,
-             progress = None,
-             **kw,
-             ) -> QueryResults:
+def query(db: GAMBITDatabase,
+          queries: Sequence[KmerSignature],
+          params: Optional[QueryParams] = None,
+          *,
+          inputs: Optional[Sequence[Union[QueryInput, SequenceFile, str]]] = None,
+          progress = None,
+          **kw,
+          ) -> QueryResults:
 	"""Predict the taxonomy of one or more query genomes using a GAMBIT reference database.
 
 	Parameters
@@ -190,13 +190,13 @@ def runquery(db: GAMBITDatabase,
 	)
 
 
-def runquery_parse(db: GAMBITDatabase,
-                   files: Sequence[SequenceFile],
-                   params: Optional[QueryParams] = None,
-                   *,
-                   file_labels: Optional[Sequence[str]] = None,
-                   **kw,
-                   ) -> QueryResults:
+def query_parse(db: GAMBITDatabase,
+                files: Sequence[SequenceFile],
+                params: Optional[QueryParams] = None,
+                *,
+                file_labels: Optional[Sequence[str]] = None,
+                **kw,
+                ) -> QueryResults:
 	"""Query a database with signatures derived by parsing a set of genome sequence files.
 
 	Parameters
@@ -211,7 +211,7 @@ def runquery_parse(db: GAMBITDatabase,
 	file_labels
 		Custom to use for each file in returned results object. If None will use file names.
 	\\**kw
-		Additional keyword arguments passed to :func:`.runquery`\\ .
+		Additional keyword arguments passed to :func:`.query`\\ .
 	"""
 	from gambit.io.seq import find_kmers_in_files
 
@@ -228,4 +228,4 @@ def runquery_parse(db: GAMBITDatabase,
 		progress=pconf.update(desc='Parsing input'),
 	)
 
-	return runquery(db, query_sigs, params, inputs=inputs, progress=pconf, **kw)
+	return query(db, query_sigs, params, inputs=inputs, progress=pconf, **kw)

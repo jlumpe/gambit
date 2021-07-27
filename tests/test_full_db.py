@@ -18,7 +18,7 @@ from gambit.io.seq import SequenceFile
 from gambit.signatures.hdf5 import HDF5Signatures
 from gambit.db.gambitdb import GAMBITDatabase
 from gambit.db.models import ReferenceGenomeSet
-from gambit.query import QueryParams, runquery_parse
+from gambit.query import QueryParams, query_parse
 from gambit.cli import cli
 from gambit.util.misc import zip_strict
 from gambit import __version__ as GAMBIT_VERSION
@@ -93,7 +93,7 @@ def test_query_python(testdb, query_data, classify_strict):
 	query_files, expected_taxa = query_data
 	params = QueryParams(classify_strict=classify_strict)
 
-	results = runquery_parse(testdb, query_files, params)
+	results = query_parse(testdb, query_files, params)
 
 	assert results.params == params
 	assert results.genomeset == testdb.genomeset

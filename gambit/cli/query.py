@@ -4,7 +4,7 @@ import click
 
 from .context import CLIContext
 from gambit.db import GAMBITDatabase
-from gambit.query import QueryParams, runquery_parse
+from gambit.query import QueryParams, query_parse
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import ClickProgressMeter
 
@@ -51,7 +51,7 @@ def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str, strict: b
 	files = SequenceFile.from_paths(files, seqfmt)
 
 	# Run query
-	results = runquery_parse(db, files, params, progress=ClickProgressMeter)
+	results = query_parse(db, files, params, progress=ClickProgressMeter)
 
 	# Export results
 	if outfmt == 'json':
