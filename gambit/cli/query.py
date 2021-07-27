@@ -55,10 +55,10 @@ def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str, strict: b
 
 	# Export results
 	if outfmt == 'json':
-		from gambit.query.export.json import JSONResultsExporter
+		from gambit.export.json import JSONResultsExporter
 		exporter = JSONResultsExporter()
 	else:
-		from gambit.query.export.csv import CSVResultsExporter
+		from gambit.export.csv import CSVResultsExporter
 		exporter = CSVResultsExporter()
 
 	exporter.export(output, results)
