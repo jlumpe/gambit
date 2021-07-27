@@ -5,10 +5,11 @@ from typing import Sequence, Union, Dict, List, Any, Optional, Tuple, Iterable, 
 import sqlalchemy as sa
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import relationship, backref, deferred
+from sqlalchemy.orm import Session, relationship, backref, deferred
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 
 from .sqla import JsonString
 
@@ -387,6 +388,30 @@ class Taxon(Base):
 	def short_repr(self):
 		"""Get a short string representation of the Taxon for logging and warning/error messages."""
 		return f'{self.id}:{self.name}'
+
+
+def only_genomeset(session: Session) -> ReferenceGenomeSet:
+	"""Get the only ``ReferenceGenomeSet`` in a database.
+
+	The format which is used to distribute GAMBIT databases and is expected by the CLI is an sqlite
+	file containing a single genome set.
+
+	Parameters
+	----------
+	session
+		ORM session connected to database.
+
+	Raises
+	------
+	RuntimeError
+		If the database does not contain a single genome set.
+	"""
+	try:
+		return session.query(ReferenceGenomeSet).one()
+	except MultipleResultsFound as e:
+		raise RuntimeError('Database contains multiple genome sets.') from e
+	except NoResultFound as e:
+		raise RuntimeError('Database contains no genome sets.') from e
 
 
 #: Attributes of :class:`gambit.db.models.Genome` which serve as unique IDs.

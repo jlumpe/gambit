@@ -6,9 +6,8 @@ from typing import Tuple
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 
-from .models import ReferenceGenomeSet
+from .models import ReferenceGenomeSet, only_genomeset
 from .gambitdb import GAMBITDatabase
 from .sqla import ReadOnlySession
 from gambit.io.util import FilePath
@@ -31,13 +30,7 @@ def open_genomeset(path: FilePath, session_cls=ReadOnlySession) -> ReferenceGeno
 	"""
 	engine = create_engine(f'sqlite:///{os.fspath(path)}')
 	session = sessionmaker(engine, class_=session_cls)()
-
-	try:
-		return session.query(ReferenceGenomeSet).one()
-	except MultipleResultsFound as e:
-		raise RuntimeError('Database file contains multiple genome sets.') from e
-	except NoResultFound as e:
-		raise RuntimeError('Database file contains no genome sets.') from e
+	return only_genomeset(session)
 
 
 def locate_db_files(path: FilePath) -> Tuple[Path, Path]:
