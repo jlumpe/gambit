@@ -14,13 +14,14 @@ from csv import DictReader
 
 import pytest
 
-from gambit.io.seq import SequenceFile, find_kmers_in_files
+from gambit.io.seq import SequenceFile
 from gambit.signatures.hdf5 import HDF5Signatures
 from gambit.db.gambitdb import GAMBITDatabase
 from gambit.db.models import ReferenceGenomeSet
 from gambit.query import QueryParams, runquery_parse
 from gambit.cli import cli
 from gambit.util.misc import zip_strict
+from gambit import __version__ as GAMBIT_VERSION
 
 
 @pytest.fixture(autouse=True, scope='module')
@@ -94,7 +95,10 @@ def test_query_python(testdb, query_data, classify_strict):
 
 	results = runquery_parse(testdb, query_files, params)
 
-	assert len(results.items) == len(query_files)
+	assert results.params == params
+	assert results.genomeset == testdb.genomeset
+	assert results.signaturesmeta == testdb.signatures.meta
+	assert results.gambit_version == GAMBIT_VERSION
 
 	for item, file, expected_key in zip_strict(results.items, query_files, expected_taxa):
 		clsresult = item.classifier_result
@@ -149,6 +153,7 @@ def _check_results_json(results_file, testdb, query_files, expected_taxa):
 
 	assert results['genomeset']['key'] == testdb.genomeset.key
 	assert results['signaturesmeta']['id'] == testdb.signatures.meta.id
+	assert results['gambit_version'] == GAMBIT_VERSION
 
 	items = results['items']
 	assert isinstance(items, list)
