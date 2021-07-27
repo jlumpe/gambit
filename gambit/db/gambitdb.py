@@ -1,5 +1,7 @@
 from typing import Sequence
 
+from sqlalchemy.orm import Session, object_session
+
 from .models import ReferenceGenomeSet, AnnotatedGenome, genomes_by_id_subset
 from gambit.signatures.base import ReferenceSignatures
 
@@ -24,6 +26,10 @@ class GAMBITDatabase:
 		Index of signature in ``signatures`` corresponding to each genome in ``genomes``.
 		In sorted order to improve performance when iterating over them (improve locality if in
 		memory and avoid seeking if in file).
+	session
+		The SQLAlchemy session ``genomeset`` and the elements of ``genomes`` belong to.
+		It is important to keep a reference to this, just having references to the ORM objects
+		themselves is not enough to keep the session from being garbage collected.
 
 	Parameters
 	----------
@@ -38,6 +44,7 @@ class GAMBITDatabase:
 	def __init__(self, genomeset: ReferenceGenomeSet, signatures: ReferenceSignatures):
 		self.genomeset = genomeset
 		self.signatures = signatures
+		self.session = object_session(genomeset)
 
 		id_attr = signatures.meta.id_attr
 		if id_attr is None:
