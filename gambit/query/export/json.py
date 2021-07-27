@@ -7,6 +7,7 @@ from attr import attrs, attrib, asdict
 
 from .base import AbstractResultsExporter
 from gambit.query.results import QueryResults, QueryResultItem
+from gambit.classify import ClassifierResult
 from gambit.db.models import ReferenceGenomeSet, Taxon, AnnotatedGenome
 import gambit.io.json as gjson
 
@@ -51,13 +52,9 @@ class JSONResultsExporter(AbstractResultsExporter):
 		# Base case
 		return gjson.to_json(obj)
 
-	@_to_json.register(QueryResults)
-	def _results_to_json(self, results: QueryResults):
-		return asdict(results)
-
-	@_to_json.register(QueryResultItem)
-	def _item_to_json(self, item: QueryResultItem):
-		return asdict(item)
+	_to_json.register(ClassifierResult, lambda self, result: asdict(result))
+	_to_json.register(QueryResults, lambda self, results: asdict(results))
+	_to_json.register(QueryResultItem, lambda self, item: asdict(item))
 
 	@_to_json.register(ReferenceGenomeSet)
 	def _genomeset_to_json(self, gset: ReferenceGenomeSet):

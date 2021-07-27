@@ -95,26 +95,27 @@ def test_query_python(testdb, query_data):
 	assert len(results.items) == len(query_files)
 
 	for item, file, expected_key in zip_strict(results.items, query_files, expected_taxa):
+		clsresult = item.classifier_result
 		expected_taxon = testdb.genomeset.taxa.filter_by(key=expected_key).one() if expected_key else None
 
 		assert item.input.file == file
-		assert item.success
+		assert clsresult.success
 
 		if expected_taxon is None:
-			assert item.predicted_taxon is None
+			assert clsresult.predicted_taxon is None
+			assert clsresult.primary_match is None
 			assert item.report_taxon is None
-			assert item.primary_match is None
 		else:
-			assert item.predicted_taxon == expected_taxon
+			assert clsresult.predicted_taxon == expected_taxon
 			assert item.report_taxon == expected_taxon
-			assert item.primary_match is not None
-			assert item.primary_match.matching_taxon == expected_taxon
+			assert clsresult.primary_match is not None
+			assert clsresult.primary_match.matched_taxon == expected_taxon
 
 			# In this database, closest match should be primary match
-			assert item.closest_match == item.primary_match
+			assert clsresult.closest_match == clsresult.primary_match
 
-		assert not item.warnings
-		assert item.error is None
+		assert not clsresult.warnings
+		assert clsresult.error is None
 
 
 @pytest.mark.parametrize('out_fmt', ['json'])
@@ -150,23 +151,24 @@ def _check_results_json(results_file, testdb, query_files, expected_taxa):
 	assert len(items) == len(query_files)
 
 	for item, file, expected in zip_strict(items, query_files, expected_taxa):
+		clsresult = item['classifier_result']
 		assert item['input']['label'] == file.path.name
-		assert item['success'] is True
+		assert clsresult['success'] is True
 
 		if expected == '':
-			assert item['predicted_taxon'] is None
+			assert clsresult['predicted_taxon'] is None
 			assert item['report_taxon'] is None
-			assert item['primary_match'] is None
+			assert clsresult['primary_match'] is None
 		else:
-			predicted = item['predicted_taxon']
+			predicted = clsresult['predicted_taxon']
 			assert predicted is not None
 			assert predicted['key'] == expected
 			assert item['report_taxon'] == predicted
-			assert item['primary_match'] is not None
-			assert item['primary_match']['matching_taxon']['key'] == expected
+			assert clsresult['primary_match'] is not None
+			assert clsresult['primary_match']['matched_taxon']['key'] == expected
 
 			# In this database, closest match should be primary match
-			assert item['closest_match'] == item['primary_match']
+			assert clsresult['closest_match'] == clsresult['primary_match']
 
-		assert item['warnings'] == []
-		assert item['error'] is None
+		assert clsresult['warnings'] == []
+		assert clsresult['error'] is None

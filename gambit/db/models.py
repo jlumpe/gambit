@@ -384,6 +384,10 @@ class Taxon(Base):
 	def __repr__(self):
 		return f'<{type(self).__name__}:{self.id} {self.name!r}>'
 
+	def short_repr(self):
+		"""Get a short string representation of the Taxon for logging and warning/error messages."""
+		return f'{self.id}:{self.name}'
+
 
 #: Attributes of :class:`gambit.db.models.Genome` which serve as unique IDs.
 GENOME_ID_ATTRS = {

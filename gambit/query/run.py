@@ -10,13 +10,8 @@ from gambit.io.seq import SequenceFile
 from gambit.util.misc import zip_strict
 from gambit.util.progress import progress_config, iter_progress
 from gambit.metric import jaccard_sparse_matrix
-from gambit.classify import find_matches, consensus_taxon, reportable_taxon, matching_taxon
-from .results import QueryInput, GenomeMatch, QueryResultItem, QueryResults
-
-
-def _taxon_repr(taxon):
-	"""Get a short string representation of a Taxon for logging and warning/error messages."""
-	return f'{taxon.id}:{taxon.name}'
+from gambit.classify import classify, reportable_taxon
+from .results import QueryInput, QueryResultItem, QueryResults
 
 
 def runquery(db: GAMBITDatabase,
@@ -69,10 +64,24 @@ def runquery(db: GAMBITDatabase,
 		progress=pconf.update(desc='Calculating distances'),
 	)
 
-	with iter_progress(inputs, pconf, desc='Classifying') as inputs_iter:
-		items = [classify_item(db, input, dmat[i, :]) for i, input in enumerate(inputs_iter)]
+	items = []
 
-	return QueryResults(items=items, genomeset=db.genomeset, signaturesmeta=db.signatures.meta)
+	# Classify inputs and create result items
+	with iter_progress(inputs, pconf, desc='Classifying') as inputs_iter:
+		for i, input in enumerate(inputs_iter):
+			clsresult = classify(db.genomes, dmat[i, :])
+			report_taxon = None if clsresult.predicted_taxon is None else reportable_taxon(clsresult.predicted_taxon)
+			items.append(QueryResultItem(
+				input=input,
+				classifier_result=clsresult,
+				report_taxon=report_taxon,
+			))
+
+	return QueryResults(
+		items=items,
+		genomeset=db.genomeset,
+		signaturesmeta=db.signatures.meta,
+	)
 
 
 def runquery_parse(db: GAMBITDatabase,
@@ -109,88 +118,3 @@ def runquery_parse(db: GAMBITDatabase,
 	)
 
 	return runquery(db, query_sigs, inputs, progress=pconf, **kw)
-
-
-def classify_item(db: GAMBITDatabase, input: QueryInput, dists: np.ndarray) -> QueryResultItem:
-	"""
-	Perform taxonomic classification of single input from distances to reference genomes and return
-	a results item object.
-	"""
-	matches = find_matches(zip_strict(db.genomes, dists))
-	consensus, others = consensus_taxon(matches.keys())
-
-	# Find closest match
-	closest = np.argmin(dists)
-	closest_match = GenomeMatch(
-		genome=db.genomes[closest],
-		distance=dists[closest],
-		matching_taxon=matching_taxon(db.genomes[closest].taxon, dists[closest]),
-	)
-
-	# No matches found
-	if not matches:
-		return QueryResultItem(
-			input=input,
-			success=True,
-			primary_match=None,
-			closest_match=closest_match,
-			predicted_taxon=None,
-			report_taxon=None,
-		)
-
-	# Find primary match
-	if consensus is None:
-		primary_match = None
-
-	else:
-		best_i = None
-		best_d = float('inf')
-		best_taxon = None
-
-		for taxon, idxs in matches.items():
-			if consensus not in taxon.ancestors(incself=True):
-				continue
-
-			for i in idxs:
-				if dists[i] < best_d:
-					best_i = i
-					best_d = dists[i]
-					best_taxon = taxon
-
-		assert best_i is not None
-		primary_match = GenomeMatch(
-			genome=db.genomes[best_i],
-			distance=best_d,
-			matching_taxon=best_taxon,
-		)
-
-	item = QueryResultItem(
-		input=input,
-		success=True,
-		primary_match=primary_match,
-		closest_match=closest_match,
-		predicted_taxon=consensus,
-		report_taxon=None if consensus is None else reportable_taxon(consensus),
-	)
-
-	# Warn of inconsistent matches
-	if others:
-		msg = f'Query matched {len(others)} inconsistent taxa: '
-		msg += ', '.join(map(_taxon_repr, others))
-		msg += '. Reporting lowest common ancestor of this set.'
-		item.warnings.append(msg)
-
-	# No consensus found - matches do not have common ancestor
-	if consensus is None:
-		item.success = False
-		item.error = 'Matched taxa have no common ancestor.'
-
-	# Consensus has no reportable ancestor
-	elif item.report_taxon is None:
-		item.success = False
-		item.error = (
-			f'Matched taxon {_taxon_repr(consensus)} has no reportable ancestor. '
-			'This indicates a problem with the database.'
-		)
-
-	return item
