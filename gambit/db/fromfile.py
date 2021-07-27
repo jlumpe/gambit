@@ -7,30 +7,26 @@ from typing import Tuple
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from .models import ReferenceGenomeSet, only_genomeset
+from .models import only_genomeset
 from .gambitdb import GAMBITDatabase
 from .sqla import ReadOnlySession
 from gambit.io.util import FilePath
 
 
-def open_genomeset(path: FilePath, session_cls=ReadOnlySession) -> ReferenceGenomeSet:
-	"""Open an SQLite file containing GAMBIT reference genomes and get its :class:`ReferenceGenomeSet`.
+def file_sessionmaker(path: FilePath, class_=ReadOnlySession, **kw) -> sessionmaker:
+	"""Get an SQLAlchemy ``sessionmaker`` for an sqlite database file.
 
 	Parameters
 	----------
 	path
 		Path to database file.
-	session_cls
-		:class:`sqlalchemy.orm.Session` subclass to use.
-
-	Raises
-	------
-	RuntimeError
-		If the database file does not contain a single genome set.
+	class_
+		SQLAlchemy ``Session`` subclass to use. Defaults to :class:`gambit.db.sqla.ReadOnlySession`\\ .
+	\\**kw
+		Additional keyword arguments to :class:`sqlalchemy.orm.sessionmaker`\\ .
 	"""
 	engine = create_engine(f'sqlite:///{os.fspath(path)}')
-	session = sessionmaker(engine, class_=session_cls)()
-	return only_genomeset(session)
+	return sessionmaker(engine, class_=class_, **kw)
 
 
 def locate_db_files(path: FilePath) -> Tuple[Path, Path]:
@@ -74,7 +70,9 @@ def locate_db_files(path: FilePath) -> Tuple[Path, Path]:
 def load_database(genomes_file: FilePath, signatures_file: FilePath) -> GAMBITDatabase:
 	"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
 	from gambit.signatures.hdf5 import HDF5Signatures
-	gset = open_genomeset(genomes_file)
+
+	session = file_sessionmaker(genomes_file)()
+	gset = only_genomeset(session)
 	sigs = HDF5Signatures.open(signatures_file)
 	return GAMBITDatabase(gset, sigs)
 
