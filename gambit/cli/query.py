@@ -4,7 +4,7 @@ import click
 
 from .context import CLIContext
 from gambit.db import GAMBITDatabase
-from gambit.query import runquery_parse
+from gambit.query import QueryParams, runquery_parse
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import ClickProgressMeter
 
@@ -28,6 +28,11 @@ from gambit.util.progress import ClickProgressMeter
 	default='json',
 	help='Format to output results in.',
 )
+@click.option(
+	'--strict/--no-strict',
+	default=False,
+	hidden=True,
+)
 @click.argument(
 	'files',
 	nargs=-1,
@@ -36,16 +41,17 @@ from gambit.util.progress import ClickProgressMeter
 	metavar='GENOMES...',
 )
 @click.pass_obj
-def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str):
+def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str, strict: bool):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 	gset = ctxobj.genomeset()
 	ref_sigs = ctxobj.signatures()
 	db = GAMBITDatabase(gset, ref_sigs)
 
+	params = QueryParams(classify_strict=strict)
 	files = SequenceFile.from_paths(files, seqfmt)
 
 	# Run query
-	results = runquery_parse(db, files, progress=ClickProgressMeter)
+	results = runquery_parse(db, files, params, progress=ClickProgressMeter)
 
 	# Export results
 	if outfmt == 'json':

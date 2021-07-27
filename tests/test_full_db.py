@@ -18,7 +18,7 @@ from gambit.io.seq import SequenceFile, find_kmers_in_files
 from gambit.signatures.hdf5 import HDF5Signatures
 from gambit.db.gambitdb import GAMBITDatabase
 from gambit.db.models import ReferenceGenomeSet
-from gambit.query import runquery_parse
+from gambit.query import QueryParams, runquery_parse
 from gambit.cli import cli
 from gambit.util.misc import zip_strict
 
@@ -85,12 +85,14 @@ def query_data(testdb_files):
 	return files, expected_taxa
 
 
-def test_query_python(testdb, query_data):
+@pytest.mark.parametrize('classify_strict', [False, True])
+def test_query_python(testdb, query_data, classify_strict):
 	"""Run a full query using the Python API."""
 
 	query_files, expected_taxa = query_data
+	params = QueryParams(classify_strict=classify_strict)
 
-	results = runquery_parse(testdb, query_files)
+	results = runquery_parse(testdb, query_files, params)
 
 	assert len(results.items) == len(query_files)
 
@@ -119,7 +121,8 @@ def test_query_python(testdb, query_data):
 
 
 @pytest.mark.parametrize('out_fmt', ['json'])
-def test_query_cli(testdb_files, testdb, query_data, out_fmt, tmp_path):
+@pytest.mark.parametrize('classify_strict', [False, True])
+def test_query_cli(testdb_files, testdb, query_data, out_fmt, classify_strict, tmp_path):
 	"""Run a full query using the command line interface."""
 	results_file = tmp_path / 'results.json'
 	query_files, expected_taxa = query_data
@@ -129,6 +132,7 @@ def test_query_cli(testdb_files, testdb, query_data, out_fmt, tmp_path):
 		'query',
 		f'--output={results_file}',
 		f'--outfmt={out_fmt}',
+		'--strict' if classify_strict else '--no-strict',
 		*(str(f.path) for f in query_files),
 	]
 

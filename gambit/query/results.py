@@ -9,6 +9,7 @@ from gambit.io.seq import SequenceFile
 from gambit.db.models import ReferenceGenomeSet, Taxon
 from gambit.signatures import SignaturesMeta
 from gambit.classify import ClassifierResult
+from .params import QueryParams
 from gambit import __version__ as GAMBIT_VERSION
 
 
@@ -68,6 +69,8 @@ class QueryResults:
 	----------
 	items
 		Results for each query sequence.
+	params
+		Parameters used to run query.
 	genomeset
 		Genome set used.
 	signaturesmeta
@@ -80,6 +83,7 @@ class QueryResults:
 		JSON-able dict containing additional arbitrary metadata.
 	"""
 	items: List[QueryResultItem] = attrib()
+	params: Optional[QueryParams] = attrib(default=None)
 	genomeset: Optional[ReferenceGenomeSet] = attrib(default=None)
 	signaturesmeta: Optional[SignaturesMeta] = attrib(default=None)
 	gambit_version: str = attrib(default=GAMBIT_VERSION)

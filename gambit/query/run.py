@@ -1,8 +1,7 @@
 """Query a GAMBIT database."""
 
 from typing import Sequence, Optional, Union
-
-import numpy as np
+from warnings import warn
 
 from gambit.db.gambitdb import GAMBITDatabase
 from gambit.kmers import KmerSignature
@@ -11,15 +10,17 @@ from gambit.util.misc import zip_strict
 from gambit.util.progress import progress_config, iter_progress
 from gambit.metric import jaccard_sparse_matrix
 from gambit.classify import classify, reportable_taxon
+from .params import QueryParams
 from .results import QueryInput, QueryResultItem, QueryResults
 
 
 def runquery(db: GAMBITDatabase,
              queries: Sequence[KmerSignature],
-             inputs: Optional[Sequence[Union[QueryInput, SequenceFile, str]]] = None,
+             params: Optional[QueryParams] = None,
              *,
-             chunksize: Optional[int] = 1000,
+             inputs: Optional[Sequence[Union[QueryInput, SequenceFile, str]]] = None,
              progress = None,
+             **kw,
              ) -> QueryResults:
 	"""Predict the taxonomy of one or more query genomes using a GAMBIT reference database.
 
@@ -29,16 +30,24 @@ def runquery(db: GAMBITDatabase,
 		Database to query.
 	queries
 		Sequence of k-mer signatures for query genomes.
+	params
+		``QueryParams`` instance defining parameter values. If None will take values from additional
+		keyword arguments or use defaults.
 	inputs
 		Description for each input, converted to :class:`gambit.query.result.QueryInput` in results
 		object. Only used for reporting, does not any other aspect of results. Items can be
 		``QueryInput``, ``SequenceFile`` or ``str``.
-	chunksize
-		Number of reference signatures to process at a time. ``None`` means no chunking is performed.
 	progress
 		Report progress for distance matrix calculation. See
 		:func:`gambit.util.progress.get_progress` for description of allowed values.
+	\\**kw
+		Passed to ``QueryParams``\\ .
 	"""
+	if params is None:
+		params = QueryParams(**kw)
+	elif kw:
+		warn('Additional keyword arguments ignored if "params" argument is not None.')
+
 	queries = list(queries)
 	pconf = progress_config(progress)
 
@@ -60,7 +69,7 @@ def runquery(db: GAMBITDatabase,
 		db.signatures,
 		ref_indices=db.sig_indices,
 		distance=True,
-		chunksize=chunksize,
+		chunksize=params.chunksize,
 		progress=pconf.update(desc='Calculating distances'),
 	)
 
@@ -69,7 +78,7 @@ def runquery(db: GAMBITDatabase,
 	# Classify inputs and create result items
 	with iter_progress(inputs, pconf, desc='Classifying') as inputs_iter:
 		for i, input in enumerate(inputs_iter):
-			clsresult = classify(db.genomes, dmat[i, :])
+			clsresult = classify(db.genomes, dmat[i, :], strict=params.classify_strict)
 			report_taxon = None if clsresult.predicted_taxon is None else reportable_taxon(clsresult.predicted_taxon)
 			items.append(QueryResultItem(
 				input=input,
@@ -79,6 +88,7 @@ def runquery(db: GAMBITDatabase,
 
 	return QueryResults(
 		items=items,
+		params=params,
 		genomeset=db.genomeset,
 		signaturesmeta=db.signatures.meta,
 	)
@@ -86,6 +96,8 @@ def runquery(db: GAMBITDatabase,
 
 def runquery_parse(db: GAMBITDatabase,
                    files: Sequence[SequenceFile],
+                   params: Optional[QueryParams] = None,
+                   *,
                    file_labels: Optional[Sequence[str]] = None,
                    **kw,
                    ) -> QueryResults:
@@ -97,6 +109,9 @@ def runquery_parse(db: GAMBITDatabase,
 		Database to query.
 	files
 		Sequence files containing query files.
+	params
+		``QueryParams`` instance defining parameter values. If None will take values from additional
+		keyword arguments or use defaults.
 	file_labels
 		Custom to use for each file in returned results object. If None will use file names.
 	\\**kw
@@ -117,4 +132,4 @@ def runquery_parse(db: GAMBITDatabase,
 		progress=pconf.update(desc='Parsing input'),
 	)
 
-	return runquery(db, query_sigs, inputs, progress=pconf, **kw)
+	return runquery(db, query_sigs, params, inputs=inputs, progress=pconf, **kw)
