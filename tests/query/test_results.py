@@ -2,7 +2,7 @@
 
 import pytest
 
-from gambit.query.results import QueryInput
+from gambit.query import QueryInput
 from gambit.io.seq import SequenceFile
 
 
