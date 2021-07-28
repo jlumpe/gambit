@@ -80,16 +80,16 @@ class TestGenome:
 
 class TestReferenceGenomeSet:
 
-	def test_root_taxa(self, testdb_session):
-		session = testdb_session()
+	def test_root_taxa(self, testdb_copy):
+		session = testdb_copy()
 		gset = session.query(ReferenceGenomeSet).one()
 
 		root = gset.taxa.filter_by(name='root').one()
 		assert gset.root_taxa().all() == [root]
 
-		# This is a read-only session specific to this test, we are free to make modifications.
 		new_roots = set(root.children)
 		session.delete(root)
+		session.commit()
 		assert set(gset.root_taxa()) == new_roots
 
 	def test_extra_json(self, empty_db_session):

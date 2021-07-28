@@ -1,4 +1,5 @@
 from pathlib import Path
+import sqlite3
 
 import numpy as np
 import pytest
@@ -6,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from gambit.db.models import Base as models_base
+from gambit.db.sqla import ReadOnlySession
 
 
 # Add option to opt-in to the tests in test_full_db.py
@@ -59,4 +61,17 @@ def testdb_engine(testdb_dir):
 @pytest.fixture(scope='session')
 def testdb_session(testdb_engine):
 	"""Function which creates a new session for the test database."""
-	return sessionmaker(testdb_engine)
+	return sessionmaker(testdb_engine, class_=ReadOnlySession)
+
+@pytest.fixture(scope='session')
+def testdb_copy(testdb_dir):
+	"""Function which creates an in-memory copy of the test database."""
+
+	def make_testdb_copy():
+		src = sqlite3.connect(str(testdb_dir / 'testdb_210126-genomes.db'))
+		memory = sqlite3.connect(':memory:')
+		src.backup(memory)
+		engine = create_engine('sqlite://', creator=lambda: memory)
+		return sessionmaker(engine)()
+
+	return make_testdb_copy
