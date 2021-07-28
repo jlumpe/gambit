@@ -44,8 +44,7 @@ def testdb_files(request, testdb_dir):
 	)
 
 	for k, v in files.items():
-		# Raises FileNotFoundError if does not exist
-		files[k] = v.resolve()
+		assert v.exists(), f'Required testdb file not found: {v}'
 
 	return files
 
