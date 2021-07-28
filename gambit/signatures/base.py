@@ -48,6 +48,9 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 	Abstract base class for types which behave as a (non-mutable) sequence of k-mer signatures
 	(k-mer sets in sparse coordinate format).
 
+	The signature data itself may already be present in memory or may be loaded lazily from the file
+	system when the object is indexed.
+
 	Elements should be Numpy arrays with integer data type. Should implement numpy-style advanced
 	indexing, see :class:`gambit.util.indexing.AdvancedIndexingMixin`. Slicing and advanced indexing
 	should return another instance of ``AbstractSignatureArray``.
