@@ -211,15 +211,22 @@ def test_iter_progress(pass_total, abort_early):
 
 		for i, val in enumerate(itr):
 			assert val == items[i]
-			assert itr.meter.n == i + 1
+			assert itr.meter.n == i
 			assert not itr.meter.closed
 
 			if abort_early and i == abort_at:
 				break
 
-	assert i == abort_at if abort_early else len(items) - 1
-	assert itr.meter.n == i + 1
-	assert itr.meter.closed
+		if abort_early:
+			assert i == abort_at
+			assert itr.meter.n == abort_at
+			assert not itr.meter.closed
+		else:
+			assert i == len(items) - 1
+			assert itr.meter.n == len(items)
+			assert itr.meter.closed
+
+	assert itr.meter.closed  # Always closed after exiting context
 
 
 def test_NullProgressMeter():

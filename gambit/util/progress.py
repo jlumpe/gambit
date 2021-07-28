@@ -250,10 +250,19 @@ class ProgressIterator(Iterator):
 	def __init__(self, iterable: Iterable, meter: AbstractProgressMeter):
 		self.itr = iter(iterable)
 		self.meter = meter
+		self._first = True
 
 	def __next__(self):
-		value = next(self.itr)  # Propagate StopIteration to caller
-		self.meter.increment()
+		if not self._first:
+			self.meter.increment()
+		self._first = False
+
+		try:
+			value = next(self.itr)
+		except StopIteration:
+			self.meter.close()  # Close on reaching end
+			raise
+
 		return value
 
 	def __enter__(self):
