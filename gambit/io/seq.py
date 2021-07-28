@@ -222,7 +222,8 @@ def find_kmers_in_files(kspec: KmerSpec, files: Sequence[SequenceFile], progress
 	"""
 	kmers = []
 
-	for file in iter_progress(files, progress):
-		kmers.append(find_kmers_in_file(kspec, file))
+	with iter_progress(files, progress) as file_itr:
+		for file in file_itr:
+			kmers.append(find_kmers_in_file(kspec, file))
 
 	return kmers
