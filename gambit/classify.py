@@ -56,12 +56,12 @@ def find_matches(itr: Iterable[Tuple[AnnotatedGenome, float]]) -> Dict[Taxon, Li
 def consensus_taxon(taxa: Iterable[Taxon]) -> Tuple[Optional[Taxon], Set[Taxon]]:
 	"""Take a set of taxa matching a query and find a single consensus taxon for classification.
 
-	If a query matches a given taxon, it is expected that there may be hits on some of its ancestors
-	as well. In this case all taxa lie in a single lineage and the most specific taxon will be the
-	consensus.
+	If a query matches a given taxon, it is expected that there may be matches to some of that
+	taxon's ancestors as well. In this case all matched taxa lie in a single lineage and the most
+	specific will be the consensus.
 
 	It may also be possible for a query to match multiple taxa which are "inconsistent" with each
-	other in the sense that one is not a descendant of the other. In that case the consensus will be
+	other in the sense that one is not a descendant of another. In that case the consensus will be
 	the lowest taxon which is either a descendant or ancestor of all taxa in the argument. It's also
 	possible in pathological cases (depending on reference database design) that the taxa may be
 	within entirely different trees, in which case the consensus will be ``None``. The second
@@ -75,8 +75,8 @@ def consensus_taxon(taxa: Iterable[Taxon]) -> Tuple[Optional[Taxon], Set[Taxon]]
 
 	Returns
 	-------
-	Tuple[Optional[Taxon], List[Taxon]]
-		Consensus taxon along with subset of ``taxa`` which are not an ancestor of it.
+	Tuple[Optional[Taxon], Set[Taxon]]
+		Consensus taxon along with the set of any taxa in the argument which are descended from it.
 	"""
 	taxa = list(taxa)
 
@@ -86,15 +86,13 @@ def consensus_taxon(taxa: Iterable[Taxon]) -> Tuple[Optional[Taxon], Set[Taxon]]
 
 	# Current consensus and ancestors, bottom to top
 	trunk = list(taxa[0].ancestors(incself=True))
-	# Taxa which are strict descendants of current consensus
-	crown = set()
 
 	for taxon in taxa[1:]:
 		# Taxon in current trunk, nothing to do
 		if taxon in trunk:
 			continue
 
-		# Find lowest ancestor of taxon in current trunk
+		# Find where ancestry of taxon meets current trunk
 		for a in taxon.ancestors(incself=False):
 			try:
 				i = trunk.index(a)
@@ -105,14 +103,9 @@ def consensus_taxon(taxa: Iterable[Taxon]) -> Tuple[Optional[Taxon], Set[Taxon]]
 			if i == 0:
 				# Directly descended from current consensus, this taxon becomes new consensus
 				trunk = list(taxon.ancestors(incself=True))
+
 			else:
-				# Descended from one of current consensus's ancestors
-
-				# This taxon and current consensus added to crown
-				crown.add(trunk[0])
-				crown.add(taxon)
-
-				# New consensus is this ancestor
+				# Meets the trunk further up - intersection is new consensus
 				trunk = trunk[i:]
 
 			break
@@ -121,7 +114,8 @@ def consensus_taxon(taxa: Iterable[Taxon]) -> Tuple[Optional[Taxon], Set[Taxon]]
 			# No common ancestor exists
 			return (None, set(taxa))
 
-	return (trunk[0] if trunk else None, crown)
+	others = {t for t in taxa if t not in trunk}
+	return (trunk[0], others)
 
 
 def reportable_taxon(taxon: Taxon) -> Optional[Taxon]:

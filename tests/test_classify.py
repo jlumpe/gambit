@@ -25,8 +25,43 @@ def test_find_matches():
 	pass  # TODO
 
 
-def test_consensus_taxon():
-	pass  # TODO
+def test_consensus_taxon(testdb_copy):
+	session = testdb_copy()
+	get_taxon = lambda name: session.query(Taxon).filter_by(name=name).one()
+
+	root = get_taxon('root')
+	A1 = get_taxon('A1')
+	A1_B1 = get_taxon('A1_B1')
+	A1_B1_C1 = get_taxon('A1_B1_C1')
+	A1_B1_C2 = get_taxon('A1_B1_C2')
+	A1_B2 = get_taxon('A1_B2')
+	A2 = get_taxon('A2')
+
+	# Remove root so we can test matches having no common ancestor
+	session.delete(root)
+	session.commit()
+
+	# Empty
+	assert consensus_taxon([]) == (None, set())
+
+	# Single
+	assert consensus_taxon([A1]) == (A1, set())
+
+	# In single lineage
+	assert consensus_taxon([A1, A1_B1]) == (A1_B1, set())
+	assert consensus_taxon([A1, A1_B1_C1]) == (A1_B1_C1, set())
+	assert consensus_taxon([A1, A1_B1, A1_B1_C1]) == (A1_B1_C1, set())
+
+	# Split, with common ancestor
+	assert consensus_taxon([A1_B1, A1_B2]) == (A1, {A1_B1, A1_B2})
+	assert consensus_taxon([A1_B1_C1, A1_B2]) == (A1, {A1_B1_C1, A1_B2})
+	assert consensus_taxon([A1_B1, A1_B1_C1, A1_B2]) == (A1, {A1_B1, A1_B1_C1, A1_B2})
+	assert consensus_taxon([A1, A1_B1_C1, A1_B1_C2]) == (A1_B1, {A1_B1_C1, A1_B1_C2})
+
+	# Split, no common ancestor
+	assert consensus_taxon([A1, A2]) == (None, {A1, A2})
+	assert consensus_taxon([A1_B1, A2]) == (None, {A1_B1, A2})
+	assert consensus_taxon([A1, A1_B1, A2]) == (None, {A1, A1_B1, A2})
 
 
 def test_reportable_taxon():
