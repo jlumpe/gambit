@@ -1,7 +1,8 @@
 """Utility code that doesn't fit anywhere else."""
 
 import sys
-from typing import Iterator, Tuple
+from typing import Iterator, Tuple, Callable
+from functools import singledispatch, wraps
 
 
 def zip_strict(*iterables: Iterator) -> Iterator[Tuple]:
@@ -72,13 +73,12 @@ def chunk_slices(n: int, size: int) -> Iterator[slice]:
 		start = stop
 
 
+# singledispatchmethod ot available in 3.7
 if sys.version_info[1] >= 8:
 	from functools import singledispatchmethod
 
 else:
-	# Not available in 3.7, make simple implementation
-	from functools import singledispatch, wraps
-
+	# Make simple implementation
 	def singledispatchmethod(func):
 		dispatcher = singledispatch(func)
 
@@ -89,3 +89,36 @@ else:
 
 		wrapper.register = dispatcher.register
 		return wrapper
+
+
+def type_singledispatchmethod(func: Callable):
+	"""
+	Similar to ``singledispatchmethod``, but the first (non-self) argument is expected to be a
+	type and dispatch occurs on the argument's *value*.
+
+	Parameters
+	----------
+	func
+		Default implementation. Signature should start with ``(self, cls: type, ...)``.
+
+	Returns
+	-------
+	Callable
+		Function with ``register`` and ``dispatch`` attributes similar to ``singledispatchmethod``.
+	"""
+
+	dispatcher = singledispatch(func)
+
+	@wraps(func)
+	def wrapper(self, cls, *rest, **kw):
+		if isinstance(cls, type):
+			impl = dispatcher.dispatch(cls)
+		else:
+			# Use default implementation for non-types (e.g. stuff from tye typing module)
+			impl = dispatcher.dispatch(object)
+
+		return impl(self, cls, *rest, **kw)
+
+	wrapper.register = dispatcher.register
+	wrapper.dispatch = dispatcher.dispatch
+	return wrapper
