@@ -5,7 +5,7 @@ from typing import Optional, Tuple, Iterable, Dict, List, Set, Sequence
 from attr import attrs, attrib
 import numpy as np
 
-from gambit.db.models import AnnotatedGenome, Taxon
+from gambit.db import AnnotatedGenome, Taxon
 from gambit.util.misc import zip_strict
 
 

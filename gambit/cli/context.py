@@ -7,8 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
-from gambit.db.fromfile import locate_db_files
-from gambit.db.models import ReferenceGenomeSet
+from gambit.db import locate_db_files, ReferenceGenomeSet
 from gambit.db.sqla import ReadOnlySession
 from gambit.signatures.hdf5 import HDF5Signatures
 

@@ -9,7 +9,7 @@ import pytest
 from sqlalchemy.orm import sessionmaker
 
 from gambit.db import models
-from gambit.db.models import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon
+from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon
 
 
 # Some arbitrary JSON data

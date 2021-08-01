@@ -8,7 +8,7 @@ from attr import attrs, attrib, asdict
 from .base import AbstractResultsExporter
 from gambit.query import QueryResultItem, QueryResults
 from gambit.classify import ClassifierResult
-from gambit.db.models import ReferenceGenomeSet, Taxon, AnnotatedGenome
+from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome
 import gambit.io.json as gjson
 
 

@@ -16,8 +16,7 @@ import pytest
 
 from gambit.io.seq import SequenceFile
 from gambit.signatures.hdf5 import HDF5Signatures
-from gambit.db.gambitdb import GAMBITDatabase
-from gambit.db.models import ReferenceGenomeSet
+from gambit.db import GAMBITDatabase, ReferenceGenomeSet
 from gambit.query import QueryParams, query_parse
 from gambit.cli import cli
 from gambit.util.misc import zip_strict
