@@ -1,5 +1,6 @@
 """Utility code that doesn't fit anywhere else."""
 
+import sys
 from typing import Iterator, Tuple
 
 
@@ -69,3 +70,22 @@ def chunk_slices(n: int, size: int) -> Iterator[slice]:
 		stop = start + size
 		yield slice(start, stop)
 		start = stop
+
+
+if sys.version_info[1] >= 8:
+	from functools import singledispatchmethod
+
+else:
+	# Not available in 3.7, make simple implementation
+	from functools import singledispatch, wraps
+
+	def singledispatchmethod(func):
+		dispatcher = singledispatch(func)
+
+		@wraps(func)
+		def wrapper(self, arg, *rest, **kw):
+			impl = dispatcher.dispatch(type(arg))
+			return impl(self, arg, *rest, **kw)
+
+		wrapper.register = dispatcher.register
+		return wrapper

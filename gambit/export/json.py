@@ -1,7 +1,6 @@
 """Export results to JSON."""
 
 import json
-import sys
 
 from attr import attrs, attrib, asdict
 
@@ -10,25 +9,7 @@ from gambit.query import QueryResultItem, QueryResults
 from gambit.classify import ClassifierResult
 from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome
 import gambit.io.json as gjson
-
-
-if sys.version_info[1] >= 8:
-	from functools import singledispatchmethod
-
-else:
-	# Not available in 3.7, make simple implementation
-	from functools import singledispatch, wraps
-
-	def singledispatchmethod(func):
-		dispatcher = singledispatch(func)
-
-		@wraps(func)
-		def wrapper(self, arg, *rest, **kw):
-			impl = dispatcher.dispatch(type(arg))
-			return impl(self, arg, *rest, **kw)
-
-		wrapper.register = dispatcher.register
-		return wrapper
+from gambit.util.misc import singledispatchmethod
 
 
 def _todict(obj, attrs):
