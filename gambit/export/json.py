@@ -1,6 +1,7 @@
 """Export results to JSON."""
 
 import json
+from typing import Union, IO
 
 from attr import attrs, attrib, asdict
 
@@ -9,6 +10,7 @@ from gambit.query import QueryResultItem, QueryResults
 from gambit.classify import ClassifierResult
 from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome
 import gambit.io.json as gjson
+from gambit.io.util import FilePath, maybe_open
 from gambit.util.misc import singledispatchmethod
 
 
@@ -51,5 +53,6 @@ class JSONResultsExporter(AbstractResultsExporter):
 		data['id'] = genome.genome_id
 		return data
 
-	def export(self, f, results: QueryResults):
-		json.dump(results, f, default=self._to_json)
+	def export(self, file_or_path: Union[FilePath, IO], results: QueryResults):
+		with maybe_open(file_or_path, 'w') as f:
+			json.dump(results, f, default=self._to_json)

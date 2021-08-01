@@ -1,6 +1,7 @@
 """Test gambit.io.util"""
 
 import io
+from pathlib import Path
 
 import pytest
 import numpy as np
@@ -122,3 +123,32 @@ class TestClosingIterator:
 		iterator.close()
 
 		assert fobj.closed and iterator.closed
+
+
+class TestMaybeOpen:
+	"""Test the maybe_open() function."""
+
+	@pytest.mark.parametrize('pathtype', [str, Path])
+	def test_with_path(self, tmpdir, pathtype):
+		path = pathtype(tmpdir / 'test.txt')
+
+		with util.maybe_open(path, 'w') as f:
+			assert not f.closed
+			assert f.mode == 'w'
+			f.write('test')
+
+		assert f.closed
+
+		with util.maybe_open(path, 'r') as f:
+			assert not f.closed
+			assert f.mode == 'r'
+			assert f.read() == 'test'
+
+		assert f.closed
+
+	def test_with_fileobj(self, tmpdir):
+		with open(tmpdir / 'test.txt', 'w') as f:
+			with util.maybe_open(f) as f2:
+				assert f2 is f
+
+			assert not f.closed

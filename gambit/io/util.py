@@ -1,7 +1,8 @@
 """Utility code for reading/writing data files."""
 
 import os
-from typing import Union, Optional
+from typing import Union, Optional, IO, ContextManager
+from contextlib import nullcontext
 
 #: Alias for types which can represent a file system path
 FilePath = Union[str, os.PathLike]
@@ -131,3 +132,39 @@ class ClosingIterator:
 
 	def __exit__(self, *args):
 		self.close()
+
+
+def maybe_open(file_or_path: Union[FilePath, IO], mode: str = 'r', **open_kw) -> ContextManager[IO]:
+	"""Open a file given a file path as an argument, but pass existing file objects though.
+
+	Intended to be used by API functions that take either type as an argument. If a file path is
+	passed the function will need to call ``open`` to get the file object to use, and will need to
+	close that object after it is done. If an existing file object is passed, it should be left to
+	the caller of the function to close it afterwards. This function returns a context manager which
+	performs the correct action for both opening and closing.
+
+	Parameters
+	----------
+	file_or_path
+		A path-like object or open file object.
+	mode
+		Mode to open file in.
+	\\**open_kw
+		Keyword arguments to :func:`open`.
+
+	Returns
+	ContextManager[IO]
+		Context manager which gives an open file object on enter and closes it on exit only if it
+		was opened by this function.
+	"""
+	try:
+		# Try to interpret as path
+		path = os.fspath(file_or_path)
+	except TypeError:
+		# Not a path, assume file object
+		# Return context manager which gives this object on enter and does not close on exit
+		return nullcontext(file_or_path)
+	else:
+		# Is a path, just open
+		return open(path, mode, **open_kw)
+

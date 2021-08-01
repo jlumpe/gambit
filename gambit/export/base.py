@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
+from typing import IO, Union
+
 from gambit.query import QueryResults
+from gambit.io import FilePath
 
 
 class AbstractResultsExporter(ABC):
@@ -9,13 +12,13 @@ class AbstractResultsExporter(ABC):
 	"""
 
 	@abstractmethod
-	def export(self, f, results: QueryResults):
+	def export(self, file_or_path: Union[FilePath, IO], results: QueryResults):
 		"""Write query results to file.
 
 		Parameters
 		----------
-		f
-			Writable file-like object.
+		file_or_path
+			Open file-like object or file path to write to.
 		results
 			Results to export.
 		"""
