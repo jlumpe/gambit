@@ -1,4 +1,5 @@
 import sys
+from typing import List, TextIO
 
 import click
 
@@ -7,6 +8,22 @@ from gambit.db import GAMBITDatabase
 from gambit.query import QueryParams, query_parse
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import ClickProgressMeter
+
+
+def get_exporter(outfmt: str):
+	if outfmt == 'csv':
+		from gambit.export.csv import CSVResultsExporter
+		return CSVResultsExporter()
+
+	if outfmt == 'json':
+		from gambit.export.json import JSONResultsExporter
+		return JSONResultsExporter()
+
+	if outfmt == 'archive':
+		from gambit.export.archive import ResultsArchiveWriter
+		return ResultsArchiveWriter(install_info=True)
+
+	assert 0
 
 
 @click.command()
@@ -24,8 +41,8 @@ from gambit.util.progress import ClickProgressMeter
 )
 @click.option(
 	'-f', '--outfmt',
-	type=click.Choice(['csv', 'json']),
-	default='json',
+	type=click.Choice(['csv', 'json', 'archive']),
+	default='csv',
 	help='Format to output results in.',
 )
 @click.option(
@@ -41,7 +58,7 @@ from gambit.util.progress import ClickProgressMeter
 	metavar='GENOMES...',
 )
 @click.pass_obj
-def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str, strict: bool):
+def query(ctxobj: CLIContext, files: List[str], output: TextIO, seqfmt: str, outfmt: str, strict: bool):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 	gset = ctxobj.genomeset()
 	ref_sigs = ctxobj.signatures()
@@ -49,16 +66,7 @@ def query(ctxobj: CLIContext, files, output, seqfmt: str, outfmt: str, strict: b
 
 	params = QueryParams(classify_strict=strict)
 	files = SequenceFile.from_paths(files, seqfmt)
+	exporter = get_exporter(outfmt)
 
-	# Run query
 	results = query_parse(db, files, params, progress=ClickProgressMeter)
-
-	# Export results
-	if outfmt == 'json':
-		from gambit.export.json import JSONResultsExporter
-		exporter = JSONResultsExporter()
-	else:
-		from gambit.export.csv import CSVResultsExporter
-		exporter = CSVResultsExporter()
-
 	exporter.export(output, results)
