@@ -2,12 +2,12 @@ from io import StringIO
 
 import pytest
 
-from gambit.export.archive import ResultsArchiveReader, ResultsArchiveWriter
 from gambit.query import QueryResults, QueryResultItem, QueryInput, QueryParams
 from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import ReferenceGenomeSet, Genome
 from gambit.signatures import SignaturesMeta
 from gambit.io.seq import SequenceFile
+from gambit.export.archive import ResultsArchiveReader, ResultsArchiveWriter
 
 
 @pytest.fixture()
@@ -70,7 +70,7 @@ def results(session):
 
 	return QueryResults(
 		items=items,
-		params=QueryParams(),
+		params=QueryParams(chunksize=1234, classify_strict=True),
 		genomeset=gset,
 		signaturesmeta=SignaturesMeta(
 			id='test',
@@ -86,7 +86,6 @@ def test_results_archive(session, results):
 	"""Test ResultArchiveWriter/Reader."""
 
 	buf = StringIO()
-
 	writer = ResultsArchiveWriter()
 	writer.export(buf, results)
 
