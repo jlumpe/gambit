@@ -5,7 +5,7 @@ import pytest
 from gambit.export.archive import ResultsArchiveReader, ResultsArchiveWriter
 from gambit.query import QueryResults, QueryResultItem, QueryInput, QueryParams
 from gambit.classify import ClassifierResult, GenomeMatch
-from gambit.db import ReferenceGenomeSet, Taxon, Genome
+from gambit.db import ReferenceGenomeSet, Genome
 from gambit.signatures import SignaturesMeta
 from gambit.io.seq import SequenceFile
 
@@ -21,9 +21,11 @@ def results(session):
 
 	gset = session.query(ReferenceGenomeSet).one()
 
+	# Taxa to use as matches
 	taxa = gset.taxa.filter_by(rank='subspecies').order_by('id').limit(20).all()
-	classifier_results = []
 
+	# Make classifier results
+	classifier_results = []
 	for i, taxon in enumerate(taxa):
 		genome = taxon.genomes.first()
 		assert genome is not None
@@ -57,8 +59,8 @@ def results(session):
 		error='Error message',
 	))
 
+	# Make result items
 	items = []
-
 	for i, cr in enumerate(classifier_results):
 		items.append(QueryResultItem(
 			input=QueryInput(f'query-{i}', SequenceFile(f'query-{i}.fasta', 'fasta')),
@@ -80,18 +82,16 @@ def results(session):
 	)
 
 
-def test_result_archive(session, results):
+def test_results_archive(session, results):
+	"""Test ResultArchiveWriter/Reader."""
 
 	buf = StringIO()
 
-	writer = ResultsArchiveWriter(install_info=True)
+	writer = ResultsArchiveWriter()
 	writer.export(buf, results)
 
 	reader = ResultsArchiveReader(session)
 	buf.seek(0)
 	results2 = reader.read(buf)
-
-	assert 'install_info' in results2.extra
-	results2.extra.pop('install_info')
 
 	assert results2 == results
