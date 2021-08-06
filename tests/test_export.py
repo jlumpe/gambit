@@ -1,4 +1,5 @@
 from io import StringIO
+import json
 from csv import DictReader
 
 import pytest
@@ -9,6 +10,9 @@ from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import ReferenceGenomeSet, Genome
 from gambit.signatures import SignaturesMeta
 from gambit.io.seq import SequenceFile
+from gambit.io.json import to_json
+from gambit.util.misc import zip_strict
+from gambit.export.json import JSONResultsExporter
 from gambit.export.csv import CSVResultsExporter
 from gambit.export.archive import ResultsArchiveReader, ResultsArchiveWriter
 
@@ -88,6 +92,55 @@ def results(session):
 		),
 		extra=dict(foo=1),
 	)
+
+
+def cmp_json_attrs(data, obj, attrnames):
+	for attr in attrnames:
+		assert data[attr] == getattr(obj, attr)
+
+def test_json(results):
+	"""Test JSONResultsExporter."""
+
+	buf = StringIO()
+	exporter = JSONResultsExporter()
+	exporter.export(buf, results)
+
+	buf.seek(0)
+	data = json.load(buf)
+
+	assert len(data['items']) == len(results.items)
+	# assert data['params'] == to_json(results.params)
+	cmp_json_attrs(data['genomeset'], results.genomeset, ['id', 'key', 'version', 'name', 'description'])
+	assert data['signaturesmeta'] == to_json(results.signaturesmeta)
+	assert data['gambit_version'] == results.gambit_version
+	assert data['timestamp'] == to_json(results.timestamp)
+	assert data['extra'] == results.extra
+
+	for item, item_data in zip(results.items, data['items']):
+		query = item_data['query']
+		assert query['name'] == item.input.label
+		assert query['path'] == str(item.input.file.path)
+		assert query['format'] == item.input.file.format
+
+		predicted_data = item_data['predicted_taxon']
+		if item.report_taxon is None:
+			assert predicted_data is None
+		else:
+			cmp_json_attrs(predicted_data, item.report_taxon, ['id', 'key', 'name', 'ncbi_id', 'rank'])
+			assert np.isclose(predicted_data['distance_threshold'], item.report_taxon.distance_threshold)
+
+		closest = item.classifier_result.closest_match
+		assert np.isclose(item_data['closest_genome_distance'], item.classifier_result.closest_match.distance)
+
+		cmp_json_attrs(
+			item_data['closest_genome'],
+			closest.genome,
+			['key', 'description', 'organism', 'ncbi_db', 'ncbi_id', 'genbank_acc', 'refseq_acc'],
+		)
+		assert item_data['closest_genome']['id'] == closest.genome.genome_id
+
+		for taxon, taxon_data in zip_strict(closest.genome.taxon.ancestors(True), item_data['closest_genome']['taxonomy']):
+			cmp_json_attrs(taxon_data, taxon, ['id', 'key', 'name', 'ncbi_id', 'rank', 'distance_threshold'])
 
 
 def test_csv(results):
