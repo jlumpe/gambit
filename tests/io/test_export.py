@@ -12,9 +12,9 @@ from gambit.signatures import SignaturesMeta
 from gambit.io.seq import SequenceFile
 from gambit.io.json import to_json
 from gambit.util.misc import zip_strict
-from gambit.export.json import JSONResultsExporter
-from gambit.export.csv import CSVResultsExporter
-from gambit.export.archive import ResultsArchiveReader, ResultsArchiveWriter
+from gambit.io.export.json import JSONResultsExporter
+from gambit.io.export.csv import CSVResultsExporter
+from gambit.io.export.archive import ResultsArchiveReader, ResultsArchiveWriter
 
 
 @pytest.fixture()

@@ -12,15 +12,15 @@ from gambit.util.progress import ClickProgressMeter
 
 def get_exporter(outfmt: str):
 	if outfmt == 'csv':
-		from gambit.export.csv import CSVResultsExporter
+		from gambit.io.export.csv import CSVResultsExporter
 		return CSVResultsExporter()
 
 	if outfmt == 'json':
-		from gambit.export.json import JSONResultsExporter
+		from gambit.io.export.json import JSONResultsExporter
 		return JSONResultsExporter()
 
 	if outfmt == 'archive':
-		from gambit.export.archive import ResultsArchiveWriter
+		from gambit.io.export.archive import ResultsArchiveWriter
 		return ResultsArchiveWriter(install_info=True)
 
 	assert 0
