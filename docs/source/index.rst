@@ -7,8 +7,7 @@ GAMBIT Documentation
 
    install
    cli
-   api/modules
-
+   api/api
 
 
 Indices and tables

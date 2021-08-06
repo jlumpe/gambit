@@ -8,15 +8,17 @@ from .base import sigarray_eq
 
 
 class AbstractSignatureArrayTests:
-	"""Base for test classes which test :class:`gambit.sigatures.base.AbstractSignatureArray` implementations.
+	"""Base for test classes which test :class:`AbstractSignatureArray` implementations.
 
 	Must implement the following fixtures (unless they exist at the module level):
-	* `sigarray` - ``AbstractSignatureArray`` instance to be tested.
-	* `refarray` - Instance of reference implementation to compare to. May be a Numpy array of object
+
+	* ``sigarray`` - ``AbstractSignatureArray`` instance to be tested.
+	* ``refarray`` - Instance of reference implementation to compare to. May be a Numpy array of object
 	  dtype containing the same signatures, or another type which is trusted to implement the
 	  ``AbstractSignatureArray`` interface correctly.
 
 	Methods which can be overridden:
+
 	* :meth:`check_scalar_result`
 	* :meth:`check_subseq_result`
 	* :meth:`check_int_array_result`
@@ -24,6 +26,7 @@ class AbstractSignatureArrayTests:
 	* :meth:`check_slice_result`
 
 	Fixtures which can be overridden:
+
 	* ``slice_indices``
 	* ``int_array_indices``
 	* ``bool_array_indices``

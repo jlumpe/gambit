@@ -26,8 +26,8 @@ NUCLEOTIDES = b'ACGT'
 
 
 #: Type for k-mer signatures (k-mer sets in sparse coordinate format)
-# TODO - use nptyping package to specify dimensions and data type?
 KmerSignature = NewType('KmerSignature', np.ndarray)
+# TODO - use nptyping package to specify dimensions and data type?
 
 
 def validate_dna_seq_bytes(seq : bytes):

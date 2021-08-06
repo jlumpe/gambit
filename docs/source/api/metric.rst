@@ -1,5 +1,8 @@
-gambit.metric module
-====================
+Metric
+======
+
+gambit.metric
+-------------
 
 .. automodule:: gambit.metric
    :members:
