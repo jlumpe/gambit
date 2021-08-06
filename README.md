@@ -6,7 +6,10 @@ GAMBIT (Genomic Approximation Method for Bacterial Identification and Tracking) 
 It uses an extremely efficient genomic distance metric along with a curated database of over 50,000 reference genomes (derived from NCBI [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/))
 to identify query genomes within seconds.
 
-Developed by Jared Lumpe in collaboration with the David Hess lab at Santa Clara University.
+Developed by Jared Lumpe in collaboration with the David Hess lab at Santa Clara University. Publication coming soon.
+
+See the [documentation](https://hesslab-gambit.readthedocs.io/en/latest/?badge=stable) for more
+detailed information on the tool and how to use it.
 
 
 ## Installation
@@ -27,17 +30,29 @@ Build and install:
     pip install .
 
 
-### Database files
+### Download reference database
 
-TODO
+Download the following files and place them in a directory of your choice:
+
+* [gambit-genomes-1.0b1-210719.db](https://storage.googleapis.com/hesslab-gambit-public/databases/refseq-curated/1.0-beta/gambit-genomes-1.0b1-210719.db)
+* [gambit-signatures-1.0b1-210719.h5](https://storage.googleapis.com/hesslab-gambit-public/databases/refseq-curated/1.0-beta/gambit-signatures-1.0b1-210719.h5)
+
+(Note - these are marked as "beta" but little is likely to change in the upcoming 1.0 release).
 
 
 ## Usage
 
-    gambit [OPTIONS] query [--csv | --json] [-o OUTPUT] GENOMES*
+    gambit [-d DB_DIR] query [-f {csv|json}] [-o OUTFILE] GENOMES*
 
-Query genomes must be assembled but may consist of multiple contigs. Currently only FASTA format is supported.
-Support for unassembled raw reads (FASTQ format) is in development.
+* `GENOMES` are one or more files containing query genomes. Currently only FASTA format is supported.
+  They must be assembled but may consist of multiple contigs. Support for unassembled raw reads in
+  FASTQ format is in development.
+* `DB_DIR` is the directory containing the database files. Alternatively you may set the
+  `GAMBIT_DB_PATH` environment variable in order to avoid typing this each time.
+* `OUTFILE` is the file to write results to.
+* `-f` sets the output format (defaults to `csv`).
+
+See the documentation for additional details on the command line interface and description of the output.
 
 
 ## Contact
