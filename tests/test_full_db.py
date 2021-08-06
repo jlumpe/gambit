@@ -64,7 +64,7 @@ def testdb(testdb_session, signatures):
 
 
 @pytest.fixture(scope='module')
-def query_data(testdb_files):
+def query_data(testdb, testdb_files):
 	"""Query files and their expected taxa."""
 	table_path = testdb_files['queries']
 	seqs_dir = table_path.parent
@@ -74,12 +74,16 @@ def query_data(testdb_files):
 
 	with open(table_path, newline='') as f:
 		for row in DictReader(f):
-			file = SequenceFile(
+			files.append(SequenceFile(
 				path=seqs_dir / (row['name'] + '.fa'),
 				format='fasta',
-			)
-			files.append(file)
-			expected_taxa.append(row['expected_taxon'])
+			))
+
+			if row['expected_taxon']:
+				expected = testdb.genomeset.taxa.filter_by(key=row['expected_taxon']).one()
+			else:
+				expected = None
+			expected_taxa.append(expected)
 
 	return files, expected_taxa
 
@@ -98,9 +102,8 @@ def test_query_python(testdb, query_data, classify_strict):
 	assert results.signaturesmeta == testdb.signatures.meta
 	assert results.gambit_version == GAMBIT_VERSION
 
-	for item, file, expected_key in zip_strict(results.items, query_files, expected_taxa):
+	for item, file, expected_taxon in zip_strict(results.items, query_files, expected_taxa):
 		clsresult = item.classifier_result
-		expected_taxon = testdb.genomeset.taxa.filter_by(key=expected_key).one() if expected_key else None
 
 		assert item.input.file == file
 		assert clsresult.success
@@ -122,7 +125,7 @@ def test_query_python(testdb, query_data, classify_strict):
 		assert clsresult.error is None
 
 
-@pytest.mark.parametrize('out_fmt', ['json'])
+@pytest.mark.parametrize('out_fmt', ['csv', 'json'])
 @pytest.mark.parametrize('classify_strict', [False, True])
 def test_query_cli(testdb_files, testdb, query_data, out_fmt, classify_strict, tmp_path):
 	"""Run a full query using the command line interface."""
@@ -140,8 +143,12 @@ def test_query_cli(testdb_files, testdb, query_data, out_fmt, classify_strict, t
 
 	cli.main(args, standalone_mode=False)
 
+	# Detailed checks of output format are already present in tests for exporter classes, just need
+	# to check that the results themselves seem correct
 	if out_fmt == 'json':
 		_check_results_json(results_file, testdb, query_files, expected_taxa)
+	elif out_fmt == 'csv':
+		_check_results_csv(results_file, query_files, expected_taxa)
 	else:
 		assert False
 
@@ -154,28 +161,26 @@ def _check_results_json(results_file, testdb, query_files, expected_taxa):
 	assert results['gambit_version'] == GAMBIT_VERSION
 
 	items = results['items']
-	assert isinstance(items, list)
 	assert len(items) == len(query_files)
 
 	for item, file, expected in zip_strict(items, query_files, expected_taxa):
-		clsresult = item['classifier_result']
-		assert item['input']['label'] == file.path.name
-		assert clsresult['success'] is True
+		assert item['query']['path'] == str(file.path)
 
-		if expected == '':
-			assert clsresult['predicted_taxon'] is None
-			assert item['report_taxon'] is None
-			assert clsresult['primary_match'] is None
+		if expected is None:
+			assert item['predicted_taxon'] is None
 		else:
-			predicted = clsresult['predicted_taxon']
-			assert predicted is not None
-			assert predicted['key'] == expected
-			assert item['report_taxon'] == predicted
-			assert clsresult['primary_match'] is not None
-			assert clsresult['primary_match']['matched_taxon']['key'] == expected
+			assert item['predicted_taxon']['key'] == expected.key
 
-			# In this database, closest match should be primary match
-			assert clsresult['closest_match'] == clsresult['primary_match']
+def _check_results_csv(results_file, query_files, expected_taxa):
+	with results_file.open() as f:
+		rows = list(DictReader(f))
 
-		assert clsresult['warnings'] == []
-		assert clsresult['error'] is None
+	assert len(rows) == len(query_files)
+
+	for row, file, expected in zip_strict(rows, query_files, expected_taxa):
+		assert row['query.path'] == str(file.path)
+
+		if expected is None:
+			assert row['predicted.name'] == ''
+		else:
+			assert row['predicted.name'] == expected.name
