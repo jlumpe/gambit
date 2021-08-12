@@ -153,6 +153,7 @@ def maybe_open(file_or_path: Union[FilePath, IO], mode: str = 'r', **open_kw) ->
 		Keyword arguments to :func:`open`.
 
 	Returns
+	-------
 	ContextManager[IO]
 		Context manager which gives an open file object on enter and closes it on exit only if it
 		was opened by this function.
