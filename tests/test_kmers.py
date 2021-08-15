@@ -4,6 +4,7 @@ import pytest
 import numpy as np
 
 from gambit import kmers
+from gambit.kmers import KmerSpec
 from gambit._cython.kmers import reverse_complement
 import gambit.io.json as gjson
 from gambit.test import fill_bytearray, make_kmer_seq
@@ -24,7 +25,7 @@ NUC_COMPLEMENTS = {
 
 def make_kmerspec(k):
 	"""Create a KmerSpec with some arbitrary prefix."""
-	return kmers.KmerSpec(k, 'ATGC')
+	return KmerSpec(k, 'ATGC')
 
 
 def test_kmer_coords_dtype():
@@ -75,15 +76,15 @@ class TestKmerSpec:
 
 	def test_constructor(self):
 		# Prefix conversion
-		assert kmers.KmerSpec(11, b'ATGAC').prefix == b'ATGAC'
-		assert kmers.KmerSpec(11, 'ATGAC').prefix == b'ATGAC'
-		assert kmers.KmerSpec(11, 'atgac').prefix == b'ATGAC'
+		assert KmerSpec(11, b'ATGAC').prefix == b'ATGAC'
+		assert KmerSpec(11, 'ATGAC').prefix == b'ATGAC'
+		assert KmerSpec(11, 'atgac').prefix == b'ATGAC'
 
 		# Invalid prefix
 		with pytest.raises(ValueError):
-			kmers.KmerSpec(11, b'ATGAX')
-			kmers.KmerSpec(11, 'ATGAX')
-			kmers.KmerSpec(11, b'ATGAc')
+			KmerSpec(11, b'ATGAX')
+			KmerSpec(11, 'ATGAX')
+			KmerSpec(11, b'ATGAc')
 
 	def test_attributes(self):
 		"""Test basic attributes."""
@@ -98,28 +99,28 @@ class TestKmerSpec:
 			assert spec.prefix_len + spec.k == spec.total_len
 
 		# Check prefix is bytes
-		assert isinstance(kmers.KmerSpec(11, 'ATGAC').prefix, bytes)
+		assert isinstance(KmerSpec(11, 'ATGAC').prefix, bytes)
 
 	def test_eq(self):
 		"""Test equality testing."""
 
-		kspec = kmers.KmerSpec(11, 'ATGAC')
-		assert kspec == kmers.KmerSpec(11, 'ATGAC')
-		assert kspec != kmers.KmerSpec(11, 'ATGAA')
-		assert kspec != kmers.KmerSpec(12, 'ATGAC')
+		kspec = KmerSpec(11, 'ATGAC')
+		assert kspec == KmerSpec(11, 'ATGAC')
+		assert kspec != KmerSpec(11, 'ATGAA')
+		assert kspec != KmerSpec(12, 'ATGAC')
 
 	def test_pickle(self):
 
 		import pickle
 
-		kspec = kmers.KmerSpec(11, 'ATGAC')
+		kspec = KmerSpec(11, 'ATGAC')
 
 		assert kspec == pickle.loads(pickle.dumps(kspec))
 
 	def test_json(self):
 		"""Test conversion to/from JSON."""
 
-		kspec = kmers.KmerSpec(11, 'ATGAC')
+		kspec = KmerSpec(11, 'ATGAC')
 		data = gjson.to_json(kspec)
 
 		assert data == dict(
@@ -127,7 +128,7 @@ class TestKmerSpec:
 			prefix=kspec.prefix.decode('ascii'),
 		)
 
-		assert gjson.from_json(data, kmers.KmerSpec) == kspec
+		assert gjson.from_json(data, KmerSpec) == kspec
 
 
 def test_dense_sparse_conversion():
@@ -218,7 +219,7 @@ class TestFindKmers:
 	def test_basic(self, sparse):
 		"""Test general k-mer finding."""
 
-		kspec = kmers.KmerSpec(11, 'ATGAC')
+		kspec = KmerSpec(11, 'ATGAC')
 
 		np.random.seed(0)
 		seq, signature = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
@@ -248,7 +249,7 @@ class TestFindKmers:
 		seq_array = fill_bytearray(b'ATN', seqlen)
 
 		# Choose prefix with nucleotides not found in sequence "background"
-		kspec = kmers.KmerSpec(11, b'CCGGG')
+		kspec = KmerSpec(11, b'CCGGG')
 
 		# Add at beginning
 		seq_array[0:kspec.prefix_len] = kspec.prefix
@@ -270,7 +271,7 @@ class TestFindKmers:
 		forwards and backwards matches
 		"""
 
-		kspec = kmers.KmerSpec(11, b'GCCGG')
+		kspec = KmerSpec(11, b'GCCGG')
 
 		seq = b'ATATGCCGGCCGGATTATATAGCCGGCATTACATCCGATAGGATCCGGCAATAA'
 		#      |    |>>>>...........
