@@ -6,7 +6,7 @@ classes.
 """
 
 import json
-from typing import Any
+from typing import Any, TextIO
 from datetime import date, datetime
 from pathlib import Path
 
@@ -45,7 +45,7 @@ def from_json(data, cls=Any):
 	return converter.structure(data, cls)
 
 
-def dump(obj, f):
+def dump(obj, f: TextIO):
 	"""Write the JSON representation of an object to a file.
 
 	Parameters
@@ -59,7 +59,7 @@ def dump(obj, f):
 	json.dump(data, f)
 
 
-def load(f, cls=Any):
+def load(f: TextIO, cls=Any):
 	"""Load an object from a JSON file.
 
 	Parameters
@@ -77,7 +77,7 @@ def load(f, cls=Any):
 	return from_json(data, cls)
 
 
-def dumps(obj):
+def dumps(obj) -> str:
 	"""Get the JSON representation of an object as a string.
 
 	Parameters
@@ -92,7 +92,7 @@ def dumps(obj):
 	return json.dumps(to_json(obj))
 
 
-def loads(s, cls=Any):
+def loads(s: str, cls=Any):
 	"""Load an object from a JSON string.
 
 	Parameters

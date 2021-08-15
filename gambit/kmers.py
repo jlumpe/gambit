@@ -11,7 +11,7 @@ bytes containing ascii-encoded nucleotide codes.
 	sequences.
 """
 
-from typing import Sequence, Optional, Union, NewType
+from typing import Sequence, Optional, Union, NewType, Dict, Any
 
 import numpy as np
 from attr import attrs, attrib
@@ -84,20 +84,20 @@ class KmerSpec(Jsonable):
 
 	Attributes
 	----------
-	prefix : bytes
+	prefix
 		Constant prefix of k-mers to search for, upper-case nucleotide codes
 		as ascii-encoded ``bytes``.
-	k : int
+	k
 		Number of nucleotides in k-mer *after* prefix.
-	prefix_len : int
+	prefix_len
 		Number of nucleotides in prefix.
-	total_len : int
+	total_len
 		Sum of ``prefix_len`` and ``k``.
-	idx_len : int
+	idx_len
 		Maximum value (plus one) of integer needed to index one of the
 		found k-mers. Also the number of possible k-mers fitting the spec.
 		Equal to ``4 ** k``.
-	coords_dtype : numpy.dtype
+	coords_dtype
 		Smallest unsigned integer dtype that can store k-mer indices.
 	"""
 	k: int = attrib()
@@ -139,7 +139,7 @@ class KmerSpec(Jsonable):
 		return dict(k=self.k, prefix=self.prefix.decode('ascii'))
 
 	@classmethod
-	def __from_json__(cls, data):
+	def __from_json__(cls, data: Dict[str, Any]) -> 'KmerSpec':
 		return cls(data['k'], data['prefix'])
 
 
