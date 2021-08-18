@@ -18,7 +18,7 @@ detailed information on the tool and how to use it.
 Install the Python library from Bioconda:
 
 ```
-conda install -c conda-forge hesslab-gambit
+conda install -c bioconda hesslab-gambit
 ```
 
 Then download the reference database files and place them in a directory of your choice:
