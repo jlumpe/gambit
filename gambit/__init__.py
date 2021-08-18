@@ -5,4 +5,4 @@ Author: Jared Lumpe
 Author email: mjlumpe@gmail.com
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
