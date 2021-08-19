@@ -136,7 +136,7 @@ class KmerSpec(Jsonable):
 		return f'{type(self).__name__}({self.k}, {self.prefix.decode("ascii")!r})'
 
 	def __to_json__(self):
-		return dict(k=self.k, prefix=self.prefix.decode('ascii'))
+		return dict(k=int(self.k), prefix=self.prefix.decode('ascii'))
 
 	@classmethod
 	def __from_json__(cls, data: Dict[str, Any]) -> 'KmerSpec':
