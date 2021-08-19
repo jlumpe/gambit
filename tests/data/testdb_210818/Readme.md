@@ -1,0 +1,16 @@
+# testdb_210818
+
+This directory contains data for the `testdb_210818` test database. Unlike the
+previously used `testdb_210126`, all files are small enough to be added in
+version control so nothing needs to be downloaded from an external data repository.
+
+
+## Files
+
+* `testdb_210818-genomes.db` - reference genomes.
+* `testdb_210818-signatures.h5` - reference genome signatures.
+* `queries/`
+  * `queries.csv` - table listing all query files and expected results.
+  * `genomes/` - contains query genome files in FASTA format.
+  * `query-signatures.h5` - precalculated signatures for query genomes.
+
