@@ -1,13 +1,14 @@
-"""Tests to ensure that Cython modules have been compiled correctly."""
+"""Test miscellaneous stuff not tied to a specific module."""
 
 from multiprocessing import cpu_count
 
 import pytest
+import numpy as np
 
 from gambit._cython.test import get_thread_ids
 
 
-def test_parallel():
+def test_cython_parallel():
 	"""Test that Cython modules are able to make use of parallelism.
 
 	This can fail if the right compile and link args are not passed.
@@ -20,3 +21,13 @@ def test_parallel():
 
 	# Check that each loop iteration got its own thread
 	assert set(thread_ids) == set(range(ncpus))
+
+
+def test_numpy_errors():
+	"""Test the raise_numpy_errors fixture."""
+
+	# Really just care about integer overflow
+	with pytest.raises(FloatingPointError):
+		np.uint8(255) + np.uint8(1)
+	with pytest.raises(FloatingPointError):
+		np.uint8(0) - np.uint8(1)
