@@ -40,6 +40,7 @@ def empty_db_session(make_empty_db):
 
 
 class TestGenome:
+	"""Test Genome model."""
 
 	def test_extra_json(self, empty_db_session):
 		"""Test storing JSON data in the 'extra' column."""
@@ -79,6 +80,7 @@ class TestGenome:
 
 
 class TestReferenceGenomeSet:
+	"""Test ReferenceGenomeSet model."""
 
 	def test_root_taxa(self, testdb_session):
 		session = testdb_session()
@@ -124,6 +126,7 @@ class TestReferenceGenomeSet:
 
 
 class TestAnnotatedGenome:
+	"""Test AnnotatedGEnome model."""
 
 	def test_hybrid_props(self, testdb_session):
 		session = testdb_session()
@@ -143,6 +146,7 @@ class TestAnnotatedGenome:
 
 
 class TestTaxon:
+	"""Test Taxon model."""
 
 	def test_tree(self, testdb_session):
 		"""Test tree structure."""
@@ -321,3 +325,5 @@ class TestGenomeIDMapping:
 
 			# Incomplete set of IDs which does not encompass all genomes
 			ids_incomplete = ids[:-1]
+
+			# TODO

@@ -143,8 +143,7 @@ class KmerSpec(Jsonable):
 		return cls(data['k'], data['prefix'])
 
 
-def find_kmers(
-               kspec: KmerSpec,
+def find_kmers(kspec: KmerSpec,
                seq: Union[bytes, str],
                *,
                sparse: bool = True,
