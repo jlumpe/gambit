@@ -12,36 +12,30 @@ from gambit.signatures import SignatureArray
 from gambit.test import make_signatures
 
 
-@pytest.fixture(scope='module')
-def load_test_coords_col(test_data):
-	"""Function to load k-mer coordinates from file."""
-
-	def load_test_coords_col_func():
-		with open(test_data / 'kmer_coords/coords.pickle', 'rb') as fobj:
-			signatures_list = pickle.load(fobj)
-
-		return SignatureArray(signatures_list)
-
-	return load_test_coords_col_func
-
-
-@pytest.fixture(params=[
-	(7, 'u2'),
-	(9, 'u4'),
-	(9, 'i4'),
-	(9, 'u8'),
-	None,
-])
-def coords_params(request, load_test_coords_col):
+@pytest.fixture(
+	params=[
+		(7, 'u2'),
+		(9, 'u4'),
+		(9, 'i4'),
+		(9, 'u8'),
+		None,
+	],
+	scope='module',
+)
+def signatures_data(request, test_data):
 	"""Tuple of (k, SignatureArray) to test on."""
 
 	if request.param is None:
-		# Load coords from file
+		# Load signatures from file
 		k = 11
-		sigs = load_test_coords_col()
+
+		with open(test_data / 'signatures/signatures.pickle', 'rb') as fobj:
+			signatures_list = pickle.load(fobj)
+
+		sigs = SignatureArray(signatures_list)
 
 	else:
-		# Create coords
+		# Create random signatures
 		k, dtype = request.param
 
 		np.random.seed(0)
@@ -50,41 +44,41 @@ def coords_params(request, load_test_coords_col):
 	return k, sigs
 
 
-def test_jaccard_single(coords_params):
+def test_jaccard_single(signatures_data):
 	"""Test calculating single scores at a time."""
 
-	k, sigs = coords_params
+	k, sigs = signatures_data
 
 	# Iterate over all pairs
-	for i, coords1 in enumerate(sigs):
-		vec1 = sparse_to_dense(k, coords1)
-		for j, coords2 in enumerate(sigs):
-			vec2 = sparse_to_dense(k, coords2)
+	for i, sparse1 in enumerate(sigs):
+		dense1 = sparse_to_dense(k, sparse1)
+		for j, sparse2 in enumerate(sigs):
+			dense2 = sparse_to_dense(k, sparse2)
 
-			score = jaccard_sparse(coords1, coords2)
+			score = jaccard_sparse(sparse1, sparse2)
 
 			# Check range
 			assert 0 <= score <= 1
 
 			# Check vs slow version
-			assert np.isclose(score, jaccard_generic(coords1, coords2))
+			assert np.isclose(score, jaccard_generic(sparse1, sparse2))
 
 			# Check distance
-			assert np.isclose(jaccarddist_sparse(coords1, coords2), 1 - score)
+			assert np.isclose(jaccarddist_sparse(sparse1, sparse2), 1 - score)
 
 			# Check dense bit vector version
-			assert np.isclose(jaccard_bits(vec1, vec2), score)
+			assert np.isclose(jaccard_bits(dense1, dense2), score)
 
 			# Check score vs. self is one (unless empty)
 			if i == j:
-				assert score == 0 if len(coords1) == 0 else 1
+				assert score == 0 if len(sparse1) == 0 else 1
 
 
 @pytest.mark.parametrize('alt_bounds_dtype', [False, True])
-def test_jaccard_sparse_array(coords_params, alt_bounds_dtype):
+def test_jaccard_sparse_array(signatures_data, alt_bounds_dtype):
 	"""Test jaccard_sparse_array() function."""
 
-	k, sigs = coords_params
+	k, sigs = signatures_data
 
 	# The inner Cython function takes a specific type for the bounds array.
 	# Try with this type and a different type, should be converted automatically by the outer Python func
@@ -94,16 +88,16 @@ def test_jaccard_sparse_array(coords_params, alt_bounds_dtype):
 	else:
 		assert sigs.bounds.dtype == BOUNDS_DTYPE
 
-	for i, coords1 in enumerate(sigs):
-		scores = jaccard_sparse_array(coords1, sigs)
+	for i, sig1 in enumerate(sigs):
+		scores = jaccard_sparse_array(sig1, sigs)
 		assert scores.shape == (len(sigs),)
 
-		# Check against single coords
-		for j, coords2 in enumerate(sigs):
-			assert scores[j] == jaccard_sparse(coords1, coords2)
+		# Check against single signatures
+		for j, sig2 in enumerate(sigs):
+			assert scores[j] == jaccard_sparse(sig1, sig2)
 
 		# Check distance
-		dists = jaccard_sparse_array(coords1, sigs, distance=True)
+		dists = jaccard_sparse_array(sig1, sigs, distance=True)
 		assert np.allclose(dists, 1 - scores)
 
 	# Check pre-allocated output
@@ -129,16 +123,16 @@ class TestJaccardSparseMatrix:
 		return np.empty((len(refs), len(queries)), dtype=dtype)
 
 	@pytest.fixture()
-	def queries(self, coords_params):
+	def queries(self, signatures_data):
 		"""queries argument."""
-		k, sigs = coords_params
+		k, sigs = signatures_data
 		# Make it a little different than the reference signatures
 		return sigs[::2]
 
 	@pytest.fixture()
-	def refs_array(self, coords_params):
+	def refs_array(self, signatures_data):
 		"""refs argument as SignatureArray."""
-		k, sigs = coords_params
+		k, sigs = signatures_data
 		# Make it a little different than the query signatures
 		return sigs[5:]
 
