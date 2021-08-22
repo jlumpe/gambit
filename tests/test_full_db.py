@@ -1,12 +1,7 @@
 """
-Run a full set of queries using the testdb_210126 database.
+Run a full set of queries using the testdb_210818 database.
 
-Tests in this file will only be run when the --gambit-test-full-db option is passed to the pycharm
-command.
-
-Database files and query sequences are located in tests/data/testdb_210126, but only the genome
-database file is included in version control. Other files need to be obtained separately. See the
-Readme.md file in that directory for more information.
+Database files and query sequences are located in tests/data/testdb_210818.
 """
 
 import json
@@ -23,35 +18,10 @@ from gambit.util.misc import zip_strict
 from gambit import __version__ as GAMBIT_VERSION
 
 
-@pytest.fixture(autouse=True, scope='module')
-def testdb_files(request, testdb_dir):
-	"""Paths to testdb_210126 files.
-
-	Skips all dependent tests if the --gambit-test-full-db command line option is not passed.
-
-	Checks that the directory and required files/subdirectories exist and fails tests immediately
-	if they do not.
-	"""
-	if not request.config.getoption('gambit_test_full_db'):
-		pytest.skip('--gambit-test-full-db option not given')
-
-	files = dict(
-		root=testdb_dir,
-		db=testdb_dir / 'testdb_210126-genomes.db',
-		signatures=testdb_dir / 'testdb_210126-signatures.h5',
-		queries=testdb_dir / 'query-seqs/queries.csv',
-	)
-
-	for k, v in files.items():
-		assert v.exists(), f'Required testdb file not found: {v}'
-
-	return files
-
-
 @pytest.fixture(scope='module')
 def signatures(testdb_files):
 	"""K-mer signatures for test genomes."""
-	return HDF5Signatures.open(testdb_files['signatures'])
+	return HDF5Signatures.open(testdb_files['ref_signatures'])
 
 
 @pytest.fixture(scope='module')
@@ -64,35 +34,28 @@ def testdb(testdb_session, signatures):
 
 
 @pytest.fixture(scope='module')
-def query_data(testdb, testdb_files):
-	"""Query files and their expected taxa."""
-	table_path = testdb_files['queries']
-	seqs_dir = table_path.parent
+def queries(testdb, testdb_files):
+	"""Query files and their expected results."""
+	genomes_dir = testdb_files['query_genomes']
 
-	files = []
-	expected_taxa = []
+	with open(testdb_files['queries_table'], newline='') as f:
+		rows = list(DictReader(f))
 
-	with open(table_path, newline='') as f:
-		for row in DictReader(f):
-			files.append(SequenceFile(
-				path=seqs_dir / (row['name'] + '.fa'),
-				format='fasta',
-			))
+	for row in rows:
+		row['warnings'] = row['warnings'].lower() == 'true'
+		row['file'] = SequenceFile(
+			path=genomes_dir / (row['name'] + '.fasta'),
+			format='fasta',
+		)
 
-			if row['expected_taxon']:
-				expected = testdb.genomeset.taxa.filter_by(key=row['expected_taxon']).one()
-			else:
-				expected = None
-			expected_taxa.append(expected)
-
-	return files, expected_taxa
+	return rows
 
 
 @pytest.mark.parametrize('classify_strict', [False, True])
-def test_query_python(testdb, query_data, classify_strict):
+def test_query_python(testdb, queries, classify_strict):
 	"""Run a full query using the Python API."""
 
-	query_files, expected_taxa = query_data
+	query_files = [item['file'] for item in queries]
 	params = QueryParams(classify_strict=classify_strict)
 
 	results = query_parse(testdb, query_files, params)
@@ -102,35 +65,54 @@ def test_query_python(testdb, query_data, classify_strict):
 	assert results.signaturesmeta == testdb.signatures.meta
 	assert results.gambit_version == GAMBIT_VERSION
 
-	for item, file, expected_taxon in zip_strict(results.items, query_files, expected_taxa):
+	for query, item in zip_strict(queries, results.items):
 		clsresult = item.classifier_result
+		predicted = clsresult.predicted_taxon
 
-		assert item.input.file == file
+		assert item.input.file == query['file']
 		assert clsresult.success
-
-		if expected_taxon is None:
-			assert clsresult.predicted_taxon is None
-			assert clsresult.primary_match is None
-			assert item.report_taxon is None
-		else:
-			assert clsresult.predicted_taxon == expected_taxon
-			assert item.report_taxon == expected_taxon
-			assert clsresult.primary_match is not None
-			assert clsresult.primary_match.matched_taxon == expected_taxon
-
-			# In this database, closest match should be primary match
-			assert clsresult.closest_match == clsresult.primary_match
-
-		assert not clsresult.warnings
 		assert clsresult.error is None
+
+		if classify_strict:
+			if query['predicted']:
+				assert predicted is not None
+				assert predicted.name == query['predicted']
+				assert clsresult.primary_match is not None
+				assert clsresult.primary_match.genome.description == query['primary']
+				assert item.report_taxon is (predicted if predicted.report else predicted.parent)
+
+			else:
+				assert predicted is None
+				assert clsresult.primary_match is None
+				assert item.report_taxon is None
+
+			assert clsresult.closest_match.genome.description == query['closest']
+			assert bool(clsresult.warnings) == query['warnings']
+
+		else:
+			if query['predicted']:
+				assert clsresult.primary_match == clsresult.closest_match
+				assert predicted is clsresult.primary_match.matched_taxon
+				assert item.report_taxon is (predicted if predicted.report else predicted.parent)
+
+			else:
+				assert predicted is None
+				assert clsresult.primary_match is None
+				assert item.report_taxon is None
+
+			assert clsresult.closest_match.genome.description == query['closest']
+			assert not clsresult.warnings
 
 
 @pytest.mark.parametrize('out_fmt', ['csv', 'json'])
 @pytest.mark.parametrize('classify_strict', [False, True])
-def test_query_cli(testdb_files, testdb, query_data, out_fmt, classify_strict, tmp_path):
+def test_query_cli(testdb_files, testdb, queries, out_fmt, classify_strict, tmp_path):
 	"""Run a full query using the command line interface."""
+	if not classify_strict:
+		pytest.skip()  # TODO
+
 	results_file = tmp_path / 'results.json'
-	query_files, expected_taxa = query_data
+	query_files = [query['file'] for query in queries]
 
 	args = [
 		f'--db={testdb_files["root"]}',
@@ -146,13 +128,13 @@ def test_query_cli(testdb_files, testdb, query_data, out_fmt, classify_strict, t
 	# Detailed checks of output format are already present in tests for exporter classes, just need
 	# to check that the results themselves seem correct
 	if out_fmt == 'json':
-		_check_results_json(results_file, testdb, query_files, expected_taxa)
+		_check_results_json(results_file, testdb, queries)
 	elif out_fmt == 'csv':
-		_check_results_csv(results_file, query_files, expected_taxa)
+		_check_results_csv(results_file, queries)
 	else:
 		assert False
 
-def _check_results_json(results_file, testdb, query_files, expected_taxa):
+def _check_results_json(results_file, testdb, queries):
 	with results_file.open() as f:
 		results = json.load(f)
 
@@ -161,26 +143,26 @@ def _check_results_json(results_file, testdb, query_files, expected_taxa):
 	assert results['gambit_version'] == GAMBIT_VERSION
 
 	items = results['items']
-	assert len(items) == len(query_files)
+	assert len(items) == len(queries)
 
-	for item, file, expected in zip_strict(items, query_files, expected_taxa):
-		assert item['query']['path'] == str(file.path)
+	for item, query in zip_strict(items, queries):
+		assert item['query']['path'] == str(query['file'].path)
 
-		if expected is None:
-			assert item['predicted_taxon'] is None
+		if query['predicted']:
+			assert item['predicted_taxon']['name'] == query['predicted']
 		else:
-			assert item['predicted_taxon']['key'] == expected.key
+			assert item['predicted_taxon'] is None
 
-def _check_results_csv(results_file, query_files, expected_taxa):
+def _check_results_csv(results_file, queries):
 	with results_file.open() as f:
 		rows = list(DictReader(f))
 
-	assert len(rows) == len(query_files)
+	assert len(rows) == len(queries)
 
-	for row, file, expected in zip_strict(rows, query_files, expected_taxa):
-		assert row['query.path'] == str(file.path)
+	for row, query in zip_strict(rows, queries):
+		assert row['query.path'] == str(query['file'].path)
 
-		if expected is None:
-			assert row['predicted.name'] == ''
+		if query['predicted']:
+			assert row['predicted.name'] == query['predicted']
 		else:
-			assert row['predicted.name'] == expected.name
+			assert row['predicted.name'] == ''

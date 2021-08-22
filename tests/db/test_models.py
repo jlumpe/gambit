@@ -1,6 +1,6 @@
 """Test gambit.db.models.
 
-Uses the included testdb_210126 database.
+Uses the included testdb_210818 database.
 """
 
 import random
@@ -80,17 +80,10 @@ class TestGenome:
 
 class TestReferenceGenomeSet:
 
-	def test_root_taxa(self, testdb_copy):
-		session = testdb_copy()
+	def test_root_taxa(self, testdb_session):
+		session = testdb_session()
 		gset = session.query(ReferenceGenomeSet).one()
-
-		root = gset.taxa.filter_by(name='root').one()
-		assert gset.root_taxa().all() == [root]
-
-		new_roots = set(root.children)
-		session.delete(root)
-		session.commit()
-		assert set(gset.root_taxa()) == new_roots
+		assert {taxon.name for taxon in gset.root_taxa()} == {'A1', 'A2', 'A3'}
 
 	def test_extra_json(self, empty_db_session):
 		"""Test storing JSON data in the 'extra' column."""
@@ -154,12 +147,12 @@ class TestTaxon:
 	def test_tree(self, testdb_session):
 		"""Test tree structure."""
 		session = testdb_session()
+		gset = session.query(ReferenceGenomeSet).one()
+		roots = gset.root_taxa()
 
-		taxa = session.query(Taxon)
-		root = taxa.filter_by(name='root').one()
-
-		for taxon in taxa:
-			assert taxon.root() == root
+		for taxon in gset.taxa:
+			root = taxon.root()
+			assert root in roots
 			assert taxon.isleaf() == (len(taxon.children) == 0)
 
 			# Test parent/child relationships match
@@ -177,7 +170,7 @@ class TestTaxon:
 				assert ancestors[i].parent is ancestors[i + 1]
 
 			# Test descendants() and leaves() methods
-			descendants = {t for t in taxa if taxon in t.ancestors(incself=True)}
+			descendants = {t for t in gset.taxa if taxon in t.ancestors(incself=True)}
 			assert set(taxon.descendants()) == descendants - {taxon}
 			assert set(taxon.descendants(incself=True)) == descendants
 			assert set(taxon.leaves()) == {d for d in descendants if d.isleaf()}

@@ -25,21 +25,16 @@ def test_find_matches():
 	pass  # TODO
 
 
-def test_consensus_taxon(testdb_copy):
-	session = testdb_copy()
+def test_consensus_taxon(testdb_session):
+	session = testdb_session()
 	get_taxon = lambda name: session.query(Taxon).filter_by(name=name).one()
 
-	root = get_taxon('root')
 	A1 = get_taxon('A1')
 	A1_B1 = get_taxon('A1_B1')
 	A1_B1_C1 = get_taxon('A1_B1_C1')
 	A1_B1_C2 = get_taxon('A1_B1_C2')
 	A1_B2 = get_taxon('A1_B2')
 	A2 = get_taxon('A2')
-
-	# Remove root so we can test matches having no common ancestor
-	session.delete(root)
-	session.commit()
 
 	# Empty
 	assert consensus_taxon([]) == (None, set())

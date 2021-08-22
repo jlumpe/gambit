@@ -10,16 +10,6 @@ from gambit.db.models import Base as models_base
 from gambit.db.sqla import ReadOnlySession
 
 
-# Add option to opt-in to the tests in test_full_db.py
-def pytest_addoption(parser):
-	parser.addoption(
-		'--gambit-test-full-db',
-		action='store_true',
-		dest='gambit_test_full_db',
-		help='Run full set of queries on test database (see test_full_db.py).',
-	)
-
-
 @pytest.fixture(scope='session')
 def test_data():
 	"""The directory containing test data."""
@@ -49,26 +39,33 @@ def make_empty_db():
 
 
 @pytest.fixture(scope='session')
-def testdb_dir(test_data):
-	"""Directory containing testdb_210126 data."""
-	return test_data / 'testdb_210126'
+def testdb_files(test_data):
+	"""Paths to testdb_210818 files."""
+	root = test_data / 'testdb_210818'
+	return dict(
+		root=root,
+		ref_genomes=root / 'testdb_210818-genomes.db',
+		ref_signatures=root / 'testdb_210818-signatures.h5',
+		queries_table=root / 'queries/queries.csv',
+		query_genomes=root / 'queries/genomes/',
+		query_signatures=root / 'queries/query-signatures.h5',
+	)
 
 @pytest.fixture(scope='session')
-def testdb_engine(testdb_dir):
+def testdb_engine(testdb_files):
 	"""SQLAlchemy engine connected to test database."""
-	return create_engine('sqlite:///' + str(testdb_dir / 'testdb_210126-genomes.db'))
+	return create_engine('sqlite:///' + str(testdb_files['ref_genomes']))
 
 @pytest.fixture(scope='session')
 def testdb_session(testdb_engine):
-	"""Function which creates a new session for the test database."""
+	"""Factory function which creates a new session for the test database."""
 	return sessionmaker(testdb_engine, class_=ReadOnlySession)
 
 @pytest.fixture(scope='session')
-def testdb_copy(testdb_dir):
-	"""Function which creates an in-memory copy of the test database."""
-
+def testdb_copy(testdb_files):
+	"""Factory function which creates an in-memory copy of the test database."""
 	def make_testdb_copy():
-		src = sqlite3.connect(str(testdb_dir / 'testdb_210126-genomes.db'))
+		src = sqlite3.connect(str(testdb_files['ref_genomes']))
 		memory = sqlite3.connect(':memory:')
 		src.backup(memory)
 		engine = create_engine('sqlite://', creator=lambda: memory)
