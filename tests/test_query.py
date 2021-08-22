@@ -1,4 +1,4 @@
-"""Test gambit.query.results module."""
+"""Test gambit.query module."""
 
 import pytest
 
