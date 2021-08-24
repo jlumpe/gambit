@@ -1,12 +1,11 @@
 from pathlib import Path
+from csv import DictReader
+import sqlite3
 
 import numpy as np
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from gambit.db.models import Base as models_base
-from gambit.db.sqla import ReadOnlySession
 
 
 @pytest.fixture(scope='session')
@@ -29,9 +28,11 @@ def raise_numpy_errors():
 @pytest.fixture(scope='session')
 def make_empty_db():
 	"""Function which creates an empty in-memory-database with initialized schema."""
+	from gambit.db.models import Base
+
 	def empty_db_factory():
 		engine = create_engine('sqlite:///:memory:')
-		models_base.metadata.create_all(engine)
+		Base.metadata.create_all(engine)
 		return engine
 
 	return empty_db_factory
@@ -48,6 +49,7 @@ def testdb_files(test_data):
 		queries_table=root / 'queries/queries.csv',
 		query_genomes=root / 'queries/genomes/',
 		query_signatures=root / 'queries/query-signatures.h5',
+		results=root / 'results/',
 	)
 
 @pytest.fixture(scope='session')
@@ -58,12 +60,12 @@ def testdb_engine(testdb_files):
 @pytest.fixture(scope='session')
 def testdb_session(testdb_engine):
 	"""Factory function which creates a new session for the test database."""
+	from gambit.db.sqla import ReadOnlySession
 	return sessionmaker(testdb_engine, class_=ReadOnlySession)
 
 @pytest.fixture(scope='session')
 def testdb_copy(testdb_files):
 	"""Factory function which creates an in-memory copy of the test database."""
-	import sqlite3
 
 	def make_testdb_copy():
 		src = sqlite3.connect(str(testdb_files['ref_genomes']))
@@ -74,14 +76,14 @@ def testdb_copy(testdb_files):
 
 	return make_testdb_copy
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def testdb_signatures(testdb_files):
 	"""K-mer signatures for test genomes."""
 	from gambit.signatures.hdf5 import HDF5Signatures
 
 	return HDF5Signatures.open(testdb_files['ref_signatures'])
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def testdb(testdb_session, testdb_signatures):
 	"""Full GAMBITDatabase object for test db."""
 	from gambit.db import GAMBITDatabase, ReferenceGenomeSet
@@ -90,11 +92,10 @@ def testdb(testdb_session, testdb_signatures):
 	gset = session.query(ReferenceGenomeSet).one()
 	return GAMBITDatabase(gset, testdb_signatures)
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def testdb_queries(testdb, testdb_files):
 	"""Query files and their expected results."""
 	from gambit.io.seq import SequenceFile
-	from csv import DictReader
 
 	genomes_dir = testdb_files['query_genomes']
 
