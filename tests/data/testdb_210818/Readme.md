@@ -13,4 +13,6 @@ version control so nothing needs to be downloaded from an external data reposito
   * `queries.csv` - table listing all query files and expected results.
   * `genomes/` - contains query genome files in FASTA format.
   * `query-signatures.h5` - precalculated signatures for query genomes.
-
+* `results/` - pre-calculated results using query files in `queries`.
+* `generate-results.py` - script which generates result files in `results/`. Verifies against
+  expected result attributes in `queries.csv`.

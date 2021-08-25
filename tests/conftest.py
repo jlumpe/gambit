@@ -110,3 +110,19 @@ def testdb_queries(testdb, testdb_files):
 		)
 
 	return rows
+
+@pytest.fixture(scope='session', params=['non_strict', 'strict'])
+def testdb_results(request, testdb_files, testdb_session):
+	"""Pre-calculated query results.
+
+	Use a yield statement here instead of a return, we want to keep a reference
+	to the session object until teardown or else it may be garbage collected,
+	which would render any ORM instances in the results object invalid.
+	"""
+	from gambit.io.export.archive import ResultsArchiveReader
+
+	session = testdb_session()
+	reader = ResultsArchiveReader(session)
+
+	path = testdb_files['results'] / (request.param + '.json')
+	yield reader.read(path)
