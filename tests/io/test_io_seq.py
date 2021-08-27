@@ -12,7 +12,7 @@ import gambit.io.util as ioutil
 from gambit.kmers import KmerSpec, dense_to_sparse, sparse_to_dense
 from gambit.signatures import sigarray_eq
 from gambit.util.misc import zip_strict
-from gambit.test import make_kmer_seq, random_seq
+from gambit.test import make_kmer_seq, random_seq, check_progress
 
 
 def create_sequence_records(kspec, n, seq_len=10000):
@@ -129,13 +129,12 @@ class TestFindKmers:
 				assert np.array_equal(dense_to_sparse(result), sig)
 
 	def test_find_kmers_in_files(self, seq_data, files):
-		"""Test the find_kmers_in_files function.
-
-		TODO - test progress monitoring
-		"""
+		"""Test the find_kmers_in_files function."""
 		seqs, sigs = seq_data
 
-		sigs2 = find_kmers_in_files(self.KSPEC, files)
+		with check_progress(total=len(files)) as pconf:
+			sigs2 = find_kmers_in_files(self.KSPEC, files, progress=pconf)
+
 		assert sigarray_eq(sigs, sigs2)
 
 
