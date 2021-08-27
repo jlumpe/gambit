@@ -329,9 +329,10 @@ class TestProgressMeter(AbstractProgressMeter):
 	# This prevents pytest from trying to collect this class as a test
 	__test__ = False
 
-	def __init__(self, total: int, initial: int = 0, **kw):
+	def __init__(self, total: int, initial: int = 0, allow_decrement: bool = True, **kw):
 		self.n = initial
 		self.total = total
+		self.allow_decrement = allow_decrement
 		self.kw = kw
 		self.closed = False
 
@@ -345,6 +346,8 @@ class TestProgressMeter(AbstractProgressMeter):
 			raise ValueError(f'Attempted to set n to negative value {n}')
 		if n > self.total:
 			raise ValueError(f'Attempted to set n to {n}, total is {self.total}')
+		if not self.allow_decrement and n < self.n:
+			raise ValueError(f'Attempted to decrease n from {self.n} to {n} with allow_decrement=False')
 		self.n = n
 
 	def close(self):

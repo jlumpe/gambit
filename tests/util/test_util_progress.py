@@ -293,6 +293,22 @@ class TestTestProgressMeter:
 		with pytest.raises(RuntimeError):
 			pbar.moveto(100)
 
+	def test_no_allow_decrement(self):
+		pbar = TestProgressMeter(100, allow_decrement=False)
+
+		# Moving forward
+		pbar.increment()
+		pbar.increment(0)
+		pbar.increment(10)
+		pbar.moveto(50)
+
+		# Moving backward
+		with pytest.raises(ValueError):
+			pbar.increment(-1)
+
+		with pytest.raises(ValueError):
+			pbar.moveto(40)
+
 
 class TestClickProgressMeter:
 	"""Test the ClickProgressMeter class."""
