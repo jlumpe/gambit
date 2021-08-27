@@ -3,8 +3,9 @@
 import pytest
 import numpy as np
 
-from gambit.test import make_signatures, random_seq, fill_bytearray, make_kmer_seq
+from gambit.test import make_signatures, random_seq, fill_bytearray, make_kmer_seq, check_progress
 from gambit.kmers import KmerSpec, reverse_complement, kmer_to_index, dense_to_sparse
+from gambit.util.progress import get_progress
 
 
 @pytest.mark.parametrize('k', [4, 6, 8])
@@ -72,3 +73,50 @@ def test_make_kmer_seq(kspec, seqlen, kmer_interval, n_interval):
 			vec[kmer_to_index(kmer)] = True
 
 	assert np.array_equal(sig, dense_to_sparse(vec))
+
+
+def test_check_progress():
+	"""Test the check_progress function."""
+
+	with check_progress() as pconf:
+		with get_progress(pconf, 100) as meter:
+			meter.moveto(100)
+
+	with check_progress(total=100) as pconf:
+		with get_progress(pconf, 100) as meter:
+			meter.moveto(100)
+
+	with check_progress(check_closed=False) as pconf:
+		meter = get_progress(pconf, 100)
+		meter.moveto(100)
+
+	# Not completed
+	with pytest.raises(AssertionError):
+		with check_progress() as pconf:
+			with get_progress(pconf, 100) as meter:
+				meter.moveto(99)
+
+	# Wrong total
+	with pytest.raises(AssertionError):
+		with check_progress(total=100) as pconf:
+			with get_progress(pconf, 10) as meter:
+				meter.moveto(10)
+
+	# Not closed
+	with pytest.raises(AssertionError):
+		with check_progress() as pconf:
+			meter = get_progress(pconf, 100)
+			meter.moveto(100)
+
+	# Not instantiated
+	with pytest.raises(AssertionError):
+		with check_progress():
+			pass
+
+	# Instantiated multiple times
+	with pytest.raises(AssertionError):
+		with check_progress() as pconf:
+			with get_progress(pconf, 100) as meter1:
+				meter1.moveto(100)
+			with get_progress(pconf, 100) as meter2:
+				meter2.moveto(100)
