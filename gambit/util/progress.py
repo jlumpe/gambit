@@ -329,7 +329,7 @@ class TestProgressMeter(AbstractProgressMeter):
 	# This prevents pytest from trying to collect this class as a test
 	__test__ = False
 
-	def __init__(self, total: Optional[int], initial: int = 0, **kw):
+	def __init__(self, total: int, initial: int = 0, **kw):
 		self.n = initial
 		self.total = total
 		self.kw = kw
@@ -351,7 +351,7 @@ class TestProgressMeter(AbstractProgressMeter):
 		self.closed = True
 
 	@classmethod
-	def create(cls, total: Optional[int], initial: int = 0, **kw):
+	def create(cls, total: int, initial: int = 0, **kw):
 		return cls(total, initial, **kw)
 
 
@@ -385,7 +385,7 @@ class TqdmProgressMeter(AbstractProgressMeter):
 
 	@classmethod
 	def create(cls,
-	           total: Optional[int],
+	           total: int,
 	           *,
 	           initial: int = 0,
 	           desc: Optional[str] = None,
@@ -426,7 +426,7 @@ class ClickProgressMeter(AbstractProgressMeter):
 
 	@classmethod
 	def create(cls,
-	           total: Optional[int],
+	           total: int,
 	           *,
 	           initial: int = 0,
 	           desc: Optional[str] = None,
