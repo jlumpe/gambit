@@ -54,80 +54,89 @@ def create_sequence_records(kspec, n, seq_len=10000):
 	return records, vec
 
 
-@pytest.mark.parametrize('sparse', [False, True])
-def test_find_kmers_parse(sparse):
-	"""Test the find_kmers_parse function."""
-	np.random.seed(0)
+class TestFindKmers:
+	KSPEC = KmerSpec(11, 'AGTAC')
 
-	kspec = KmerSpec(11, 'AGTAC')
-	records, vec = create_sequence_records(kspec, 10)
+	@pytest.fixture(scope='class')
+	def seq_data(self):
+		n = 5
 
-	# Write records to string buffer in FASTA format
-	buf = StringIO()
-	SeqIO.write(records, buf, 'fasta')
-	buf.seek(0)
+		seqs = []
+		sigs = []
 
-	# Parse from buffer
-	kmers = find_kmers_parse(kspec, buf, 'fasta', sparse=sparse)
+		# Create files
+		np.random.seed(0)
+		for i in range(n):
+			records, vec = create_sequence_records(self.KSPEC, 10)
+			seqs.append(records)
+			sigs.append(dense_to_sparse(vec))
 
-	if sparse:
-		assert np.array_equal(kmers, dense_to_sparse(vec))
-	else:
-		assert np.array_equal(kmers, vec)
+		return seqs, sigs
 
+	@pytest.fixture(scope='class', params=['fasta'])
+	def format(self, request):
+		return request.param
 
-@pytest.mark.parametrize('format', ['fasta'])
-@pytest.mark.parametrize('compression', list(ioutil.COMPRESSED_OPENERS))
-@pytest.mark.parametrize('sparse', [False, True])
-def test_find_kmers_in_file(format, compression, sparse, tmp_path):
-	"""Test the find_kmers_in_file function."""
+	@pytest.fixture(scope='class', params=list(ioutil.COMPRESSED_OPENERS))
+	def compression(self, request):
+		return request.param
 
-	kspec = KmerSpec(11, 'AGTAC')
-	seqfile = SequenceFile(tmp_path / 'test.fasta', format, compression)
+	@pytest.fixture()
+	def files(self, seq_data, tmp_path, format, compression):
+		seqs, sigs = seq_data
 
-	# Write records
-	np.random.seed(0)
-	records, vec = create_sequence_records(kspec, 10)
-	with seqfile.open('w') as f:
-		SeqIO.write(records, f, format)
+		files = []
 
-	# Parse from file
-	result = find_kmers_in_file(kspec, seqfile, sparse=sparse)
+		for i, records in enumerate(seqs):
+			file = SequenceFile(tmp_path / f'{i + 1}.fasta', format, compression)
 
-	if sparse:
-		assert np.array_equal(result, dense_to_sparse(vec))
-	else:
-		assert np.array_equal(result, vec)
+			with file.open('w') as f:
+				SeqIO.write(records, f, format)
 
+			files.append(file)
 
-@pytest.mark.parametrize('format', ['fasta'])
-@pytest.mark.parametrize('compression', list(ioutil.COMPRESSED_OPENERS))
-def test_find_kmers_in_files(format, compression, tmp_path):
-	"""Test the find_kmers_in_files function.
+		return files
 
-	TODO - test progress monitoring
-	"""
+	@pytest.mark.parametrize('sparse', [False, True])
+	def test_find_kmers_parse(self, seq_data, format, sparse):
+		"""Test the find_kmers_parse function."""
 
-	n = 5
-	kspec = KmerSpec(11, 'AGTAC')
+		for records, sig in zip(*seq_data):
+			# Parse from buffer
+			buf = StringIO()
+			SeqIO.write(records, buf, format)
+			buf.seek(0)
 
-	files = []
-	sigs = []
+			result = find_kmers_parse(self.KSPEC, buf, 'fasta', sparse=sparse)
 
-	# Create files
-	np.random.seed(0)
-	for i in range(n):
-		file = SequenceFile(tmp_path / f'{i}.fasta', format, compression)
-		records, vec = create_sequence_records(kspec, 10)
+			if sparse:
+				assert np.array_equal(result, sig)
+			else:
+				assert np.array_equal(dense_to_sparse(result), sig)
 
-		with file.open('w') as f:
-			SeqIO.write(records, f, format)
+	@pytest.mark.parametrize('sparse', [False, True])
+	def test_find_kmers_in_file(self, seq_data, files, sparse):
+		"""Test the find_kmers_in_file function."""
 
-		files.append(file)
-		sigs.append(dense_to_sparse(vec))
+		seqs, sigs = seq_data
 
-	sigs2 = find_kmers_in_files(kspec, files)
-	assert sigarray_eq(sigs, sigs2)
+		for file, sig in zip(files, sigs):
+			result = find_kmers_in_file(self.KSPEC, file, sparse=sparse)
+
+			if sparse:
+				assert np.array_equal(result, sig)
+			else:
+				assert np.array_equal(dense_to_sparse(result), sig)
+
+	def test_find_kmers_in_files(self, seq_data, files):
+		"""Test the find_kmers_in_files function.
+
+		TODO - test progress monitoring
+		"""
+		seqs, sigs = seq_data
+
+		sigs2 = find_kmers_in_files(self.KSPEC, files)
+		assert sigarray_eq(sigs, sigs2)
 
 
 class TestSequenceFile:
