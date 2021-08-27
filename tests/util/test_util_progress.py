@@ -247,7 +247,51 @@ def test_NullProgressMeter():
 
 class TestTestProgressMeter:
 	"""Test the TestProgressMeter class."""
-	# TODO
+
+	def test_basic(self):
+		kw = dict(foo=1, bar=True)
+		pbar = TestProgressMeter(100, **kw)
+
+		assert pbar.total == 100
+		assert pbar.n == 0
+		assert not pbar.closed
+		assert pbar.kw == kw
+
+		pbar.increment()
+		assert pbar.n == 1
+
+		pbar.increment(10)
+		assert pbar.n == 11
+
+		pbar.increment(-1)
+		assert pbar.n == 10
+
+		pbar.moveto(50)
+		assert pbar.n == 50
+
+		pbar.moveto(40)
+		assert pbar.n == 40
+
+		with pytest.raises(ValueError):
+			pbar.increment(100)
+
+		with pytest.raises(ValueError):
+			pbar.increment(-100)
+
+		with pytest.raises(ValueError):
+			pbar.moveto(101)
+
+		with pytest.raises(ValueError):
+			pbar.moveto(-1)
+
+		pbar.close()
+		assert pbar.closed
+
+		with pytest.raises(RuntimeError):
+			pbar.increment()
+
+		with pytest.raises(RuntimeError):
+			pbar.moveto(100)
 
 
 class TestClickProgressMeter:
