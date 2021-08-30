@@ -84,11 +84,13 @@ class KmerSpec(Jsonable):
 
 	Attributes
 	----------
+	k
+		Number of nucleotides in k-mer *after* prefix.
 	prefix
 		Constant prefix of k-mers to search for, upper-case nucleotide codes
 		as ascii-encoded ``bytes``.
-	k
-		Number of nucleotides in k-mer *after* prefix.
+	prefix_str
+		Prefix as string.
 	prefix_len
 		Number of nucleotides in prefix.
 	total_len
@@ -104,6 +106,7 @@ class KmerSpec(Jsonable):
 	prefix: bytes = attrib(
 		converter=lambda v: v.upper().encode('ascii') if isinstance(v, str) else v,
 	)
+	prefix_str: str
 	prefix_len: int
 	total_len: int
 	idx_len: int
@@ -119,6 +122,7 @@ class KmerSpec(Jsonable):
 		validate_dna_seq_bytes(value)
 
 	def __attrs_post_init__(self):
+		object.__setattr__(self, 'prefix_str', self.prefix.decode('ascii'))
 		object.__setattr__(self, 'prefix_len', len(self.prefix))
 		object.__setattr__(self, 'total_len', self.k + self.prefix_len)
 		object.__setattr__(self, 'idx_len', 4 ** self.k)
@@ -133,10 +137,10 @@ class KmerSpec(Jsonable):
 			self.prefix == other.prefix
 
 	def __repr__(self):
-		return f'{type(self).__name__}({self.k}, {self.prefix.decode("ascii")!r})'
+		return f'{type(self).__name__}({self.k}, {self.prefix_str!r})'
 
 	def __to_json__(self):
-		return dict(k=int(self.k), prefix=self.prefix.decode('ascii'))
+		return dict(k=int(self.k), prefix=self.prefix_str)
 
 	@classmethod
 	def __from_json__(cls, data: Dict[str, Any]) -> 'KmerSpec':
