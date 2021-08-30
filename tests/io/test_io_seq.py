@@ -128,12 +128,13 @@ class TestFindKmers:
 			else:
 				assert np.array_equal(dense_to_sparse(result), sig)
 
-	def test_find_kmers_in_files(self, seq_data, files):
+	@pytest.mark.parametrize('concurrency', [None, 'threads', 'processes'])
+	def test_find_kmers_in_files(self, seq_data, files, concurrency):
 		"""Test the find_kmers_in_files function."""
 		seqs, sigs = seq_data
 
 		with check_progress(total=len(files)) as pconf:
-			sigs2 = find_kmers_in_files(self.KSPEC, files, progress=pconf)
+			sigs2 = find_kmers_in_files(self.KSPEC, files, progress=pconf, concurrency=concurrency)
 
 		assert sigarray_eq(sigs, sigs2)
 

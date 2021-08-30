@@ -2,6 +2,8 @@
 
 from pathlib import Path
 from typing import Optional, List, Sequence
+from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+from contextlib import nullcontext
 
 import numpy as np
 from Bio import SeqIO
@@ -9,7 +11,7 @@ from attr import attrs, attrib
 
 from gambit.kmers import KmerSpec, find_kmers, dense_to_sparse, KmerSignature
 from .util import open_compressed, ClosingIterator
-from gambit.util.progress import iter_progress
+from gambit.util.progress import iter_progress, get_progress
 
 
 @attrs(frozen=True, slots=True)
@@ -197,11 +199,14 @@ def find_kmers_in_file(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool =
 		return find_kmers_parse(kspec, f, seqfile.format, sparse=sparse, dense_out=dense_out)
 
 
-def find_kmers_in_files(kspec: KmerSpec, files: Sequence[SequenceFile], progress=None) -> List[KmerSignature]:
+def find_kmers_in_files(kspec: KmerSpec,
+                        files: Sequence[SequenceFile],
+                        progress=None,
+                        concurrency: Optional[str] = 'threads',
+                        max_workers: Optional[int] = None,
+                        executor: Optional[Executor] = None,
+                        ) -> List[KmerSignature]:
 	"""Parse and calculate k-mer signatures for multiple sequence files.
-
-	Currently calculates signature for each file in series, future implementation should run in
-	parallel.
 
 	Parameters
 	----------
@@ -211,6 +216,14 @@ def find_kmers_in_files(kspec: KmerSpec, files: Sequence[SequenceFile], progress
 		Files to read.
 	progress
 		Display a progress meter. See :func:`gambit.util.progress.get_progress` for allowed values.
+	concurrency
+		Process files concurrently. ``"threads"`` for thread-based (default), ``"processes"`` for
+		process-based, ``None`` for no concurrency.
+	max_workers
+		Number of worker threads/processes to use if ``concurrency`` is not None.
+	executor
+		Instance of class:`concurrent.futures.Executor` to use for concurrency. Overrides the
+		``concurrency`` and ``max_workers`` arguments.
 
 	Returns
 	-------
@@ -220,10 +233,40 @@ def find_kmers_in_files(kspec: KmerSpec, files: Sequence[SequenceFile], progress
 	--------
 	.find_kmers_in_file
 	"""
-	kmers = []
+	if executor is None:
+		if concurrency == 'threads':
+			executor = ThreadPoolExecutor(max_workers=max_workers)
+		elif concurrency == 'processes':
+			executor = ProcessPoolExecutor(max_workers=max_workers)
+		elif concurrency is not None:
+			raise ValueError(f'concurrency should be one of [None, "threads", "processes"], got {concurrency!r}')
 
-	with iter_progress(files, progress) as file_itr:
-		for file in file_itr:
-			kmers.append(find_kmers_in_file(kspec, file))
+		executor_context = executor
 
-	return kmers
+	else:
+		executor_context = nullcontext()
+
+	if executor is None:
+		sigs = []
+
+		with iter_progress(files, progress) as file_itr:
+			for file in file_itr:
+				sigs.append(find_kmers_in_file(kspec, file))
+
+	else:
+		sigs = [None] * len(files)
+		future_to_index = dict()
+
+		with executor_context, get_progress(progress, len(files)) as meter:
+			for i, file in enumerate(files):
+				future = executor.submit(find_kmers_in_file, kspec, file)
+				future_to_index[future] = i
+
+			for future in as_completed(future_to_index):
+				i = future_to_index[future]
+				sigs[i] = future.result()
+				meter.increment()
+
+		assert all(sig is not None for sig in sigs)
+
+	return sigs
