@@ -142,7 +142,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		path
 			File to open.
 		\\**kw
-			Additional keyword arguments to :func:`h5py.File`.
+			Additional keyword arguments to :func:`h5py.File`\\ .
 		"""
 		return cls(h5.File(path, **kw))
 

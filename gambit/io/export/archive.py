@@ -63,6 +63,7 @@ class ResultsArchiveWriter(BaseJSONResultsExporter):
 	def _genome_to_json(self, genome: AnnotatedGenome):
 		return _todict(genome, ['key'])
 
+
 class ResultsArchiveReader:
 	"""Loads query results from file created by :class:`ResultsArchiveWriter`.
 

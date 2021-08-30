@@ -158,11 +158,7 @@ def test_dense_sparse_conversion():
 
 
 def check_reverse_complement(seq, rc):
-	"""Assert the reverse complement of a sequence is correct.
-
-	:param bytes seq: Byte sequence
-	:param bytes rc: Reverse complement of seq
-	"""
+	"""Assert the reverse complement of a sequence is correct."""
 	l = len(seq)
 	for i in range(l):
 		assert rc[l - i - 1] == NUC_COMPLEMENTS.get(seq[i], seq[i])
