@@ -7,7 +7,7 @@ from gambit import kmers
 from gambit.kmers import KmerSpec
 from gambit._cython.kmers import reverse_complement
 import gambit.io.json as gjson
-from gambit.test import fill_bytearray, make_kmer_seq
+from gambit.test import fill_bytearray, make_kmer_seq, random_seq
 
 
 # Complements to nucleotide ASCII codes
@@ -295,3 +295,59 @@ class TestFindKmers:
 
 			assert len(found) == len(expected)
 			assert all(kmer in expected for kmer in found)
+
+
+class TestKmerSpecConversion:
+	"""Test converting signatures from one KmerSpec to another."""
+
+	def test_can_convert(self):
+		from_kspec = KmerSpec(11, 'ATGAC')
+
+		compatible = [
+			KmerSpec(11, 'ATGAC'),
+			KmerSpec(8, 'ATGAC'),
+			KmerSpec(10, 'ATGACA'),
+			KmerSpec(8, 'ATGACA'),
+		]
+
+		for to_kspec in compatible:
+			assert kmers.can_convert(from_kspec, to_kspec)
+			kmers.check_can_convert(from_kspec, to_kspec)
+
+		incompatible = [
+			KmerSpec(11, 'CAGTA'),
+			KmerSpec(12, 'ATGAC'),
+			KmerSpec(11, 'ATGA'),
+			KmerSpec(11, 'ATGACT'),
+		]
+
+		for to_kspec in incompatible:
+			assert not kmers.can_convert(from_kspec, to_kspec)
+			with pytest.raises(ValueError):
+				kmers.check_can_convert(from_kspec, to_kspec)
+
+	@pytest.fixture(scope='class')
+	def seqs(self):
+		np.random.seed(0)
+		return [random_seq(100_000) for _ in range(100)]
+
+	@pytest.mark.parametrize('to_kspec', [
+		KmerSpec(10, 'ATGAC'),   # Reduce k
+		KmerSpec(8, 'ATGAC'),    # Reduce k
+		KmerSpec(9, 'ATGACGT'),  # Extend prefix
+		KmerSpec(7, 'ATGACGT'),  # Extend prefix and reduce k further
+	])
+	def test_convert(self, seqs, to_kspec):
+		from_kspec = KmerSpec(11, 'ATGAC')
+
+		for seq in seqs:
+			from_vec = kmers.find_kmers(from_kspec, seq, sparse=False)
+			from_sig = kmers.dense_to_sparse(from_vec)
+
+			to_vec = kmers.convert_dense(from_kspec, to_kspec, from_vec)
+			to_sig = kmers.convert_sparse(from_kspec, to_kspec, from_sig)
+
+			found_vec = kmers.find_kmers(to_kspec, seq, sparse=False)
+
+			assert np.array_equal(to_vec, found_vec)
+			assert np.array_equal(to_sig, kmers.dense_to_sparse(found_vec))
