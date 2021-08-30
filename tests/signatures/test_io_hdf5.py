@@ -95,6 +95,25 @@ class TestHDF5Signatures:
 		assert np.array_equal(h5sigs.ids, sig_ids)
 		assert h5sigs.meta == meta
 
+	def test_close(self, h5sigs):
+		assert h5sigs.group
+		assert h5sigs
+
+		h5sigs.close()
+		assert not h5sigs.group
+		assert not h5sigs
+
+		h5sigs.close()
+
+	def test_context(self, h5sigs):
+		with h5sigs as value:
+			assert value is h5sigs
+			assert h5sigs.group
+			assert h5sigs
+
+		assert not h5sigs.group
+		assert not h5sigs
+
 	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
 		"""Test implementation of AbstractSignatureArray."""
 

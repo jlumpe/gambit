@@ -68,6 +68,10 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	Inherits from :class:`gambit.signatures.base.AbstractSignatureArray`, so behaves as a sequence of
 	k-mer signatures supporting Numpy-style advanced indexing.
 
+	Behaves as a context manager which yields itself on enter and closes the underlying HDF5 file
+	object on exit. The :meth:`__bool__` method can be used to check whether the file is currently
+	open and valid.
+
 	Attributes
 	----------
 	group
@@ -104,13 +108,28 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		else:
 			self.ids = ids_data[:]
 
+	def close(self):
+		"""Close the underlying HDF5 file."""
+		if self.group:
+			self.group.file.close()
+
+	def __bool__(self):
+		"""Check whether the underlying HDF5 file object is open."""
+		return bool(self.group)
+
+	def __enter__(self):
+		return self
+
+	def __exit__(self, *args):
+		self.close()
+
 	@classmethod
 	def _init_attrs(cls, group: h5.Group, kmerspec: KmerSpec, meta: SignaturesMeta):
 		"""Initialize attributes of group."""
 
 		group.attrs[FMT_VERSION_ATTR] = CURRENT_FMT_VERSION
 		group.attrs['kmerspec_k'] = kmerspec.k
-		group.attrs['kmerspec_prefix'] = kmerspec.prefix.decode('ascii')
+		group.attrs['kmerspec_prefix'] = kmerspec.prefix_str
 
 		write_metadata(group, meta)
 
