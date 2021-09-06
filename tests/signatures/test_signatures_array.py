@@ -32,10 +32,6 @@ class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
 		super().check_getindex_subseq(sigarray, refarray, index, result, refresult)
 		assert isinstance(result, SignatureArray)
 
-	def check_getindex_slice(self, sigarray, refarray, index, result, refresult):
-		super().check_getindex_slice(sigarray, refarray, index, result, refresult)
-
-
 
 def test_uninitialized(refarray):
 	"""Test creating with uninitialized() class method."""
