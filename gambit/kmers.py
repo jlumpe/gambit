@@ -48,17 +48,8 @@ def validate_dna_seq_bytes(seq : bytes):
 			raise ValueError(f'Invalid byte at position {i}: {nuc}')
 
 
-def coords_dtype(k : int) -> np.dtype:
-	"""Get the smallest unsigned integer dtype that can store k-mer indices for the given ``k``.
-
-	Parameters
-	----------
-	k : int
-
-	Returns
-	-------
-	numpy.dtype
-	"""
+def index_dtype(k: int) -> np.dtype:
+	"""Get the smallest unsigned integer dtype that can store k-mer indices for the given ``k``."""
 	if k <= 4:
 		return np.dtype('u1')
 	elif k <= 8:
@@ -99,7 +90,7 @@ class KmerSpec(Jsonable):
 		Maximum value (plus one) of integer needed to index one of the
 		found k-mers. Also the number of possible k-mers fitting the spec.
 		Equal to ``4 ** k``.
-	coords_dtype
+	index_dtype
 		Smallest unsigned integer dtype that can store k-mer indices.
 	"""
 	k: int = attrib()
@@ -110,7 +101,7 @@ class KmerSpec(Jsonable):
 	prefix_len: int
 	total_len: int
 	idx_len: int
-	coords_dtype: np.dtype
+	index_dtype: np.dtype
 
 	@k.validator
 	def _validate_k(self, attribute, value):
@@ -126,7 +117,7 @@ class KmerSpec(Jsonable):
 		object.__setattr__(self, 'prefix_len', len(self.prefix))
 		object.__setattr__(self, 'total_len', self.k + self.prefix_len)
 		object.__setattr__(self, 'idx_len', 4 ** self.k)
-		object.__setattr__(self, 'coords_dtype', coords_dtype(self.k))
+		object.__setattr__(self, 'index_dtype', index_dtype(self.k))
 
 	def __get_newargs__(self):
 		return self.k, self.prefix
@@ -377,7 +368,7 @@ def convert_sparse(from_kspec: KmerSpec, to_kspec: KmerSpec, sig: KmerSignature)
 	start, stop, reduce = _convert_params(from_kspec, to_kspec)
 	reduce_bits = 2 * reduce
 
-	out = np.empty(len(sig), dtype=to_kspec.coords_dtype)
+	out = np.empty(len(sig), dtype=to_kspec.index_dtype)
 	i = 0
 	next_ = start
 

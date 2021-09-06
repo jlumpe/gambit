@@ -28,17 +28,17 @@ def make_kmerspec(k):
 	return KmerSpec(k, 'ATGC')
 
 
-def test_kmer_coords_dtype():
-	"""Test coords_dtype function."""
+def test_kmer_index_dtype():
+	"""Test index_dtype function."""
 
 	# Try k from 0 to 32 (all have dtypes)
 	for k in range(33):
 		# Check dtype can store the largest index
 		top_idx = 4**k - 1
-		assert kmers.coords_dtype(k).type(top_idx) == top_idx
+		assert kmers.index_dtype(k).type(top_idx) == top_idx
 
 	# k > 32 should have no dtype
-	assert kmers.coords_dtype(33) is None
+	assert kmers.index_dtype(33) is None
 
 
 def test_nucleotide_order():
