@@ -146,7 +146,7 @@ def find_kmers_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True,
 	numpy.ndarray
 		If ``sparse`` is False, returns dense K-mer vector (same array as ``dense_out`` if it was
 		given). If ``sparse`` is True returns k-mers in sparse coordinate format (dtype will match
-		:func:`gambit.kmers.vec_to_coords`).
+		:func:`gambit.kmers.dense_to_sparse`).
 
 	See Also
 	--------
@@ -187,7 +187,7 @@ def find_kmers_in_file(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool =
 	numpy.ndarray
 		If ``sparse`` is False, returns dense K-mer vector (same array as ``dense_out`` if it was
 		given). If ``sparse`` is True returns k-mers in sparse coordinate format (dtype will match
-		:func:`gambit.kmers.vec_to_coords`).
+		:func:`gambit.kmers.dense_to_sparse`).
 
 	See Also
 	--------
