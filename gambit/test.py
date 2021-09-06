@@ -5,7 +5,7 @@ from contextlib import contextmanager
 
 import numpy as np
 
-from gambit.kmers import KmerSpec, KmerSignature, dense_to_sparse, kmer_to_index, reverse_complement
+from gambit.kmers import KmerSpec, KmerSignature, dense_to_sparse, kmer_to_index, reverse_complement, nkmers
 from gambit.signatures import SignatureArray
 from gambit.query import QueryResultItem
 from gambit.classify import ClassifierResult, GenomeMatch
@@ -36,28 +36,28 @@ def make_signatures(k: int, n: int, dtype: np.dtype = np.dtype('u8')) -> Signatu
 	dtype
 		Numpy dtype of signatures.
 	"""
-	idx_len = 4 ** k
+	nk = nkmers(k)
 
 	# Uniform probability for including a k-mer
 	# .005 is about what we see in real genomes with k=11
 	# For small values of k, try to have an expected signature length of at least 20 but don't go over p=.5
-	p = max(.005, min(20 / idx_len, .5))
+	p = max(.005, min(20 / nk, .5))
 
 	signatures_list = []
 
 	# Add empty and full sets as edge cases
 	signatures_list.append(np.arange(0))
-	signatures_list.append(np.arange(idx_len))
+	signatures_list.append(np.arange(nk))
 
 	# Use a core set of k-mers so that we get some overlap
-	core_vec = bernoulli(idx_len, p)
+	core_vec = bernoulli(nk, p)
 
 	for i in range(n - 3):
-		vec = bernoulli(idx_len, p) | core_vec
+		vec = bernoulli(nk, p) | core_vec
 		signatures_list.append(dense_to_sparse(vec))
 
 	# Add one more that does not include core set
-	vec = bernoulli(idx_len, p) & ~core_vec
+	vec = bernoulli(nk, p) & ~core_vec
 	signatures_list.append(dense_to_sparse(vec))
 
 	return SignatureArray(signatures_list, dtype=dtype)

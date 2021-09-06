@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from gambit import kmers
-from gambit.kmers import KmerSpec
+from gambit.kmers import KmerSpec, nkmers
 from gambit._cython.kmers import reverse_complement
 import gambit.io.json as gjson
 from gambit.test import fill_bytearray, make_kmer_seq, random_seq
@@ -34,7 +34,7 @@ def test_kmer_index_dtype():
 	# Try k from 0 to 32 (all have dtypes)
 	for k in range(33):
 		# Check dtype can store the largest index
-		top_idx = 4**k - 1
+		top_idx = nkmers(k) - 1
 		assert kmers.index_dtype(k).type(top_idx) == top_idx
 
 	# k > 32 should have no dtype
@@ -55,7 +55,7 @@ def test_index_conversion():
 	for k in range(11):
 
 		# Test all indices to max of 1000
-		for index in range(min(4 ** k, 1000)):
+		for index in range(min(nkmers(k), 1000)):
 
 			kmer = kmers.index_to_kmer(index, k)
 
@@ -182,7 +182,7 @@ def test_revcomp():
 
 	# Check all 6-mers
 	k = 6
-	for i in range(4 ** k):
+	for i in range(nkmers(k)):
 		kmer = kmers.index_to_kmer(i, k)
 
 		rc = reverse_complement(kmer)

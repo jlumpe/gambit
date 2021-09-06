@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from gambit.test import make_signatures, random_seq, fill_bytearray, make_kmer_seq, check_progress
-from gambit.kmers import KmerSpec, reverse_complement, kmer_to_index, dense_to_sparse
+from gambit.kmers import KmerSpec, reverse_complement, kmer_to_index, dense_to_sparse, nkmers
 from gambit.util.progress import get_progress
 
 
@@ -19,7 +19,7 @@ def test_make_signatures(k, n, dtype):
 	for i, sig in enumerate(sigs):
 		assert sig.dtype == dtype
 		assert np.all(np.diff(sig) > 0)  # sorted
-		assert np.all(sig < 4**k)  # in expected range
+		assert np.all(sig < nkmers(k))  # in expected range
 
 		# Pairwise distinct
 		for j in range(i+1, n):
@@ -56,7 +56,7 @@ def test_make_kmer_seq(kspec, seqlen, kmer_interval, n_interval):
 	seq, sig = make_kmer_seq(kspec, seqlen, kmer_interval, n_interval)
 	assert len(seq) == seqlen
 
-	vec = np.zeros(4 ** kspec.k, dtype=bool)
+	vec = np.zeros(kspec.idx_len, dtype=bool)
 
 	for i, p in enumerate(range(0, seqlen - kspec.total_len, kmer_interval)):
 		match = seq[p:(p + kspec.total_len)]

@@ -48,6 +48,11 @@ def validate_dna_seq_bytes(seq : bytes):
 			raise ValueError(f'Invalid byte at position {i}: {nuc}')
 
 
+def nkmers(k: int) -> int:
+	"""Get the number of possible distinct k-mers for a given value of ``k``."""
+	return 4 ** k
+
+
 def index_dtype(k: int) -> np.dtype:
 	"""Get the smallest unsigned integer dtype that can store k-mer indices for the given ``k``."""
 	if k <= 4:
@@ -292,7 +297,7 @@ def sparse_to_dense(k_or_kspec: Union[int, KmerSpec],  coords: KmerSignature) ->
 	--------
 	.dense_to_sparse
 	"""
-	idx_len = k_or_kspec.idx_len if isinstance(k_or_kspec, KmerSpec) else 4 ** k_or_kspec
+	idx_len = k_or_kspec.idx_len if isinstance(k_or_kspec, KmerSpec) else nkmers(k_or_kspec)
 	vec = np.zeros(idx_len, dtype=np.bool_)
 	vec[coords] = 1
 	return vec
@@ -328,7 +333,7 @@ def _convert_params(from_kspec: KmerSpec, to_kspec: KmerSpec):
 	extra_ind = kmer_to_index(extra_prefix)
 	extra_len = len(extra_prefix)
 
-	range_ = 4 ** (from_kspec.k - extra_len)
+	range_ = nkmers(from_kspec.k - extra_len)
 	start = extra_ind * range_
 	stop = (extra_ind + 1) * range_
 	reduce = from_kspec.k - to_kspec.k - extra_len
@@ -346,7 +351,7 @@ def convert_dense(from_kspec: KmerSpec, to_kspec: KmerSpec, vec: np.ndarray) -> 
 	"""
 	check_can_convert(from_kspec, to_kspec)
 	start, stop, reduce = _convert_params(from_kspec, to_kspec)
-	block_size = 4 ** reduce
+	block_size = nkmers(reduce)
 
 	out = np.zeros(to_kspec.idx_len, dtype=bool)
 
