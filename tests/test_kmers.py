@@ -139,7 +139,7 @@ def test_dense_sparse_conversion():
 		kspec = make_kmerspec(k)
 
 		# Create vector with every 3rd k-mer
-		vec = np.zeros(kspec.idx_len, dtype=bool)
+		vec = np.zeros(kspec.nkmers, dtype=bool)
 		vec[np.arange(vec.size) % 3 == 0] = True
 
 		# Convert to coords

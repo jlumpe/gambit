@@ -105,7 +105,7 @@ class KmerSpec(Jsonable):
 	prefix_str: str
 	prefix_len: int
 	total_len: int
-	idx_len: int
+	nkmers: int
 	index_dtype: np.dtype
 
 	@k.validator
@@ -121,7 +121,7 @@ class KmerSpec(Jsonable):
 		object.__setattr__(self, 'prefix_str', self.prefix.decode('ascii'))
 		object.__setattr__(self, 'prefix_len', len(self.prefix))
 		object.__setattr__(self, 'total_len', self.k + self.prefix_len)
-		object.__setattr__(self, 'idx_len', 4 ** self.k)
+		object.__setattr__(self, 'nkmers', nkmers(self.k))
 		object.__setattr__(self, 'index_dtype', index_dtype(self.k))
 
 	def __get_newargs__(self):
@@ -162,7 +162,7 @@ def find_kmers(kspec: KmerSpec,
 		Sequence to search within as ``bytes`` or ``str``. If ``str`` will be encoded as ASCII.
 		Lower-case characters are OK and will be matched as upper-case.
 	dense_out : numpy.ndarray
-		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.idx_len``.
+		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.nkmers``.
 		Note that this is still used as working space even if ``sparse=True``. Should be zeroed
 		prior to use (although if not the result will effectively be the bitwise AND between its
 		previous value and k-mers found in ``data``.
@@ -181,7 +181,7 @@ def find_kmers(kspec: KmerSpec,
 	gambit.io.seq.find_kmers_parse
 	"""
 	if dense_out is None:
-		dense_out = np.zeros(kspec.idx_len, dtype=bool)
+		dense_out = np.zeros(kspec.nkmers, dtype=bool)
 
 	# Convert sequence to bytes
 	if not isinstance(seq, bytes):
@@ -297,7 +297,7 @@ def sparse_to_dense(k_or_kspec: Union[int, KmerSpec],  coords: KmerSignature) ->
 	--------
 	.dense_to_sparse
 	"""
-	idx_len = k_or_kspec.idx_len if isinstance(k_or_kspec, KmerSpec) else nkmers(k_or_kspec)
+	idx_len = k_or_kspec.nkmers if isinstance(k_or_kspec, KmerSpec) else nkmers(k_or_kspec)
 	vec = np.zeros(idx_len, dtype=np.bool_)
 	vec[coords] = 1
 	return vec
@@ -353,7 +353,7 @@ def convert_dense(from_kspec: KmerSpec, to_kspec: KmerSpec, vec: np.ndarray) -> 
 	start, stop, reduce = _convert_params(from_kspec, to_kspec)
 	block_size = nkmers(reduce)
 
-	out = np.zeros(to_kspec.idx_len, dtype=bool)
+	out = np.zeros(to_kspec.nkmers, dtype=bool)
 
 	for i in range(block_size):
 		out |= vec[start+i:stop:block_size]

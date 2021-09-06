@@ -135,7 +135,7 @@ def make_kmer_seq(kspec: KmerSpec, seqlen: int, kmer_interval: int, n_interval: 
 	seq_array = fill_bytearray(b'N', seqlen)
 
 	# Keep track of which kmers have been added
-	vec = np.zeros(kspec.idx_len, dtype=bool)
+	vec = np.zeros(kspec.nkmers, dtype=bool)
 
 	# Add matches
 	for i, p in enumerate(range(0, seqlen - kspec.total_len, kmer_interval)):

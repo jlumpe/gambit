@@ -56,7 +56,7 @@ def test_make_kmer_seq(kspec, seqlen, kmer_interval, n_interval):
 	seq, sig = make_kmer_seq(kspec, seqlen, kmer_interval, n_interval)
 	assert len(seq) == seqlen
 
-	vec = np.zeros(kspec.idx_len, dtype=bool)
+	vec = np.zeros(kspec.nkmers, dtype=bool)
 
 	for i, p in enumerate(range(0, seqlen - kspec.total_len, kmer_interval)):
 		match = seq[p:(p + kspec.total_len)]

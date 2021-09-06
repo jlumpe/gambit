@@ -136,7 +136,7 @@ def find_kmers_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True,
 	sparse : bool
 		If True return k-mers in sparse coordinate format rather than dense (bit vector) format.
 	dense_out : numpy.ndarray
-		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.idx_len``.
+		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.nkmers``.
 		Note that this is still used as working space even if ``sparse=True``. Should be zeroed
 		prior to use (although if not the result will effectively be the bitwise AND between its
 		previous value and k-mers found in ``data``.
@@ -154,7 +154,7 @@ def find_kmers_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True,
 	.find_kmers_in_file
 	"""
 	if dense_out is None:
-		dense_out = np.zeros(kspec.idx_len, dtype=bool)
+		dense_out = np.zeros(kspec.nkmers, dtype=bool)
 
 	for record in SeqIO.parse(data, format):
 		find_kmers(kspec, record.seq, dense_out=dense_out)

@@ -32,7 +32,7 @@ def create_sequence_records(kspec, n, seq_len=10000):
 		(records, kmer_vec) tuple.
 	"""
 	records = []
-	vec = np.zeros(kspec.idx_len, dtype=bool)
+	vec = np.zeros(kspec.nkmers, dtype=bool)
 
 	for i in range(n):
 		seq, sig = make_kmer_seq(kspec, seq_len, kmer_interval=50, n_interval=10)
