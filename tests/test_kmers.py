@@ -81,10 +81,9 @@ class TestKmerSpec:
 		assert KmerSpec(11, 'atgac').prefix == b'ATGAC'
 
 		# Invalid prefix
-		with pytest.raises(ValueError):
-			KmerSpec(11, b'ATGAX')
-			KmerSpec(11, 'ATGAX')
-			KmerSpec(11, b'ATGAc')
+		for prefix in [b'ATGAX', 'ATGAX', b'ATGAc']:
+			with pytest.raises(ValueError):
+				KmerSpec(11, prefix)
 
 	def test_attributes(self):
 		"""Test basic attributes."""
