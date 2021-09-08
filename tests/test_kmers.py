@@ -7,7 +7,7 @@ from gambit import kmers
 from gambit.kmers import KmerSpec, nkmers
 from gambit._cython.kmers import reverse_complement
 import gambit.io.json as gjson
-from gambit.test import fill_bytearray, make_kmer_seq, random_seq
+from gambit.test import random_seq
 
 
 # Complements to nucleotide ASCII codes
@@ -207,91 +207,6 @@ def test_revcomp():
 		assert reverse_complement(rc) == seq2
 
 
-class TestFindKmers:
-	"""Test k-mer finding."""
-
-	@pytest.mark.parametrize('sparse', [True, False])
-	def test_basic(self, sparse):
-		"""Test general k-mer finding."""
-
-		kspec = KmerSpec(11, 'ATGAC')
-
-		np.random.seed(0)
-		seq, signature = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
-		expected = signature if sparse else kmers.sparse_to_dense(kspec, signature)
-
-		# Test normal
-		result = kmers.find_kmers(kspec, seq, sparse=sparse)
-		assert np.array_equal(result, expected)
-
-		# Test reverse complement
-		result = kmers.find_kmers(kspec, reverse_complement(seq), sparse=sparse)
-		assert np.array_equal(result, expected)
-
-		# Test lower case
-		result = kmers.find_kmers(kspec, seq.lower(), sparse=sparse)
-		assert np.array_equal(result, expected)
-
-		# Test string argument
-		result = kmers.find_kmers(kspec, seq.decode('ascii'), sparse=sparse)
-		assert np.array_equal(result, expected)
-
-	def test_bounds(self):
-		"""Test k-mer finding at beginning and end of sequence to catch errors with search bounds."""
-
-		# Sequence of all ATN's
-		seqlen = 100000
-		seq_array = fill_bytearray(b'ATN', seqlen)
-
-		# Choose prefix with nucleotides not found in sequence "background"
-		kspec = KmerSpec(11, b'CCGGG')
-
-		# Add at beginning
-		seq_array[0:kspec.prefix_len] = kspec.prefix
-		seq_array[kspec.prefix_len:kspec.total_len] = kmers.index_to_kmer(0, kspec.k)
-
-		# Add at end
-		seq_array[-kspec.total_len:-kspec.k] = kspec.prefix
-		seq_array[-kspec.k:] = kmers.index_to_kmer(1, kspec.k)
-
-		seq = bytes(seq_array)
-		found = kmers.find_kmers(kspec, seq)
-
-		assert np.array_equal(found, [0, 1])
-
-	def test_overlapping(self):
-		"""Test k-mer finding when k-mers overlap with each other.
-
-		The test sequence is manually designed to have a variety of overlapping
-		forwards and backwards matches
-		"""
-
-		kspec = KmerSpec(11, b'GCCGG')
-
-		seq = b'ATATGCCGGCCGGATTATATAGCCGGCATTACATCCGATAGGATCCGGCAATAA'
-		#      |    |>>>>...........
-		#      |        |>>>>........... (forward match which overlaps prefix)
-		#      |                     |>>>>........... (another overlapping forward match)
-		#      |....<<<<| (backward match for prefix, but too close to end)
-		#      |           ...........<<<<|
-		#      |                                 ...........<<<<|
-
-		expected = {
-			b'CCGGATTATAT',
-			b'ATTATATAGCC',
-			b'CATTACATCCG',
-			reverse_complement(b'GGATTATATAG'),
-			reverse_complement(b'TCCGATAGGAT'),
-		}
-
-		for s in [seq, reverse_complement(seq)]:
-			sig = kmers.find_kmers(kspec, s)
-			found = [kmers.index_to_kmer(idx, kspec.k) for idx in sig]
-
-			assert len(found) == len(expected)
-			assert all(kmer in expected for kmer in found)
-
-
 class TestKmerSpecConversion:
 	"""Test converting signatures from one KmerSpec to another."""
 
@@ -333,16 +248,18 @@ class TestKmerSpecConversion:
 		KmerSpec(7, 'ATGACGT'),  # Extend prefix and reduce k further
 	])
 	def test_convert(self, seqs, to_kspec):
+		from gambit.search import find_kmers
+
 		from_kspec = KmerSpec(11, 'ATGAC')
 
 		for seq in seqs:
-			from_vec = kmers.find_kmers(from_kspec, seq, sparse=False)
+			from_vec = find_kmers(from_kspec, seq, sparse=False)
 			from_sig = kmers.dense_to_sparse(from_vec)
 
 			to_vec = kmers.convert_dense(from_kspec, to_kspec, from_vec)
 			to_sig = kmers.convert_sparse(from_kspec, to_kspec, from_sig)
 
-			found_vec = kmers.find_kmers(to_kspec, seq, sparse=False)
+			found_vec = find_kmers(to_kspec, seq, sparse=False)
 
 			assert np.array_equal(to_vec, found_vec)
 			assert np.array_equal(to_sig, kmers.dense_to_sparse(found_vec))

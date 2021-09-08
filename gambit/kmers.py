@@ -11,7 +11,7 @@ bytes containing ascii-encoded nucleotide codes.
 	sequences.
 """
 
-from typing import Sequence, Optional, Union, NewType, Dict, Any
+from typing import Sequence, Union, NewType, Dict, Any
 
 import numpy as np
 from attr import attrs, attrib
@@ -141,121 +141,6 @@ class KmerSpec(Jsonable):
 	@classmethod
 	def __from_json__(cls, data: Dict[str, Any]) -> 'KmerSpec':
 		return cls(data['k'], data['prefix'])
-
-
-def find_kmers(kspec: KmerSpec,
-               seq: Union[bytes, str],
-               *,
-               sparse: bool = True,
-               dense_out: Optional[np.ndarray] = None,
-               ) -> KmerSignature:
-	"""Find all k-mers in a DNA sequence.
-
-	Searches sequence both backwards and forwards (reverse complement). The sequence may contain
-	invalid characters (not one of the four nucleotide codes) which will simply not be matched.
-
-	Parameters
-	----------
-	kspec : .KmerSpec
-		K-mer spec to use for search.
-	seq
-		Sequence to search within as ``bytes`` or ``str``. If ``str`` will be encoded as ASCII.
-		Lower-case characters are OK and will be matched as upper-case.
-	dense_out : numpy.ndarray
-		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.nkmers``.
-		Note that this is still used as working space even if ``sparse=True``. Should be zeroed
-		prior to use (although if not the result will effectively be the bitwise AND between its
-		previous value and k-mers found in ``data``.
-	sparse : bool
-		If True return k-mers in sparse coordinate format rather than dense (bit vector) format.
-
-	Returns
-	-------
-	numpy.ndarray
-		If ``sparse`` is False, returns dense K-mer vector (same array as ``dense_out`` if it was
-		given). If ``sparse`` is True returns k-mers in sparse coordinate format (dtype will match
-		:func:`gambit.kmers.dense_to_sparse`).
-
-	See Also
-	--------
-	gambit.io.seq.find_kmers_parse
-	"""
-	if dense_out is None:
-		dense_out = np.zeros(kspec.nkmers, dtype=bool)
-
-	# Convert sequence to bytes
-	if not isinstance(seq, bytes):
-		if not isinstance(seq, str):
-			seq = str(seq)
-
-		seq = seq.encode('ascii')
-
-	# Convert to upper-case only if needed
-	nucs_lower = set(NUCLEOTIDES.lower())
-	for char in seq:
-		if char in nucs_lower:
-			seq = seq.upper()
-			break
-
-	_find_kmers(kspec, seq, dense_out)
-
-	if sparse:
-		return dense_to_sparse(dense_out)
-	else:
-		return dense_out
-
-
-def _find_kmers(kspec, seq, out):
-	"""Actual implementation of find_kmers.
-
-	Parameters
-	----------
-	kspec : KmerSpec
-	seq : bytes
-		Upper-case ASCII nucleotide codes.
-	out : np.ndarray
-		Write dense output to this array.
-	"""
-
-	# Reverse complement of prefix
-	rcprefix = reverse_complement(kspec.prefix)
-
-	# Search forward
-	start = 0
-	while True:
-		loc = seq.find(kspec.prefix, start, -kspec.k)
-		if loc < 0:
-			break
-
-		kmer = seq[loc + kspec.prefix_len:loc + kspec.total_len]
-		if not isinstance(kmer, bytes):
-			kmer = str(kmer).encode('ascii')
-
-		try:
-			out[kmer_to_index(kmer)] = 1
-		except ValueError:
-			pass
-
-		start = loc + 1
-
-	# Search backward
-	start = kspec.k
-	while True:
-		loc = seq.find(rcprefix, start)
-		if loc < 0:
-			break
-
-		rckmer = seq[loc - kspec.k:loc]
-		if not isinstance(rckmer, bytes):
-			rckmer = str(rckmer).encode('ascii')
-		kmer = reverse_complement(rckmer)
-
-		try:
-			out[kmer_to_index(kmer)] = 1
-		except ValueError:
-			pass
-
-		start = loc + 1
 
 
 def dense_to_sparse(vec: Sequence[bool]) -> KmerSignature:

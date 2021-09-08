@@ -213,7 +213,7 @@ def query_parse(db: GAMBITDatabase,
 	\\**kw
 		Additional keyword arguments passed to :func:`.query`\\ .
 	"""
-	from gambit.io.seq import find_kmers_in_files
+	from gambit.search import find_kmers_in_files
 
 	pconf = progress_config(kw.pop('progress', None))
 
