@@ -248,18 +248,18 @@ class TestKmerSpecConversion:
 		KmerSpec(7, 'ATGACGT'),  # Extend prefix and reduce k further
 	])
 	def test_convert(self, seqs, to_kspec):
-		from gambit.search import find_kmers
+		from gambit.search import calc_signature
 
 		from_kspec = KmerSpec(11, 'ATGAC')
 
 		for seq in seqs:
-			from_vec = find_kmers(from_kspec, seq, sparse=False)
+			from_vec = calc_signature(from_kspec, seq, sparse=False)
 			from_sig = kmers.dense_to_sparse(from_vec)
 
 			to_vec = kmers.convert_dense(from_kspec, to_kspec, from_vec)
 			to_sig = kmers.convert_sparse(from_kspec, to_kspec, from_sig)
 
-			found_vec = find_kmers(to_kspec, seq, sparse=False)
+			found_vec = calc_signature(to_kspec, seq, sparse=False)
 
 			assert np.array_equal(to_vec, found_vec)
 			assert np.array_equal(to_sig, kmers.dense_to_sparse(found_vec))

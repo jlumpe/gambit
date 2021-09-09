@@ -229,8 +229,8 @@ def _convert_params(from_kspec: KmerSpec, to_kspec: KmerSpec):
 def convert_dense(from_kspec: KmerSpec, to_kspec: KmerSpec, vec: np.ndarray) -> np.ndarray:
 	"""Convert a k-mer signature in dense format from one ``KmerSpec`` to another.
 
-	In the ideal case, if ``vec`` is the result of ``find_kmers(from_kspec, seq, sparse=False)``
-	the output of this function should be identical to ``find_kmers(to_kspec, seq, sparse=False)``\\ .
+	In the ideal case, if ``vec`` is the result of ``calc_signature(from_kspec, seq, sparse=False)``
+	the output of this function should be identical to ``calc_signature(to_kspec, seq, sparse=False)``\\ .
 	In reality this may not hold if any potential matches of ``from_kspec`` in ``seq`` are discarded
 	due to an invalid nucleotide which is not included in the corresponding ``to_kspec`` match.
 	"""
@@ -249,8 +249,8 @@ def convert_dense(from_kspec: KmerSpec, to_kspec: KmerSpec, vec: np.ndarray) -> 
 def convert_sparse(from_kspec: KmerSpec, to_kspec: KmerSpec, sig: KmerSignature) -> KmerSignature:
 	"""Convert a k-mer signature in sparse format from one ``KmerSpec`` to another.
 
-	In the ideal case, if ``sig`` is the result of ``find_kmers(from_kspec, seq)``
-	the output of this function should be identical to ``find_kmers(to_kspec, seq)``\\ .
+	In the ideal case, if ``sig`` is the result of ``calc_signature(from_kspec, seq)``
+	the output of this function should be identical to ``calc_signature(to_kspec, seq)``\\ .
 	In reality this may not hold if any potential matches of ``from_kspec`` in ``seq`` are discarded
 	due to an invalid nucleotide which is not included in the corresponding ``to_kspec`` match.
 	"""

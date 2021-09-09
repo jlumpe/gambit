@@ -12,13 +12,13 @@ from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
 
 
-def find_kmers(kspec: KmerSpec,
-               seq: Union[bytes, str],
-               *,
-               sparse: bool = True,
-               dense_out: Optional[np.ndarray] = None,
-               ) -> KmerSignature:
-	"""Find all k-mers in a DNA sequence.
+def calc_signature(kspec: KmerSpec,
+                   seq: Union[bytes, str],
+                   *,
+                   sparse: bool = True,
+                   dense_out: Optional[np.ndarray] = None,
+                   ) -> KmerSignature:
+	"""Calculate the k-mer signature of a DNA sequence.
 
 	Searches sequence both backwards and forwards (reverse complement). The sequence may contain
 	invalid characters (not one of the four nucleotide codes) which will simply not be matched.
@@ -47,7 +47,7 @@ def find_kmers(kspec: KmerSpec,
 
 	See Also
 	--------
-	.find_kmers_parse
+	.calc_signature_parse
 	"""
 	if dense_out is None:
 		dense_out = np.zeros(kspec.nkmers, dtype=bool)
@@ -66,7 +66,7 @@ def find_kmers(kspec: KmerSpec,
 			seq = seq.upper()
 			break
 
-	_find_kmers(kspec, seq, dense_out)
+	_calc_signature(kspec, seq, dense_out)
 
 	if sparse:
 		return dense_to_sparse(dense_out)
@@ -74,8 +74,8 @@ def find_kmers(kspec: KmerSpec,
 		return dense_out
 
 
-def _find_kmers(kspec, seq, out):
-	"""Actual implementation of find_kmers.
+def _calc_signature(kspec, seq, out):
+	"""Actual implementation of calc_signature.
 
 	Parameters
 	----------
@@ -127,8 +127,8 @@ def _find_kmers(kspec, seq, out):
 		start = loc + 1
 
 
-def find_kmers_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True, dense_out: Optional[np.ndarray] = None) -> np.ndarray:
-	"""Parse sequence data with ``Bio.Seq.parse()`` and find k-mers.
+def calc_signature_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True, dense_out: Optional[np.ndarray] = None) -> np.ndarray:
+	"""Parse sequence data with ``Bio.Seq.parse()`` and calculate its k-mer signature.
 
 	Parameters
 	----------
@@ -155,14 +155,14 @@ def find_kmers_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True,
 
 	See Also
 	--------
-	.find_kmers
-	.find_kmers_in_file
+	.calc_signature
+	.calc_file_signature
 	"""
 	if dense_out is None:
 		dense_out = np.zeros(kspec.nkmers, dtype=bool)
 
 	for record in SeqIO.parse(data, format):
-		find_kmers(kspec, record.seq, dense_out=dense_out)
+		calc_signature(kspec, record.seq, dense_out=dense_out)
 
 	if sparse:
 		return dense_to_sparse(dense_out)
@@ -170,11 +170,11 @@ def find_kmers_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True,
 		return dense_out
 
 
-def find_kmers_in_file(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool = True, dense_out: Optional[np.ndarray] = None) -> np.ndarray:
-	"""Open a sequence file on disk and find k-mers.
+def calc_file_signature(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool = True, dense_out: Optional[np.ndarray] = None) -> np.ndarray:
+	"""Open a sequence file on disk and calculate its k-mer signature.
 
-	This works identically to :func:`.find_kmers_parse` but takes a :class:`.SequenceFile` as input
-	instead of a data stream.
+	This works identically to :func:`.calc_signature_parse` but takes a :class:`.SequenceFile` as
+	input instead of a data stream.
 
 	Parameters
 	----------
@@ -183,9 +183,9 @@ def find_kmers_in_file(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool =
 	seqfile
 		File to read.
 	sparse
-		See :func:`.find_kmers_parse`.
+		See :func:`.calc_signature_parse`.
 	dense_out
-		See :func:`.find_kmers_parse`.
+		See :func:`.calc_signature_parse`.
 
 	Returns
 	-------
@@ -196,21 +196,21 @@ def find_kmers_in_file(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool =
 
 	See Also
 	--------
-	.find_kmers
-	.find_kmers_in_files
-	.find_kmers_parse
+	.calc_signature
+	.calc_file_signatures
+	.calc_signature_parse
 	"""
 	with seqfile.open() as f:
-		return find_kmers_parse(kspec, f, seqfile.format, sparse=sparse, dense_out=dense_out)
+		return calc_signature_parse(kspec, f, seqfile.format, sparse=sparse, dense_out=dense_out)
 
 
-def find_kmers_in_files(kspec: KmerSpec,
-                        files: Sequence[SequenceFile],
-                        progress=None,
-                        concurrency: Optional[str] = 'threads',
-                        max_workers: Optional[int] = None,
-                        executor: Optional[Executor] = None,
-                        ) -> List[KmerSignature]:
+def calc_file_signatures(kspec: KmerSpec,
+                         files: Sequence[SequenceFile],
+                         progress=None,
+                         concurrency: Optional[str] = 'threads',
+                         max_workers: Optional[int] = None,
+                         executor: Optional[Executor] = None,
+                         ) -> List[KmerSignature]:
 	"""Parse and calculate k-mer signatures for multiple sequence files.
 
 	Parameters
@@ -236,7 +236,7 @@ def find_kmers_in_files(kspec: KmerSpec,
 
 	See Also
 	--------
-	.find_kmers_in_file
+	.calc_file_signature
 	"""
 	if executor is None:
 		if concurrency == 'threads':
@@ -256,7 +256,7 @@ def find_kmers_in_files(kspec: KmerSpec,
 
 		with iter_progress(files, progress) as file_itr:
 			for file in file_itr:
-				sigs.append(find_kmers_in_file(kspec, file))
+				sigs.append(calc_file_signature(kspec, file))
 
 	else:
 		sigs = [None] * len(files)
@@ -264,7 +264,7 @@ def find_kmers_in_files(kspec: KmerSpec,
 
 		with executor_context, get_progress(progress, len(files)) as meter:
 			for i, file in enumerate(files):
-				future = executor.submit(find_kmers_in_file, kspec, file)
+				future = executor.submit(calc_file_signature, kspec, file)
 				future_to_index[future] = i
 
 			for future in as_completed(future_to_index):

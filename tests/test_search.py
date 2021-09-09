@@ -6,7 +6,7 @@ import pytest
 import numpy as np
 from Bio import Seq, SeqIO
 
-from gambit.search import find_kmers, find_kmers_parse, find_kmers_in_file, find_kmers_in_files
+from gambit.search import calc_signature, calc_signature_parse, calc_file_signature, calc_file_signatures
 from gambit.kmers import KmerSpec, reverse_complement, dense_to_sparse, sparse_to_dense, index_to_kmer
 from gambit.test import fill_bytearray, make_kmer_seq, check_progress
 
@@ -54,8 +54,8 @@ def create_sequence_records(kspec, n, seq_len=10000):
 	return records, vec
 
 
-class TestFindKmers:
-	"""Test the find_kmers() function."""
+class TestCalcSignature:
+	"""Test the calc_signature() function."""
 
 	@pytest.mark.parametrize('sparse', [True, False])
 	def test_basic(self, sparse):
@@ -68,19 +68,19 @@ class TestFindKmers:
 		expected = signature if sparse else sparse_to_dense(kspec, signature)
 
 		# Test normal
-		result = find_kmers(kspec, seq, sparse=sparse)
+		result = calc_signature(kspec, seq, sparse=sparse)
 		assert np.array_equal(result, expected)
 
 		# Test reverse complement
-		result = find_kmers(kspec, reverse_complement(seq), sparse=sparse)
+		result = calc_signature(kspec, reverse_complement(seq), sparse=sparse)
 		assert np.array_equal(result, expected)
 
 		# Test lower case
-		result = find_kmers(kspec, seq.lower(), sparse=sparse)
+		result = calc_signature(kspec, seq.lower(), sparse=sparse)
 		assert np.array_equal(result, expected)
 
 		# Test string argument
-		result = find_kmers(kspec, seq.decode('ascii'), sparse=sparse)
+		result = calc_signature(kspec, seq.decode('ascii'), sparse=sparse)
 		assert np.array_equal(result, expected)
 
 	def test_bounds(self):
@@ -102,7 +102,7 @@ class TestFindKmers:
 		seq_array[-kspec.k:] = index_to_kmer(1, kspec.k)
 
 		seq = bytes(seq_array)
-		found = find_kmers(kspec, seq)
+		found = calc_signature(kspec, seq)
 
 		assert np.array_equal(found, [0, 1])
 
@@ -132,14 +132,14 @@ class TestFindKmers:
 		}
 
 		for s in [seq, reverse_complement(seq)]:
-			sig = find_kmers(kspec, s)
+			sig = calc_signature(kspec, s)
 			found = [index_to_kmer(idx, kspec.k) for idx in sig]
 
 			assert len(found) == len(expected)
 			assert all(kmer in expected for kmer in found)
 
 
-class TestFindKmersInFile:
+class TestCalcFileSignatures:
 	KSPEC = KmerSpec(11, 'AGTAC')
 
 	@pytest.fixture(scope='class')
@@ -183,8 +183,8 @@ class TestFindKmersInFile:
 		return files
 
 	@pytest.mark.parametrize('sparse', [False, True])
-	def test_find_kmers_parse(self, seq_data, format, sparse):
-		"""Test the find_kmers_parse function."""
+	def test_calc_signature_parse(self, seq_data, format, sparse):
+		"""Test the calc_signature_parse function."""
 
 		for records, sig in zip(*seq_data):
 			# Parse from buffer
@@ -192,7 +192,7 @@ class TestFindKmersInFile:
 			SeqIO.write(records, buf, format)
 			buf.seek(0)
 
-			result = find_kmers_parse(self.KSPEC, buf, 'fasta', sparse=sparse)
+			result = calc_signature_parse(self.KSPEC, buf, 'fasta', sparse=sparse)
 
 			if sparse:
 				assert np.array_equal(result, sig)
@@ -200,13 +200,13 @@ class TestFindKmersInFile:
 				assert np.array_equal(dense_to_sparse(result), sig)
 
 	@pytest.mark.parametrize('sparse', [False, True])
-	def test_find_kmers_in_file(self, seq_data, files, sparse):
-		"""Test the find_kmers_in_file function."""
+	def test_calc_file_signature(self, seq_data, files, sparse):
+		"""Test the calc_file_signature function."""
 
 		seqs, sigs = seq_data
 
 		for file, sig in zip(files, sigs):
-			result = find_kmers_in_file(self.KSPEC, file, sparse=sparse)
+			result = calc_file_signature(self.KSPEC, file, sparse=sparse)
 
 			if sparse:
 				assert np.array_equal(result, sig)
@@ -214,11 +214,11 @@ class TestFindKmersInFile:
 				assert np.array_equal(dense_to_sparse(result), sig)
 
 	@pytest.mark.parametrize('concurrency', [None, 'threads', 'processes'])
-	def test_find_kmers_in_files(self, seq_data, files, concurrency):
-		"""Test the find_kmers_in_files function."""
+	def test_calc_file_signatures(self, seq_data, files, concurrency):
+		"""Test the calc_file_signatures function."""
 		seqs, sigs = seq_data
 
 		with check_progress(total=len(files)) as pconf:
-			sigs2 = find_kmers_in_files(self.KSPEC, files, progress=pconf, concurrency=concurrency)
+			sigs2 = calc_file_signatures(self.KSPEC, files, progress=pconf, concurrency=concurrency)
 
 		assert sigarray_eq(sigs, sigs2)

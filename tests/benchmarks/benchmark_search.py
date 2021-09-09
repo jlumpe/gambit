@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from gambit.kmers import KmerSpec
-from gambit.search import find_kmers
+from gambit.search import calc_signature
 from gambit.test import random_seq
 
 
@@ -29,5 +29,5 @@ def kspec(kspec_k, kspec_prefix):
 	return KmerSpec(kspec_k, kspec_prefix)
 
 
-def benchmark_find_kmers(seq, kspec, benchmark):
-	benchmark(find_kmers, kspec, seq)
+def benchmark_calc_signature(seq, kspec, benchmark):
+	benchmark(calc_signature, kspec, seq)

@@ -213,7 +213,7 @@ def query_parse(db: GAMBITDatabase,
 	\\**kw
 		Additional keyword arguments passed to :func:`.query`\\ .
 	"""
-	from gambit.search import find_kmers_in_files
+	from gambit.search import calc_file_signatures
 
 	pconf = progress_config(kw.pop('progress', None))
 
@@ -222,7 +222,7 @@ def query_parse(db: GAMBITDatabase,
 	else:
 		inputs = [QueryInput(label, file) for label, file in zip_strict(file_labels, files)]
 
-	query_sigs = find_kmers_in_files(
+	query_sigs = calc_file_signatures(
 		db.signatures.kmerspec,
 		files,
 		progress=pconf.update(desc='Parsing input'),
