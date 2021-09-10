@@ -1,19 +1,136 @@
 """Search for k-mer matches in sequence data."""
 
-from typing import Union, Optional, List, Sequence
+from typing import Union, Optional, List, Sequence, Iterator
 from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from contextlib import nullcontext
 
 import numpy as np
 from Bio import SeqIO
+from Bio.Seq import Seq
+from attr import attrs, attrib
 
 from gambit.kmers import NUCLEOTIDES, KmerSpec, KmerSignature, dense_to_sparse, kmer_to_index, reverse_complement
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
 
 
-def calc_signature(kspec: KmerSpec,
-                   seq: Union[bytes, str],
+#: Sequence types accepted for k-mer search / signature calculation.
+DNASeq = Union[str, bytes, Seq]
+
+
+@attrs(slots=True)
+class KmerMatch:
+	"""Represents a
+
+	Attributes
+	----------
+	kmerspec
+		K-mer spec used for search.
+	seq
+		The sequence searched within.
+	pos
+		Index of first nucleotide of prefix in ``seq``.
+	reverse
+		If the match is on the reverse strand.
+	"""
+	kmerspec: KmerSpec = attrib()
+	seq: DNASeq = attrib()
+	pos: int = attrib()
+	reverse: bool = attrib()
+
+	def kmer_indices(self) -> slice:
+		"""Index range for k-mer in sequence (without prefix)."""
+		if self.reverse:
+			return slice(self.pos - self.kmerspec.total_len + 1, self.pos - self.kmerspec.prefix_len + 1)
+		else:
+			return slice(self.pos + self.kmerspec.prefix_len, self.pos + self.kmerspec.total_len)
+
+	def full_indices(self) -> slice:
+		"""Index range for prefix plus k-mer in sequence."""
+		if self.reverse:
+			return slice(self.pos - self.kmerspec.total_len + 1, self.pos + 1)
+		else:
+			return slice(self.pos, self.pos + self.kmerspec.total_len)
+
+	def kmer(self) -> bytes:
+		"""Get matched k-mer sequence."""
+		kmer = self.seq[self.kmer_indices()]
+		if not isinstance(kmer, bytes):
+			kmer = kmer.encode('ascii')
+		return reverse_complement(kmer) if self.reverse else kmer
+
+	def kmer_index(self) -> int:
+		"""Get index of matched k-mer.
+
+		Raises
+		------
+		ValueError
+			If the k-mer contains invalid nucleotides.
+		"""
+		return kmer_to_index(self.kmer())
+
+
+def find_kmers(kmerspec: KmerSpec, seq: DNASeq) -> Iterator[KmerMatch]:
+	"""Locate k-mers with the given prefix in a DNA sequence.
+
+	Searches sequence both backwards and forwards (reverse complement). The sequence may contain
+	invalid characters (not one of the four nucleotide codes) which will simply not be matched.
+
+	Parameters
+	----------
+	kmerspec
+		K-mer spec to use for search.
+	seq
+		Sequence to search within. Lowercase characters are OK and will be matched as uppercase.
+
+	Returns
+	-------
+	Iterator[KmerMatch]
+		Iterator of :class:`.KmerMatch` objects.
+	"""
+
+	# Convert to uppercase only if needed
+	nucs_lower = set(NUCLEOTIDES.lower())
+	if not isinstance(seq, bytes):
+		nucs_lower = set(map(chr, nucs_lower))
+
+	for char in seq:
+		if char in nucs_lower:
+			seq = seq.upper()
+			break
+
+	# Find forward
+	needle_fwd = kmerspec.prefix if isinstance(seq, bytes) else kmerspec.prefix_str
+	start = 0
+
+	while True:
+		loc = seq.find(needle_fwd, start, -kmerspec.k)
+		if loc < 0:
+			break
+
+		yield KmerMatch(kmerspec, seq, loc, False)
+
+		start = loc + 1
+
+	# Find reverse
+	needle_rev = reverse_complement(kmerspec.prefix)
+	if not isinstance(seq, bytes):
+		needle_rev = needle_rev.decode('ascii')
+
+	start = kmerspec.k
+
+	while True:
+		loc = seq.find(needle_rev, start)
+		if loc < 0:
+			break
+
+		yield KmerMatch(kmerspec, seq, loc + kmerspec.prefix_len - 1, True)
+
+		start = loc + 1
+
+
+def calc_signature(kmerspec: KmerSpec,
+                   seq: DNASeq,
                    *,
                    sparse: bool = True,
                    dense_out: Optional[np.ndarray] = None,
@@ -25,11 +142,10 @@ def calc_signature(kspec: KmerSpec,
 
 	Parameters
 	----------
-	kspec : .KmerSpec
+	kmerspec : .KmerSpec
 		K-mer spec to use for search.
 	seq
-		Sequence to search within as ``bytes`` or ``str``. If ``str`` will be encoded as ASCII.
-		Lower-case characters are OK and will be matched as upper-case.
+		Sequence to search within. Lowercase characters are OK and will be matched as uppercase.
 	dense_out : numpy.ndarray
 		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.nkmers``.
 		Note that this is still used as working space even if ``sparse=True``. Should be zeroed
@@ -50,81 +166,19 @@ def calc_signature(kspec: KmerSpec,
 	.calc_signature_parse
 	"""
 	if dense_out is None:
-		dense_out = np.zeros(kspec.nkmers, dtype=bool)
+		dense_out = np.zeros(kmerspec.nkmers, dtype=bool)
 
-	# Convert sequence to bytes
-	if not isinstance(seq, bytes):
-		if not isinstance(seq, str):
-			seq = str(seq)
-
-		seq = seq.encode('ascii')
-
-	# Convert to upper-case only if needed
-	nucs_lower = set(NUCLEOTIDES.lower())
-	for char in seq:
-		if char in nucs_lower:
-			seq = seq.upper()
-			break
-
-	_calc_signature(kspec, seq, dense_out)
+	for match in find_kmers(kmerspec, seq):
+		try:
+			i = match.kmer_index()
+		except ValueError:
+			continue
+		dense_out[i] = 1
 
 	if sparse:
 		return dense_to_sparse(dense_out)
 	else:
 		return dense_out
-
-
-def _calc_signature(kspec, seq, out):
-	"""Actual implementation of calc_signature.
-
-	Parameters
-	----------
-	kspec : KmerSpec
-	seq : bytes
-		Upper-case ASCII nucleotide codes.
-	out : np.ndarray
-		Write dense output to this array.
-	"""
-
-	# Reverse complement of prefix
-	rcprefix = reverse_complement(kspec.prefix)
-
-	# Search forward
-	start = 0
-	while True:
-		loc = seq.find(kspec.prefix, start, -kspec.k)
-		if loc < 0:
-			break
-
-		kmer = seq[loc + kspec.prefix_len:loc + kspec.total_len]
-		if not isinstance(kmer, bytes):
-			kmer = str(kmer).encode('ascii')
-
-		try:
-			out[kmer_to_index(kmer)] = 1
-		except ValueError:
-			pass
-
-		start = loc + 1
-
-	# Search backward
-	start = kspec.k
-	while True:
-		loc = seq.find(rcprefix, start)
-		if loc < 0:
-			break
-
-		rckmer = seq[loc - kspec.k:loc]
-		if not isinstance(rckmer, bytes):
-			rckmer = str(rckmer).encode('ascii')
-		kmer = reverse_complement(rckmer)
-
-		try:
-			out[kmer_to_index(kmer)] = 1
-		except ValueError:
-			pass
-
-		start = loc + 1
 
 
 def calc_signature_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True, dense_out: Optional[np.ndarray] = None) -> np.ndarray:

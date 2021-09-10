@@ -4,10 +4,13 @@ from io import StringIO
 
 import pytest
 import numpy as np
-from Bio import Seq, SeqIO
+from Bio import SeqIO
+from Bio.Seq import Seq
 
-from gambit.search import calc_signature, calc_signature_parse, calc_file_signature, calc_file_signatures
-from gambit.kmers import KmerSpec, reverse_complement, dense_to_sparse, sparse_to_dense, index_to_kmer
+from gambit.search import find_kmers, calc_signature, calc_signature_parse, calc_file_signature, \
+	calc_file_signatures
+from gambit.kmers import KmerSpec, reverse_complement, dense_to_sparse, sparse_to_dense, \
+	index_to_kmer, kmer_to_index, NUCLEOTIDES
 from gambit.test import fill_bytearray, make_kmer_seq, check_progress
 
 from gambit.io.seq import SequenceFile
@@ -46,7 +49,7 @@ def create_sequence_records(kspec, n, seq_len=10000):
 
 		# Create the BioPython sequence record object
 		records.append(SeqIO.SeqRecord(
-			seq=Seq.Seq(seq.decode('ascii')),
+			seq=Seq(seq.decode('ascii')),
 			id='SEQ{}'.format(i + 1),
 			description='sequence {}'.format(i + 1),
 		))
@@ -54,89 +57,157 @@ def create_sequence_records(kspec, n, seq_len=10000):
 	return records, vec
 
 
-class TestCalcSignature:
+def convert_seq(seq, t: type):
+	if isinstance(seq, t):
+		return seq
+
+	if t is bytes:
+		return seq.encode('ascii')
+
+	if isinstance(seq, bytes):
+		seq = seq.decode('ascii')
+
+	if t is str:
+		return str(seq)
+	elif t is Seq:
+		return Seq(seq)
+	else:
+		assert 0
+
+
+@pytest.fixture(params=[bytes, str, Seq])
+def seq_type(request):
+	return request.param
+
+
+def test_find_kmers(seq_type):
+	"""Test the find_kmers() function and KmerMatch class."""
+
+	kspec = KmerSpec(11, 'ATGAC')
+
+	np.random.seed(0)
+	seq, sig = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
+	seq = convert_seq(seq, seq_type)
+
+	found = []
+
+	for match in find_kmers(kspec, seq):
+		assert match.kmerspec is kspec
+		assert match.seq is seq
+
+		kmer_indices = match.kmer_indices()
+		full_indices = match.full_indices()
+
+		assert kmer_indices.stop - kmer_indices.start == kspec.k
+		assert full_indices.stop - full_indices.start == kspec.total_len
+		if match.reverse:
+			assert full_indices.start == kmer_indices.start
+		else:
+			assert full_indices.stop == kmer_indices.stop
+
+		matched = convert_seq(seq[kmer_indices], bytes)
+		if match.reverse:
+			matched = reverse_complement(matched)
+
+		matched_full = convert_seq(seq[full_indices], bytes)
+		if match.reverse:
+			matched_full = reverse_complement(matched_full)
+
+		assert matched_full == kspec.prefix + matched
+		assert match.kmer() == matched
+
+		try:
+			index = kmer_to_index(matched)
+		except ValueError:
+			assert any(c not in NUCLEOTIDES for c in matched.upper())
+			continue
+
+		assert match.kmer_index() == index
+		found.append(index)
+
+	assert np.array_equal(sorted(found), sig)
+
+
+@pytest.mark.parametrize('sparse', [True, False])
+def test_calc_signature(sparse, seq_type):
 	"""Test the calc_signature() function."""
 
-	@pytest.mark.parametrize('sparse', [True, False])
-	def test_basic(self, sparse):
-		"""Test general k-mer finding."""
+	kspec = KmerSpec(11, 'ATGAC')
 
-		kspec = KmerSpec(11, 'ATGAC')
+	np.random.seed(0)
+	seq_bytes, signature = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
+	seq = convert_seq(seq_bytes, seq_type)
+	expected = signature if sparse else sparse_to_dense(kspec, signature)
 
-		np.random.seed(0)
-		seq, signature = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
-		expected = signature if sparse else sparse_to_dense(kspec, signature)
+	# Test normal
+	result = calc_signature(kspec, seq, sparse=sparse)
+	assert np.array_equal(result, expected)
 
-		# Test normal
-		result = calc_signature(kspec, seq, sparse=sparse)
-		assert np.array_equal(result, expected)
+	# Test reverse complement
+	rcseq = convert_seq(reverse_complement(seq_bytes), seq_type)
+	result = calc_signature(kspec, rcseq, sparse=sparse)
+	assert np.array_equal(result, expected)
 
-		# Test reverse complement
-		result = calc_signature(kspec, reverse_complement(seq), sparse=sparse)
-		assert np.array_equal(result, expected)
+	# Test lower case
+	result = calc_signature(kspec, seq.lower(), sparse=sparse)
+	assert np.array_equal(result, expected)
 
-		# Test lower case
-		result = calc_signature(kspec, seq.lower(), sparse=sparse)
-		assert np.array_equal(result, expected)
 
-		# Test string argument
-		result = calc_signature(kspec, seq.decode('ascii'), sparse=sparse)
-		assert np.array_equal(result, expected)
+def test_bounds():
+	"""Test k-mer finding at beginning and end of sequence to catch errors with search bounds."""
 
-	def test_bounds(self):
-		"""Test k-mer finding at beginning and end of sequence to catch errors with search bounds."""
+	# Sequence of all ATN's
+	seqlen = 100000
+	seq_array = fill_bytearray(b'ATN', seqlen)
 
-		# Sequence of all ATN's
-		seqlen = 100000
-		seq_array = fill_bytearray(b'ATN', seqlen)
+	# Choose prefix with nucleotides not found in sequence "background"
+	kspec = KmerSpec(11, b'CCGGG')
 
-		# Choose prefix with nucleotides not found in sequence "background"
-		kspec = KmerSpec(11, b'CCGGG')
+	# Add at beginning
+	seq_array[0:kspec.prefix_len] = kspec.prefix
+	seq_array[kspec.prefix_len:kspec.total_len] = index_to_kmer(0, kspec.k)
 
-		# Add at beginning
-		seq_array[0:kspec.prefix_len] = kspec.prefix
-		seq_array[kspec.prefix_len:kspec.total_len] = index_to_kmer(0, kspec.k)
+	# Add at end
+	seq_array[-kspec.total_len:-kspec.k] = kspec.prefix
+	seq_array[-kspec.k:] = index_to_kmer(1, kspec.k)
 
-		# Add at end
-		seq_array[-kspec.total_len:-kspec.k] = kspec.prefix
-		seq_array[-kspec.k:] = index_to_kmer(1, kspec.k)
+	seq = bytes(seq_array)
+	found = calc_signature(kspec, seq)
 
-		seq = bytes(seq_array)
-		found = calc_signature(kspec, seq)
+	assert np.array_equal(found, [0, 1])
 
-		assert np.array_equal(found, [0, 1])
 
-	def test_overlapping(self):
-		"""Test k-mer finding when k-mers overlap with each other.
+def test_overlapping():
+	"""Test k-mer finding when k-mers overlap with each other.
 
-		The test sequence is manually designed to have a variety of overlapping
-		forwards and backwards matches
-		"""
+	The test sequence is manually designed to have a variety of overlapping
+	forwards and backwards matches
+	"""
 
-		kspec = KmerSpec(11, b'GCCGG')
+	kspec = KmerSpec(11, b'GCCGG')
 
-		seq = b'ATATGCCGGCCGGATTATATAGCCGGCATTACATCCGATAGGATCCGGCAATAA'
-		#      |    |>>>>...........
-		#      |        |>>>>........... (forward match which overlaps prefix)
-		#      |                     |>>>>........... (another overlapping forward match)
-		#      |....<<<<| (backward match for prefix, but too close to end)
-		#      |           ...........<<<<|
-		#      |                                 ...........<<<<|
+	seq = b'ATATGCCGGCCGGATTATATAGCCGGCATTACATCCGATAGGATCCGGCAATAA'
+	#      |    |>>>>...........
+	#      |        |>>>>........... (forward match which overlaps prefix)
+	#      |                     |>>>>........... (another overlapping forward match)
+	#      |....<<<<| (backward match for prefix, but too close to end)
+	#      |           ...........<<<<|
+	#      |                                 ...........<<<<|
 
-		expected = {
-			b'CCGGATTATAT',
-			b'ATTATATAGCC',
-			b'CATTACATCCG',
-			reverse_complement(b'GGATTATATAG'),
-			reverse_complement(b'TCCGATAGGAT'),
-		}
+	expected = {
+		b'CCGGATTATAT',
+		b'ATTATATAGCC',
+		b'CATTACATCCG',
+		reverse_complement(b'GGATTATATAG'),
+		reverse_complement(b'TCCGATAGGAT'),
+	}
 
-		for s in [seq, reverse_complement(seq)]:
-			sig = calc_signature(kspec, s)
-			found = [index_to_kmer(idx, kspec.k) for idx in sig]
+	for s in [seq, reverse_complement(seq)]:
+		sig = calc_signature(kspec, s)
+		found = [index_to_kmer(idx, kspec.k) for idx in sig]
 
-			assert len(found) == len(expected)
-			assert all(kmer in expected for kmer in found)
+		assert len(found) == len(expected)
+		assert all(kmer in expected for kmer in found)
 
 
 class TestCalcFileSignatures:
