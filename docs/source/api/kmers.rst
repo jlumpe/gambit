@@ -11,6 +11,8 @@ gambit.kmers
 
    .. autofunction:: gambit.kmers.kmer_to_index
 
+   .. autofunction:: gambit.kmers.kmer_to_index_rc
+
    .. autofunction:: gambit.kmers.index_to_kmer
 
    .. autofunction:: gambit.kmers.reverse_complement

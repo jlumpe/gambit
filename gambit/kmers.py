@@ -16,7 +16,7 @@ from typing import Sequence, Union, NewType, Dict, Any
 import numpy as np
 from attr import attrs, attrib
 
-from gambit._cython.kmers import kmer_to_index, index_to_kmer, reverse_complement
+from gambit._cython.kmers import kmer_to_index, kmer_to_index_rc, index_to_kmer, reverse_complement
 from gambit.io.json import Jsonable
 
 

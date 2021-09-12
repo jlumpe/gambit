@@ -73,6 +73,61 @@ cdef np.uint64_t c_kmer_to_index(const CHAR[:] kmer) nogil except? 0:
 	return idx
 
 
+def kmer_to_index_rc(kmer):
+	"""kmer_to_index_rc(kmer)
+
+	Get the integer index of the reverse complement of a k-mer.
+
+	Parameters
+	----------
+	kmer : Union[str, bytes, bytearray]
+		K-mer as string or bytes.
+
+	Returns
+	-------
+	int
+		Index of k-mer's reverse complement.
+
+	Raises
+	------
+	ValueError
+		If an invalid nucleotide code is encountered.
+	"""
+	if isinstance(kmer, str):
+		kmer = kmer.encode('ascii')
+	if isinstance(kmer, (bytes, bytearray)):
+		return c_kmer_to_index_rc(kmer)
+	raise TypeError(f'Expected str, bytes, or bytearray, got {type(kmer)}')
+
+cdef np.uint64_t c_kmer_to_index_rc(const CHAR[:] kmer) nogil except? 0:
+	cdef:
+		np.uint64_t idx = 0
+		int i, k = kmer.shape[0]
+		CHAR nuc
+
+	if k > 32:
+		raise ValueError('k must be <= 32')
+
+	for i in range(k):
+		nuc = kmer[k - i - 1]
+
+		idx <<= 2
+
+		nuc &= 0b11011111  # To upper case
+		if nuc == 'A':
+			idx += 3
+		elif nuc == 'C':
+			idx += 2
+		elif nuc == 'G':
+			idx += 1
+		elif nuc == 'T':
+			idx += 0
+		else:
+			raise ValueError(nuc)
+
+	return idx
+
+
 def index_to_kmer(np.uint64_t index, int k):
 	"""index_to_kmer(index, k)
 
