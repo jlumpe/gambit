@@ -158,8 +158,8 @@ def index_to_kmer(np.uint64_t index, int k):
 		free(buf)
 
 
-def reverse_complement(bytes seq):
-	"""reverse_complement(seq)
+def revcomp(bytes seq):
+	"""revcomp(seq)
 
 	Get the reverse complement of a nucleotide sequence.
 
@@ -180,7 +180,7 @@ def reverse_complement(bytes seq):
 		char* buf = <char*>malloc((l + 1) * sizeof(char))
 
 	try:
-		c_reverse_complement(seq, l, buf)
+		c_revcomp(seq, l, buf)
 		buf[l] = 0  # Null-terminate it
 		return <bytes>buf
 
@@ -251,7 +251,7 @@ cdef inline char nuc_complement(char nuc) nogil:
 		return nuc
 
 
-cdef void c_reverse_complement(const char* seq, int l, char* out) nogil:
+cdef void c_revcomp(const char* seq, int l, char* out) nogil:
 	"""Get the reverse complement of a nucleotide sequence.
 
 	Parameters

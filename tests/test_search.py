@@ -9,7 +9,7 @@ from Bio.Seq import Seq
 
 from gambit.search import find_kmers, calc_signature, calc_signature_parse, calc_file_signature, \
 	calc_file_signatures
-from gambit.kmers import KmerSpec, reverse_complement, dense_to_sparse, sparse_to_dense, \
+from gambit.kmers import KmerSpec, revcomp, dense_to_sparse, sparse_to_dense, \
 	index_to_kmer, kmer_to_index, NUCLEOTIDES
 from gambit.test import fill_bytearray, make_kmer_seq, check_progress
 
@@ -107,11 +107,11 @@ def test_find_kmers(seq_type):
 
 		matched = convert_seq(seq[kmer_indices], bytes)
 		if match.reverse:
-			matched = reverse_complement(matched)
+			matched = revcomp(matched)
 
 		matched_full = convert_seq(seq[full_indices], bytes)
 		if match.reverse:
-			matched_full = reverse_complement(matched_full)
+			matched_full = revcomp(matched_full)
 
 		assert matched_full == kspec.prefix + matched
 		assert match.kmer() == matched
@@ -144,7 +144,7 @@ def test_calc_signature(sparse, seq_type):
 	assert np.array_equal(result, expected)
 
 	# Test reverse complement
-	rcseq = convert_seq(reverse_complement(seq_bytes), seq_type)
+	rcseq = convert_seq(revcomp(seq_bytes), seq_type)
 	result = calc_signature(kspec, rcseq, sparse=sparse)
 	assert np.array_equal(result, expected)
 
@@ -198,11 +198,11 @@ def test_overlapping():
 		b'CCGGATTATAT',
 		b'ATTATATAGCC',
 		b'CATTACATCCG',
-		reverse_complement(b'GGATTATATAG'),
-		reverse_complement(b'TCCGATAGGAT'),
+		revcomp(b'GGATTATATAG'),
+		revcomp(b'TCCGATAGGAT'),
 	}
 
-	for s in [seq, reverse_complement(seq)]:
+	for s in [seq, revcomp(seq)]:
 		sig = calc_signature(kspec, s)
 		found = [index_to_kmer(idx, kspec.k) for idx in sig]
 

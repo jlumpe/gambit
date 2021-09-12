@@ -4,8 +4,7 @@ import pytest
 import numpy as np
 
 from gambit import kmers
-from gambit.kmers import KmerSpec, nkmers
-from gambit._cython.kmers import reverse_complement
+from gambit.kmers import KmerSpec, nkmers, revcomp
 import gambit.io.json as gjson
 from gambit.test import random_seq
 
@@ -156,7 +155,7 @@ def test_dense_sparse_conversion():
 		assert np.array_equal(vec, kmers.sparse_to_dense(kspec, coords))
 
 
-def check_reverse_complement(seq, rc):
+def check_revcomp(seq, rc):
 	"""Assert the reverse complement of a sequence is correct."""
 	l = len(seq)
 	for i in range(l):
@@ -164,33 +163,33 @@ def check_reverse_complement(seq, rc):
 
 
 def test_revcomp():
-	"""Test gambit._cython.kmers.reverse_complement."""
+	"""Test gambit._cython.kmers.revcomp."""
 
 	# Check empty
-	assert reverse_complement(b'') == b''
+	assert revcomp(b'') == b''
 
 	# Check one-nucleotide values
 	for nuc1, nuc2 in NUC_COMPLEMENTS.items():
 		b1, b2 = [bytes([n]) for n in [nuc1, nuc2]]
-		assert reverse_complement(b1) == b2
-		assert reverse_complement(b1.lower()) == b2.lower()
+		assert revcomp(b1) == b2
+		assert revcomp(b1.lower()) == b2.lower()
 
 	# Check single invalid code
-	assert reverse_complement(b'N') == b'N'
-	assert reverse_complement(b'n') == b'n'
+	assert revcomp(b'N') == b'N'
+	assert revcomp(b'n') == b'n'
 
 	# Check all 6-mers
 	k = 6
 	for i in range(nkmers(k)):
 		kmer = kmers.index_to_kmer(i, k)
 
-		rc = reverse_complement(kmer)
+		rc = revcomp(kmer)
 
-		check_reverse_complement(rc, kmer)
-		check_reverse_complement(rc.lower(), kmer.lower())
+		check_revcomp(rc, kmer)
+		check_revcomp(rc.lower(), kmer.lower())
 
-		assert reverse_complement(rc) == kmer
-		assert reverse_complement(rc.lower()) == kmer.lower()
+		assert revcomp(rc) == kmer
+		assert revcomp(rc.lower()) == kmer.lower()
 
 	# Check longer seqs with invalid nucleotides
 	seq = bytearray(b'ATGCatgc')
@@ -201,10 +200,10 @@ def test_revcomp():
 		array[i] = ord(b'N')
 		seq2 = bytes(array)
 
-		rc = reverse_complement(seq2)
+		rc = revcomp(seq2)
 
-		check_reverse_complement(rc, seq2)
-		assert reverse_complement(rc) == seq2
+		check_revcomp(rc, seq2)
+		assert revcomp(rc) == seq2
 
 
 class TestKmerSpecConversion:

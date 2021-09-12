@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from gambit.test import make_signatures, random_seq, fill_bytearray, make_kmer_seq, check_progress
-from gambit.kmers import KmerSpec, reverse_complement, kmer_to_index, dense_to_sparse, nkmers
+from gambit.kmers import KmerSpec, revcomp, kmer_to_index, dense_to_sparse, nkmers
 from gambit.util.progress import get_progress
 
 
@@ -62,11 +62,11 @@ def test_make_kmer_seq(kspec, seqlen, kmer_interval, n_interval):
 		match = seq[p:(p + kspec.total_len)]
 
 		fwd = match.startswith(kspec.prefix)
-		rev = match.endswith(reverse_complement(kspec.prefix))
+		rev = match.endswith(revcomp(kspec.prefix))
 		assert fwd ^ rev
 
 		if rev:
-			match = reverse_complement(match)
+			match = revcomp(match)
 
 		kmer = match[kspec.prefix_len:]
 		if b'N' not in kmer:

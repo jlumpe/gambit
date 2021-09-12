@@ -9,7 +9,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from attr import attrs, attrib
 
-from gambit.kmers import NUCLEOTIDES, KmerSpec, KmerSignature, dense_to_sparse, kmer_to_index, reverse_complement
+from gambit.kmers import NUCLEOTIDES, KmerSpec, KmerSignature, dense_to_sparse, kmer_to_index, revcomp
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
 
@@ -57,7 +57,7 @@ class KmerMatch:
 		kmer = self.seq[self.kmer_indices()]
 		if not isinstance(kmer, bytes):
 			kmer = kmer.encode('ascii')
-		return reverse_complement(kmer) if self.reverse else kmer
+		return revcomp(kmer) if self.reverse else kmer
 
 	def kmer_index(self) -> int:
 		"""Get index of matched k-mer.
@@ -113,7 +113,7 @@ def find_kmers(kmerspec: KmerSpec, seq: DNASeq) -> Iterator[KmerMatch]:
 		start = loc + 1
 
 	# Find reverse
-	needle_rev = reverse_complement(kmerspec.prefix)
+	needle_rev = revcomp(kmerspec.prefix)
 	if not isinstance(seq, bytes):
 		needle_rev = needle_rev.decode('ascii')
 

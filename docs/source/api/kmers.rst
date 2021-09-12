@@ -15,7 +15,7 @@ gambit.kmers
 
    .. autofunction:: gambit.kmers.index_to_kmer
 
-   .. autofunction:: gambit.kmers.reverse_complement
+   .. autofunction:: gambit.kmers.revcomp
 
 
 gambit.signatures

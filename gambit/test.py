@@ -5,7 +5,7 @@ from contextlib import contextmanager
 
 import numpy as np
 
-from gambit.kmers import KmerSpec, KmerSignature, dense_to_sparse, kmer_to_index, reverse_complement, nkmers
+from gambit.kmers import KmerSpec, KmerSignature, dense_to_sparse, kmer_to_index, revcomp, nkmers
 from gambit.signatures import SignatureArray
 from gambit.query import QueryResultItem
 from gambit.classify import ClassifierResult, GenomeMatch
@@ -142,7 +142,7 @@ def make_kmer_seq(kspec: KmerSpec, seqlen: int, kmer_interval: int, n_interval: 
 		# Pick random k-mer, but make sure its reverse complement doesn't cause another match.
 		while True:
 			kmer = random_seq(kspec.k)
-			if not kmer.endswith(reverse_complement(kspec.prefix)):
+			if not kmer.endswith(revcomp(kspec.prefix)):
 				break
 
 		# Every so often add an N just to throw things off
@@ -158,7 +158,7 @@ def make_kmer_seq(kspec: KmerSpec, seqlen: int, kmer_interval: int, n_interval: 
 
 		# Reverse every other match
 		if i % 2 == 1:
-			match = reverse_complement(match)
+			match = revcomp(match)
 
 		seq_array[p:p + kspec.total_len] = match
 
