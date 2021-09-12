@@ -18,21 +18,59 @@ COORDS_DTYPES = frozenset(map(np.dtype, [
 ]))
 
 
-def kmer_to_index(bytes kmer):
+def kmer_to_index(kmer):
 	"""kmer_to_index(kmer)
 
-	Convert k-mer byte string into index.
+	Convert k-mer byte string to its integer index.
 
 	Parameters
 	----------
-	kmer : bytes
-		K-mer as bytes string.
+	kmer : Union[str, bytes, bytearray]
+		K-mer as string or bytes.
 
 	Returns
 	-------
-		K-mer index as appropriate numpy integer type.
+	int
+		Index of k-mer.
+
+	Raises
+	------
+	ValueError
+		If an invalid nucleotide code is encountered.
 	"""
-	return c_kmer_to_index64(<char*>kmer, len(kmer))
+	if isinstance(kmer, str):
+		kmer = kmer.encode('ascii')
+	if isinstance(kmer, (bytes, bytearray)):
+		return c_kmer_to_index(kmer)
+	raise TypeError(f'Expected str, bytes, or bytearray, got {type(kmer)}')
+
+cdef np.uint64_t c_kmer_to_index(const CHAR[:] kmer) nogil except? 0:
+	cdef:
+		np.uint64_t idx = 0
+		int i, k = kmer.shape[0]
+		CHAR nuc
+
+	if k > 32:
+		raise ValueError('k must be <= 32')
+
+	for i in range(k):
+		nuc = kmer[i]
+
+		idx <<= 2
+
+		nuc &= 0b11011111  # To upper case
+		if nuc == 'A':
+			idx += 0
+		elif nuc == 'C':
+			idx += 1
+		elif nuc == 'G':
+			idx += 2
+		elif nuc == 'T':
+			idx += 3
+		else:
+			raise ValueError(nuc)
+
+	return idx
 
 
 def index_to_kmer(np.uint64_t index, int k):
@@ -93,96 +131,6 @@ def reverse_complement(bytes seq):
 
 	finally:
 		free(buf)
-
-
-cdef np.uint32_t c_kmer_to_index32(const char *kmer, int k) except? 0:
-	"""Convert k-mer byte string into 32-bit unsigned integer index.
-
-	Parameters
-	----------
-	kmer
-		Pointer to k-mer string.
-	k
-		Length of k-mer string. Must be <= 16.
-		
-	Returns
-	-------
-		Index of k-mer
-
-	Raises
-	------
-	ValueError
-		If an invalid nucleotide code is encountered.
-	"""
-
-	cdef:
-		np.uint32_t idx = 0
-		char c
-
-	if k > 16:
-		raise ValueError('k must be <= 16')
-
-	for i in range(k):
-		idx <<= 2
-
-		c = kmer[i] & 0b11011111  # To upper case
-		if c == <char>'A':
-			idx += 0
-		elif c == <char>'C':
-			idx += 1
-		elif c == <char>'G':
-			idx += 2
-		elif c == <char>'T':
-			idx += 3
-		else:
-			raise ValueError(kmer[i])
-
-	return idx
-
-
-cdef np.uint64_t c_kmer_to_index64(const char *kmer, int k) except? 0:
-	"""Convert k-mer byte string into 64-bit unsigned integer index.
-
-	Parameters
-	----------
-	kmer
-		Pointer to k-mer string.
-	k
-		Length of k-mer string. Must be <= 32.
-	
-	Returns
-	-------
-		Index of k-mer
-
-	Raises
-	------
-	ValueError
-		If an invalid nucleotide code is encountered.
-	"""
-
-	cdef:
-		np.uint64_t idx = 0
-		char c
-
-	if k > 32:
-		raise ValueError('k must be <= 32')
-
-	for i in range(k):
-		idx <<= 2
-
-		c = kmer[i] & 0b11011111  # To upper case
-		if c == <char>'A':
-			idx += 0
-		elif c == <char>'C':
-			idx += 1
-		elif c == <char>'G':
-			idx += 2
-		elif c == <char>'T':
-			idx += 3
-		else:
-			raise ValueError(kmer[i])
-
-	return idx
 
 
 cdef void c_index_to_kmer(COORDS_T index, int k, char* out) nogil:
