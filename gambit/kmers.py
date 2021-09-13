@@ -91,16 +91,9 @@ def index_dtype(k: int) -> np.dtype:
 		return None
 
 
-@attrs(frozen=True, repr=False, cmp=False)
+@attrs(frozen=True, repr=False, cmp=False, init=False)
 class KmerSpec(Jsonable):
 	"""Specifications for a k-mer search operation.
-
-	Parameters
-	----------
-	k : int
-		Value of :attr:`k` attribute.
-	prefix : str or bytes
-		Value of :attr:`prefix` attribute. If ``str`` and not ``bytes`` will be encoded as ascii.
 
 	Attributes
 	----------
@@ -123,30 +116,37 @@ class KmerSpec(Jsonable):
 		Smallest unsigned integer dtype that can store k-mer indices.
 	"""
 	k: int = attrib()
-	prefix: bytes = attrib(
-		converter=lambda v: v.upper().encode('ascii') if isinstance(v, str) else v,
-	)
-	prefix_str: str
-	prefix_len: int
-	total_len: int
-	nkmers: int
-	index_dtype: np.dtype
+	prefix: bytes = attrib()
+	prefix_str: str = attrib()
+	prefix_len: int = attrib()
+	total_len: int = attrib()
+	nkmers: int = attrib()
+	index_dtype: np.dtype = attrib()
 
-	@k.validator
-	def _validate_k(self, attribute, value):
-		if value < 1:
+	def __init__(self, k: int, prefix: DNASeq):
+		"""
+		Parameters
+		----------
+		k
+			Value of :attr:`k` attribute.
+		prefix
+			Value of :attr:`prefix` attribute. Will be converted to ``bytes``.
+		"""
+		if k < 1:
 			raise ValueError('k must be positive')
 
-	@prefix.validator
-	def _validate_prefix(self, attribute, value):
-		validate_dna_seq_bytes(value)
+		prefix = seq_to_bytes(prefix).upper()
+		validate_dna_seq_bytes(prefix)
 
-	def __attrs_post_init__(self):
-		object.__setattr__(self, 'prefix_str', self.prefix.decode('ascii'))
-		object.__setattr__(self, 'prefix_len', len(self.prefix))
-		object.__setattr__(self, 'total_len', self.k + self.prefix_len)
-		object.__setattr__(self, 'nkmers', nkmers(self.k))
-		object.__setattr__(self, 'index_dtype', index_dtype(self.k))
+		self.__attrs_init__(
+			k=k,
+			prefix=prefix,
+			prefix_str=prefix.decode('ascii'),
+			prefix_len=len(prefix),
+			total_len=k + len(prefix),
+			nkmers=nkmers(k),
+			index_dtype=index_dtype(k),
+		)
 
 	def __get_newargs__(self):
 		return self.k, self.prefix

@@ -2,6 +2,7 @@
 
 import pytest
 import numpy as np
+from Bio.Seq import Seq
 
 from gambit import kmers
 from gambit.kmers import KmerSpec
@@ -20,6 +21,14 @@ NUC_COMPLEMENTS = {
 	103: 99,
 	99: 103,
 }
+
+SEQ_TYPES = [str, bytes, bytearray, Seq]
+
+def seq_to_type(seq, type):
+	seq = kmers.seq_to_bytes(seq)
+	if type is str:
+		return seq.decode('ascii')
+	return type(seq)
 
 
 class TestIndices:
@@ -71,12 +80,16 @@ class TestKmerSpec:
 
 	def test_constructor(self):
 		# Prefix conversion
-		assert KmerSpec(11, b'ATGAC').prefix == b'ATGAC'
-		assert KmerSpec(11, 'ATGAC').prefix == b'ATGAC'
-		assert KmerSpec(11, 'atgac').prefix == b'ATGAC'
+		for T in SEQ_TYPES:
+			assert KmerSpec(11, seq_to_type('ATGAC', T)).prefix == b'ATGAC'
+			assert KmerSpec(11, seq_to_type('atgac', T)).prefix == b'ATGAC'
+
+		# Invalid k
+		with pytest.raises(ValueError):
+			KmerSpec(0, 'ATGAC')
 
 		# Invalid prefix
-		for prefix in [b'ATGAX', 'ATGAX', b'ATGAc']:
+		for prefix in [b'ATGAX', 'ATGAX']:
 			with pytest.raises(ValueError):
 				KmerSpec(11, prefix)
 
