@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from gambit import kmers
-from gambit.kmers import KmerSpec, nkmers, revcomp
+from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
 from gambit.test import random_seq
 
@@ -22,52 +22,48 @@ NUC_COMPLEMENTS = {
 }
 
 
-def make_kmerspec(k):
-	"""Create a KmerSpec with some arbitrary prefix."""
-	return KmerSpec(k, 'ATGC')
+class TestIndices:
+	"""Test representation of k-mers by their indices."""
 
+	def test_index_dtype(self):
+		"""Test index_dtype() function."""
 
-def test_kmer_index_dtype():
-	"""Test index_dtype function."""
+		# Try k from 0 to 32 (all have dtypes)
+		for k in range(33):
+			# Check dtype can store the largest index
+			top_idx = kmers.nkmers(k) - 1
+			assert kmers.index_dtype(k).type(top_idx) == top_idx
 
-	# Try k from 0 to 32 (all have dtypes)
-	for k in range(33):
-		# Check dtype can store the largest index
-		top_idx = nkmers(k) - 1
-		assert kmers.index_dtype(k).type(top_idx) == top_idx
+		# k > 32 should have no dtype
+		assert kmers.index_dtype(33) is None
 
-	# k > 32 should have no dtype
-	assert kmers.index_dtype(33) is None
+	def test_nucleotide_order(self):
+		"""Check k-mer indices correspond to defined nucleotide order."""
 
+		for i, nuc in enumerate(kmers.NUCLEOTIDES):
+			assert kmers.kmer_to_index(bytes([nuc])) == i
 
-def test_nucleotide_order():
-	"""Check k-mer indices correspond to defined nucleotide order."""
+	def test_index_conversion(self):
+		"""Test converting k-mers to and from their indices."""
 
-	for i, nuc in enumerate(kmers.NUCLEOTIDES):
-		assert kmers.kmer_to_index(bytes([nuc])) == i
+		# Test for k in range 0-10
+		for k in range(11):
 
+			# Test all indices to max of 1000
+			for index in range(min(kmers.nkmers(k), 1000)):
 
-def test_index_conversion():
-	"""Test converting k-mers to and from their indices."""
+				kmer = kmers.index_to_kmer(index, k)
 
-	# Test for k in range 0-10
-	for k in range(11):
+				# Check k-mer is of correct length
+				assert len(kmer) == k
 
-		# Test all indices to max of 1000
-		for index in range(min(nkmers(k), 1000)):
+				# Check converting back, both cases
+				assert kmers.kmer_to_index(kmer.upper()) == index
+				assert kmers.kmer_to_index(kmer.lower()) == index
 
-			kmer = kmers.index_to_kmer(index, k)
-
-			# Check k-mer is of correct length
-			assert len(kmer) == k
-
-			# Check converting back, both cases
-			assert kmers.kmer_to_index(kmer.upper()) == index
-			assert kmers.kmer_to_index(kmer.lower()) == index
-
-	# Check invalid raises error
-	with pytest.raises(ValueError):
-		kmers.kmer_to_index(b'ATGNC')
+		# Check invalid raises error
+		with pytest.raises(ValueError):
+			kmers.kmer_to_index(b'ATGNC')
 
 
 class TestKmerSpec:
@@ -90,7 +86,7 @@ class TestKmerSpec:
 		# Try k from 1 to 32 (all have dtypes)
 		for k in range(1, 33):
 
-			spec = make_kmerspec(k)
+			spec = KmerSpec(k, 'ATGAC')
 
 			# Check length attributes
 			assert spec.prefix_len == len(spec.prefix)
@@ -134,7 +130,7 @@ def test_dense_sparse_conversion():
 
 	for k in range(1, 10):
 
-		kspec = make_kmerspec(k)
+		kspec = KmerSpec(k, 'ATGAC')
 
 		# Create vector with every 3rd k-mer
 		vec = np.zeros(kspec.nkmers, dtype=bool)
@@ -166,30 +162,30 @@ def test_revcomp():
 	"""Test gambit._cython.kmers.revcomp."""
 
 	# Check empty
-	assert revcomp(b'') == b''
+	assert kmers.revcomp(b'') == b''
 
 	# Check one-nucleotide values
 	for nuc1, nuc2 in NUC_COMPLEMENTS.items():
 		b1, b2 = [bytes([n]) for n in [nuc1, nuc2]]
-		assert revcomp(b1) == b2
-		assert revcomp(b1.lower()) == b2.lower()
+		assert kmers.revcomp(b1) == b2
+		assert kmers.revcomp(b1.lower()) == b2.lower()
 
 	# Check single invalid code
-	assert revcomp(b'N') == b'N'
-	assert revcomp(b'n') == b'n'
+	assert kmers.revcomp(b'N') == b'N'
+	assert kmers.revcomp(b'n') == b'n'
 
 	# Check all 6-mers
 	k = 6
-	for i in range(nkmers(k)):
+	for i in range(kmers.nkmers(k)):
 		kmer = kmers.index_to_kmer(i, k)
 
-		rc = revcomp(kmer)
+		rc = kmers.revcomp(kmer)
 
 		check_revcomp(rc, kmer)
 		check_revcomp(rc.lower(), kmer.lower())
 
-		assert revcomp(rc) == kmer
-		assert revcomp(rc.lower()) == kmer.lower()
+		assert kmers.revcomp(rc) == kmer
+		assert kmers.revcomp(rc.lower()) == kmer.lower()
 
 	# Check longer seqs with invalid nucleotides
 	seq = bytearray(b'ATGCatgc')
@@ -200,10 +196,10 @@ def test_revcomp():
 		array[i] = ord(b'N')
 		seq2 = bytes(array)
 
-		rc = revcomp(seq2)
+		rc = kmers.revcomp(seq2)
 
 		check_revcomp(rc, seq2)
-		assert revcomp(rc) == seq2
+		assert kmers.revcomp(rc) == seq2
 
 
 class TestKmerSpecConversion:
