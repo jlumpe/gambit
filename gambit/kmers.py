@@ -15,6 +15,7 @@ from typing import Sequence, Union, NewType, Dict, Any
 
 import numpy as np
 from attr import attrs, attrib
+from Bio.Seq import Seq
 
 from gambit._cython.kmers import kmer_to_index, kmer_to_index_rc, index_to_kmer, revcomp
 from gambit.io.json import Jsonable
@@ -28,6 +29,29 @@ NUCLEOTIDES = b'ACGT'
 #: Type for k-mer signatures (k-mer sets in sparse coordinate format)
 KmerSignature = NewType('KmerSignature', np.ndarray)
 # TODO - use nptyping package to specify dimensions and data type?
+
+
+#: DNA sequence types accepted for k-mer search / signature calculation.
+DNASeq = Union[str, bytes, bytearray, Seq]
+
+#: Sequence types accepted directly by native (Cython) code.
+DNASeqBytes = Union[bytes, bytearray]
+
+
+def seq_to_bytes(seq: DNASeq) -> DNASeqBytes:
+	"""Convert generic DNA sequence to byte string representation.
+
+	This is for passing sequence data to Cython functions.
+	"""
+	if isinstance(seq, (bytes, bytearray)):
+		return seq
+	if isinstance(seq, str):
+		return seq.encode('ascii')
+	if isinstance(seq, Seq):
+		# This is recommended in the documentation over the deprecated encode() method, also
+		# probably avoids copying any data as it typically just returns the seq._data attribute.
+		return bytes(seq)
+	raise TypeError(f'Expected sequence type, got {type(seq)}')
 
 
 def validate_dna_seq_bytes(seq : bytes):

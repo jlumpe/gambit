@@ -1,21 +1,17 @@
 """Search for k-mer matches in sequence data."""
 
-from typing import Union, Optional, List, Sequence, Iterator
+from typing import Optional, List, Sequence, Iterator
 from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from contextlib import nullcontext
 
 import numpy as np
 from Bio import SeqIO
-from Bio.Seq import Seq
 from attr import attrs, attrib
 
-from gambit.kmers import NUCLEOTIDES, KmerSpec, KmerSignature, dense_to_sparse, kmer_to_index, revcomp
+from gambit.kmers import NUCLEOTIDES, DNASeq, KmerSpec, KmerSignature, dense_to_sparse, \
+	kmer_to_index, revcomp
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
-
-
-#: Sequence types accepted for k-mer search / signature calculation.
-DNASeq = Union[str, bytes, Seq]
 
 
 @attrs(slots=True)
