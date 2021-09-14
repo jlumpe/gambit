@@ -2,12 +2,11 @@
 
 import pytest
 import numpy as np
-from Bio.Seq import Seq
 
 from gambit import kmers
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
-from gambit.test import random_seq
+from gambit.test import random_seq, SEQ_TYPES, convert_seq
 
 
 # Complements to nucleotide ASCII codes
@@ -21,14 +20,6 @@ NUC_COMPLEMENTS = {
 	103: 99,
 	99: 103,
 }
-
-SEQ_TYPES = [str, bytes, bytearray, Seq]
-
-def seq_to_type(seq, type):
-	seq = kmers.seq_to_bytes(seq)
-	if type is str:
-		return seq.decode('ascii')
-	return type(seq)
 
 
 class TestIndices:
@@ -68,12 +59,12 @@ class TestIndices:
 
 				# Check conversion back to index
 				for T in SEQ_TYPES:
-					assert kmers.kmer_to_index(seq_to_type(kmer, T)) == index
-					assert kmers.kmer_to_index(seq_to_type(kmer.lower(), T)) == index
+					assert kmers.kmer_to_index(convert_seq(kmer, T)) == index
+					assert kmers.kmer_to_index(convert_seq(kmer.lower(), T)) == index
 
 					rc = kmers.revcomp(kmer)
-					assert kmers.kmer_to_index_rc(seq_to_type(rc, T)) == index
-					assert kmers.kmer_to_index_rc(seq_to_type(rc.lower(), T)) == index
+					assert kmers.kmer_to_index_rc(convert_seq(rc, T)) == index
+					assert kmers.kmer_to_index_rc(convert_seq(rc.lower(), T)) == index
 
 		# Check invalid raises error
 		with pytest.raises(ValueError):
@@ -86,8 +77,8 @@ class TestKmerSpec:
 	def test_constructor(self):
 		# Prefix conversion
 		for T in SEQ_TYPES:
-			assert KmerSpec(11, seq_to_type('ATGAC', T)).prefix == b'ATGAC'
-			assert KmerSpec(11, seq_to_type('atgac', T)).prefix == b'ATGAC'
+			assert KmerSpec(11, convert_seq('ATGAC', T)).prefix == b'ATGAC'
+			assert KmerSpec(11, convert_seq('atgac', T)).prefix == b'ATGAC'
 
 		# Invalid k
 		with pytest.raises(ValueError):

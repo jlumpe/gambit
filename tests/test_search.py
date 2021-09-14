@@ -11,7 +11,7 @@ from gambit.search import find_kmers, calc_signature, calc_signature_parse, calc
 	calc_file_signatures
 from gambit.kmers import KmerSpec, revcomp, dense_to_sparse, sparse_to_dense, \
 	index_to_kmer, kmer_to_index, NUCLEOTIDES
-from gambit.test import fill_bytearray, make_kmer_seq, check_progress
+from gambit.test import fill_bytearray, make_kmer_seq, check_progress, SEQ_TYPES, convert_seq
 
 from gambit.io.seq import SequenceFile
 import gambit.io.util as ioutil
@@ -57,25 +57,7 @@ def create_sequence_records(kspec, n, seq_len=10000):
 	return records, vec
 
 
-def convert_seq(seq, t: type):
-	if isinstance(seq, t):
-		return seq
-
-	if t is bytes:
-		return seq.encode('ascii')
-
-	if isinstance(seq, bytes):
-		seq = seq.decode('ascii')
-
-	if t is str:
-		return str(seq)
-	elif t is Seq:
-		return Seq(seq)
-	else:
-		assert 0
-
-
-@pytest.fixture(params=[bytes, str, Seq])
+@pytest.fixture(params=SEQ_TYPES)
 def seq_type(request):
 	return request.param
 
