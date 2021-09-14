@@ -61,14 +61,19 @@ class TestIndices:
 			# Test all indices to max of 1000
 			for index in range(min(kmers.nkmers(k), 1000)):
 
+				# Check getting kmer from index
 				kmer = kmers.index_to_kmer(index, k)
-
-				# Check k-mer is of correct length
 				assert len(kmer) == k
+				assert set(kmers.NUCLEOTIDES).issuperset(kmer)
 
-				# Check converting back, both cases
-				assert kmers.kmer_to_index(kmer.upper()) == index
-				assert kmers.kmer_to_index(kmer.lower()) == index
+				# Check conversion back to index
+				for T in SEQ_TYPES:
+					assert kmers.kmer_to_index(seq_to_type(kmer, T)) == index
+					assert kmers.kmer_to_index(seq_to_type(kmer.lower(), T)) == index
+
+					rc = kmers.revcomp(kmer)
+					assert kmers.kmer_to_index_rc(seq_to_type(rc, T)) == index
+					assert kmers.kmer_to_index_rc(seq_to_type(rc.lower(), T)) == index
 
 		# Check invalid raises error
 		with pytest.raises(ValueError):

@@ -17,7 +17,8 @@ import numpy as np
 from attr import attrs, attrib
 from Bio.Seq import Seq
 
-from gambit._cython.kmers import kmer_to_index, kmer_to_index_rc, index_to_kmer, revcomp
+import gambit._cython.kmers as ckmers
+from gambit._cython.kmers import index_to_kmer, revcomp
 from gambit.io.json import Jsonable
 
 
@@ -89,6 +90,28 @@ def index_dtype(k: int) -> np.dtype:
 		return np.dtype('u8')
 	else:
 		return None
+
+
+def kmer_to_index(kmer: DNASeq) -> int:
+	"""Convert a k-mer to its integer index.
+
+	Raises
+	------
+	ValueError
+		If an invalid nucleotide code is encountered.
+	"""
+	return ckmers.kmer_to_index(seq_to_bytes(kmer))
+
+
+def kmer_to_index_rc(kmer: DNASeq) -> int:
+	"""Get the integer index of a k-mer's reverse complement.
+
+	Raises
+	------
+	ValueError
+		If an invalid nucleotide code is encountered.
+	"""
+	return ckmers.kmer_to_index_rc(seq_to_bytes(kmer))
 
 
 @attrs(frozen=True, repr=False, cmp=False, init=False)
