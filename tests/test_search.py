@@ -62,14 +62,18 @@ def seq_type(request):
 	return request.param
 
 
-def test_find_kmers(seq_type):
+@pytest.mark.parametrize('lower', [False, True])
+def test_find_kmers(seq_type, lower):
 	"""Test the find_kmers() function and KmerMatch class."""
 
 	kspec = KmerSpec(11, 'ATGAC')
 
 	np.random.seed(0)
 	seq, sig = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
+
 	seq = convert_seq(seq, seq_type)
+	if lower:
+		seq = seq.lower()
 
 	found = []
 
@@ -87,16 +91,16 @@ def test_find_kmers(seq_type):
 		else:
 			assert full_indices.stop == kmer_indices.stop
 
-		matched = convert_seq(seq[kmer_indices], bytes)
+		matched = convert_seq(seq[kmer_indices], bytes).upper()
 		if match.reverse:
 			matched = revcomp(matched)
 
-		matched_full = convert_seq(seq[full_indices], bytes)
+		matched_full = convert_seq(seq[full_indices], bytes).upper()
 		if match.reverse:
 			matched_full = revcomp(matched_full)
 
 		assert matched_full == kspec.prefix + matched
-		assert match.kmer() == matched
+		assert match.kmer().upper() == matched
 
 		try:
 			index = kmer_to_index(matched)

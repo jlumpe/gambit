@@ -9,7 +9,7 @@ from Bio import SeqIO
 from attr import attrs, attrib
 
 from gambit.kmers import NUCLEOTIDES, DNASeq, KmerSpec, KmerSignature, dense_to_sparse, \
-	kmer_to_index, revcomp
+	kmer_to_index, kmer_to_index_rc, seq_to_bytes, revcomp
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
 
@@ -50,9 +50,7 @@ class KmerMatch:
 
 	def kmer(self) -> bytes:
 		"""Get matched k-mer sequence."""
-		kmer = self.seq[self.kmer_indices()]
-		if not isinstance(kmer, bytes):
-			kmer = kmer.encode('ascii')
+		kmer = seq_to_bytes(self.seq[self.kmer_indices()])
 		return revcomp(kmer) if self.reverse else kmer
 
 	def kmer_index(self) -> int:
@@ -63,7 +61,8 @@ class KmerMatch:
 		ValueError
 			If the k-mer contains invalid nucleotides.
 		"""
-		return kmer_to_index(self.kmer())
+		kmer = self.seq[self.kmer_indices()]
+		return kmer_to_index_rc(kmer) if self.reverse else kmer_to_index(kmer)
 
 
 def find_kmers(kmerspec: KmerSpec, seq: DNASeq) -> Iterator[KmerMatch]:
@@ -85,22 +84,20 @@ def find_kmers(kmerspec: KmerSpec, seq: DNASeq) -> Iterator[KmerMatch]:
 		Iterator of :class:`.KmerMatch` objects.
 	"""
 
-	# Convert to uppercase only if needed
-	nucs_lower = set(NUCLEOTIDES.lower())
-	if not isinstance(seq, bytes):
-		nucs_lower = set(map(chr, nucs_lower))
+	haystack = seq_to_bytes(seq)
 
-	for char in seq:
+	# Convert to uppercase only if needed
+	nucs_lower = NUCLEOTIDES.lower()
+	for char in haystack:
 		if char in nucs_lower:
-			seq = seq.upper()
+			haystack = haystack.upper()
 			break
 
 	# Find forward
-	needle_fwd = kmerspec.prefix if isinstance(seq, bytes) else kmerspec.prefix_str
 	start = 0
 
 	while True:
-		loc = seq.find(needle_fwd, start, -kmerspec.k)
+		loc = haystack.find(kmerspec.prefix, start, -kmerspec.k)
 		if loc < 0:
 			break
 
@@ -109,14 +106,11 @@ def find_kmers(kmerspec: KmerSpec, seq: DNASeq) -> Iterator[KmerMatch]:
 		start = loc + 1
 
 	# Find reverse
-	needle_rev = revcomp(kmerspec.prefix)
-	if not isinstance(seq, bytes):
-		needle_rev = needle_rev.decode('ascii')
-
+	prefix_rc = revcomp(kmerspec.prefix)
 	start = kmerspec.k
 
 	while True:
-		loc = seq.find(needle_rev, start)
+		loc = haystack.find(prefix_rc, start)
 		if loc < 0:
 			break
 
