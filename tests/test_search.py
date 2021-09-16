@@ -7,10 +7,9 @@ import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-from gambit.search import find_kmers, calc_signature, calc_signature_parse, calc_file_signature, \
+from gambit.search import calc_signature, calc_signature_parse, calc_file_signature, \
 	calc_file_signatures
-from gambit.kmers import KmerSpec, revcomp, dense_to_sparse, sparse_to_dense, \
-	index_to_kmer, kmer_to_index, NUCLEOTIDES
+from gambit.kmers import KmerSpec, revcomp, dense_to_sparse, sparse_to_dense, index_to_kmer
 from gambit.test import fill_bytearray, make_kmer_seq, check_progress, SEQ_TYPES, convert_seq
 
 from gambit.io.seq import SequenceFile
@@ -57,64 +56,8 @@ def create_sequence_records(kspec, n, seq_len=10000):
 	return records, vec
 
 
-@pytest.fixture(params=SEQ_TYPES)
-def seq_type(request):
-	return request.param
-
-
-@pytest.mark.parametrize('lower', [False, True])
-def test_find_kmers(seq_type, lower):
-	"""Test the find_kmers() function and KmerMatch class."""
-
-	kspec = KmerSpec(11, 'ATGAC')
-
-	np.random.seed(0)
-	seq, sig = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
-
-	seq = convert_seq(seq, seq_type)
-	if lower:
-		seq = seq.lower()
-
-	found = []
-
-	for match in find_kmers(kspec, seq):
-		assert match.kmerspec is kspec
-		assert match.seq is seq
-
-		kmer_indices = match.kmer_indices()
-		full_indices = match.full_indices()
-
-		assert kmer_indices.stop - kmer_indices.start == kspec.k
-		assert full_indices.stop - full_indices.start == kspec.total_len
-		if match.reverse:
-			assert full_indices.start == kmer_indices.start
-		else:
-			assert full_indices.stop == kmer_indices.stop
-
-		matched = convert_seq(seq[kmer_indices], bytes).upper()
-		if match.reverse:
-			matched = revcomp(matched)
-
-		matched_full = convert_seq(seq[full_indices], bytes).upper()
-		if match.reverse:
-			matched_full = revcomp(matched_full)
-
-		assert matched_full == kspec.prefix + matched
-		assert match.kmer().upper() == matched
-
-		try:
-			index = kmer_to_index(matched)
-		except ValueError:
-			assert any(c not in NUCLEOTIDES for c in matched.upper())
-			continue
-
-		assert match.kmer_index() == index
-		found.append(index)
-
-	assert np.array_equal(sorted(found), sig)
-
-
 @pytest.mark.parametrize('sparse', [True, False])
+@pytest.mark.parametrize('seq_type', SEQ_TYPES)
 def test_calc_signature(sparse, seq_type):
 	"""Test the calc_signature() function."""
 

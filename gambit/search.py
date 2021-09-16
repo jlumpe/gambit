@@ -1,122 +1,15 @@
 """Search for k-mer matches in sequence data."""
 
-from typing import Optional, List, Sequence, Iterator
+from typing import Optional, List, Sequence
 from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from contextlib import nullcontext
 
 import numpy as np
 from Bio import SeqIO
-from attr import attrs, attrib
 
-from gambit.kmers import NUCLEOTIDES, DNASeq, KmerSpec, KmerSignature, dense_to_sparse, \
-	kmer_to_index, kmer_to_index_rc, seq_to_bytes, revcomp
+from gambit.kmers import DNASeq, KmerSpec, KmerSignature, find_kmers, dense_to_sparse
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
-
-
-@attrs(slots=True)
-class KmerMatch:
-	"""Represents a
-
-	Attributes
-	----------
-	kmerspec
-		K-mer spec used for search.
-	seq
-		The sequence searched within.
-	pos
-		Index of first nucleotide of prefix in ``seq``.
-	reverse
-		If the match is on the reverse strand.
-	"""
-	kmerspec: KmerSpec = attrib()
-	seq: DNASeq = attrib()
-	pos: int = attrib()
-	reverse: bool = attrib()
-
-	def kmer_indices(self) -> slice:
-		"""Index range for k-mer in sequence (without prefix)."""
-		if self.reverse:
-			return slice(self.pos - self.kmerspec.total_len + 1, self.pos - self.kmerspec.prefix_len + 1)
-		else:
-			return slice(self.pos + self.kmerspec.prefix_len, self.pos + self.kmerspec.total_len)
-
-	def full_indices(self) -> slice:
-		"""Index range for prefix plus k-mer in sequence."""
-		if self.reverse:
-			return slice(self.pos - self.kmerspec.total_len + 1, self.pos + 1)
-		else:
-			return slice(self.pos, self.pos + self.kmerspec.total_len)
-
-	def kmer(self) -> bytes:
-		"""Get matched k-mer sequence."""
-		kmer = seq_to_bytes(self.seq[self.kmer_indices()])
-		return revcomp(kmer) if self.reverse else kmer
-
-	def kmer_index(self) -> int:
-		"""Get index of matched k-mer.
-
-		Raises
-		------
-		ValueError
-			If the k-mer contains invalid nucleotides.
-		"""
-		kmer = self.seq[self.kmer_indices()]
-		return kmer_to_index_rc(kmer) if self.reverse else kmer_to_index(kmer)
-
-
-def find_kmers(kmerspec: KmerSpec, seq: DNASeq) -> Iterator[KmerMatch]:
-	"""Locate k-mers with the given prefix in a DNA sequence.
-
-	Searches sequence both backwards and forwards (reverse complement). The sequence may contain
-	invalid characters (not one of the four nucleotide codes) which will simply not be matched.
-
-	Parameters
-	----------
-	kmerspec
-		K-mer spec to use for search.
-	seq
-		Sequence to search within. Lowercase characters are OK and will be matched as uppercase.
-
-	Returns
-	-------
-	Iterator[KmerMatch]
-		Iterator of :class:`.KmerMatch` objects.
-	"""
-
-	haystack = seq_to_bytes(seq)
-
-	# Convert to uppercase only if needed
-	nucs_lower = NUCLEOTIDES.lower()
-	for char in haystack:
-		if char in nucs_lower:
-			haystack = haystack.upper()
-			break
-
-	# Find forward
-	start = 0
-
-	while True:
-		loc = haystack.find(kmerspec.prefix, start, -kmerspec.k)
-		if loc < 0:
-			break
-
-		yield KmerMatch(kmerspec, seq, loc, False)
-
-		start = loc + 1
-
-	# Find reverse
-	prefix_rc = revcomp(kmerspec.prefix)
-	start = kmerspec.k
-
-	while True:
-		loc = haystack.find(prefix_rc, start)
-		if loc < 0:
-			break
-
-		yield KmerMatch(kmerspec, seq, loc + kmerspec.prefix_len - 1, True)
-
-		start = loc + 1
 
 
 def calc_signature(kmerspec: KmerSpec,

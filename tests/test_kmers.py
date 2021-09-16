@@ -6,7 +6,7 @@ import numpy as np
 from gambit import kmers
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
-from gambit.test import random_seq, SEQ_TYPES, convert_seq
+from gambit.test import random_seq, SEQ_TYPES, convert_seq, make_kmer_seq
 
 
 # Complements to nucleotide ASCII codes
@@ -132,6 +132,59 @@ class TestKmerSpec:
 		)
 
 		assert gjson.from_json(data, KmerSpec) == kspec
+
+
+@pytest.mark.parametrize('lower', [False, True])
+@pytest.mark.parametrize('seq_type', SEQ_TYPES)
+def test_find_kmers(seq_type, lower):
+	"""Test the find_kmers() function and KmerMatch class."""
+
+	kspec = KmerSpec(11, 'ATGAC')
+
+	np.random.seed(0)
+	seq, sig = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
+
+	seq = convert_seq(seq, seq_type)
+	if lower:
+		seq = seq.lower()
+
+	found = []
+
+	for match in kmers.find_kmers(kspec, seq):
+		assert match.kmerspec is kspec
+		assert match.seq is seq
+
+		kmer_indices = match.kmer_indices()
+		full_indices = match.full_indices()
+
+		assert kmer_indices.stop - kmer_indices.start == kspec.k
+		assert full_indices.stop - full_indices.start == kspec.total_len
+		if match.reverse:
+			assert full_indices.start == kmer_indices.start
+		else:
+			assert full_indices.stop == kmer_indices.stop
+
+		matched = convert_seq(seq[kmer_indices], bytes).upper()
+		if match.reverse:
+			matched = kmers.revcomp(matched)
+
+		matched_full = convert_seq(seq[full_indices], bytes).upper()
+		if match.reverse:
+			matched_full = kmers.revcomp(matched_full)
+
+		assert matched_full == kspec.prefix + matched
+		assert match.kmer().upper() == matched
+
+		try:
+			index = kmers.kmer_to_index(matched)
+		except ValueError:
+			assert any(c not in kmers.NUCLEOTIDES for c in matched.upper())
+			continue
+
+		assert match.kmer_index() == index
+		found.append(index)
+
+	assert np.array_equal(sorted(found), sig)
 
 
 def test_dense_sparse_conversion():
