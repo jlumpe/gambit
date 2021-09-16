@@ -109,6 +109,7 @@ class TestKmerSpec:
 
 		kspec = KmerSpec(11, 'ATGAC')
 		assert kspec == KmerSpec(11, 'ATGAC')
+		assert hash(kspec) == hash(KmerSpec(11, 'ATGAC'))
 		assert kspec != KmerSpec(11, 'ATGAA')
 		assert kspec != KmerSpec(12, 'ATGAC')
 
@@ -117,7 +118,6 @@ class TestKmerSpec:
 		import pickle
 
 		kspec = KmerSpec(11, 'ATGAC')
-
 		assert kspec == pickle.loads(pickle.dumps(kspec))
 
 	def test_json(self):

@@ -114,7 +114,7 @@ def kmer_to_index_rc(kmer: DNASeq) -> int:
 	return ckmers.kmer_to_index_rc(seq_to_bytes(kmer))
 
 
-@attrs(frozen=True, repr=False, cmp=False, init=False)
+@attrs(frozen=True, repr=False, init=False)
 class KmerSpec(Jsonable):
 	"""Specifications for a k-mer search operation.
 
@@ -140,11 +140,11 @@ class KmerSpec(Jsonable):
 	"""
 	k: int = attrib()
 	prefix: bytes = attrib()
-	prefix_str: str = attrib()
-	prefix_len: int = attrib()
-	total_len: int = attrib()
-	nkmers: int = attrib()
-	index_dtype: np.dtype = attrib()
+	prefix_str: str = attrib(eq=False)
+	prefix_len: int = attrib(eq=False)
+	total_len: int = attrib(eq=False)
+	nkmers: int = attrib(eq=False)
+	index_dtype: np.dtype = attrib(eq=False)
 
 	def __init__(self, k: int, prefix: DNASeq):
 		"""
@@ -173,11 +173,6 @@ class KmerSpec(Jsonable):
 
 	def __get_newargs__(self):
 		return self.k, self.prefix
-
-	def __eq__(self, other):
-		return isinstance(other, KmerSpec) and\
-			self.k == other.k and\
-			self.prefix == other.prefix
 
 	def __repr__(self):
 		return f'{type(self).__name__}({self.k}, {self.prefix_str!r})'
