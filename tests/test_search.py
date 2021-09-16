@@ -56,29 +56,27 @@ def create_sequence_records(kspec, n, seq_len=10000):
 	return records, vec
 
 
-@pytest.mark.parametrize('sparse', [True, False])
 @pytest.mark.parametrize('seq_type', SEQ_TYPES)
-def test_calc_signature(sparse, seq_type):
+def test_calc_signature(seq_type):
 	"""Test the calc_signature() function."""
 
 	kspec = KmerSpec(11, 'ATGAC')
 
 	np.random.seed(0)
-	seq_bytes, signature = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
+	seq_bytes, expected = make_kmer_seq(kspec, 100000, kmer_interval=50, n_interval=10)
 	seq = convert_seq(seq_bytes, seq_type)
-	expected = signature if sparse else sparse_to_dense(kspec, signature)
 
 	# Test normal
-	result = calc_signature(kspec, seq, sparse=sparse)
+	result = calc_signature(kspec, seq)
 	assert np.array_equal(result, expected)
 
 	# Test reverse complement
 	rcseq = convert_seq(revcomp(seq_bytes), seq_type)
-	result = calc_signature(kspec, rcseq, sparse=sparse)
+	result = calc_signature(kspec, rcseq)
 	assert np.array_equal(result, expected)
 
 	# Test lower case
-	result = calc_signature(kspec, seq.lower(), sparse=sparse)
+	result = calc_signature(kspec, seq.lower())
 	assert np.array_equal(result, expected)
 
 
@@ -182,8 +180,7 @@ class TestCalcFileSignatures:
 
 		return files
 
-	@pytest.mark.parametrize('sparse', [False, True])
-	def test_calc_signature_parse(self, seq_data, format, sparse):
+	def test_calc_signature_parse(self, seq_data, format):
 		"""Test the calc_signature_parse function."""
 
 		for records, sig in zip(*seq_data):
@@ -192,26 +189,17 @@ class TestCalcFileSignatures:
 			SeqIO.write(records, buf, format)
 			buf.seek(0)
 
-			result = calc_signature_parse(self.KSPEC, buf, 'fasta', sparse=sparse)
+			result = calc_signature_parse(self.KSPEC, buf, 'fasta')
+			assert np.array_equal(result, sig)
 
-			if sparse:
-				assert np.array_equal(result, sig)
-			else:
-				assert np.array_equal(dense_to_sparse(result), sig)
-
-	@pytest.mark.parametrize('sparse', [False, True])
-	def test_calc_file_signature(self, seq_data, files, sparse):
+	def test_calc_file_signature(self, seq_data, files):
 		"""Test the calc_file_signature function."""
 
 		seqs, sigs = seq_data
 
 		for file, sig in zip(files, sigs):
-			result = calc_file_signature(self.KSPEC, file, sparse=sparse)
-
-			if sparse:
-				assert np.array_equal(result, sig)
-			else:
-				assert np.array_equal(dense_to_sparse(result), sig)
+			result = calc_file_signature(self.KSPEC, file)
+			assert np.array_equal(result, sig)
 
 	@pytest.mark.parametrize('concurrency', [None, 'threads', 'processes'])
 	def test_calc_file_signatures(self, seq_data, files, concurrency):

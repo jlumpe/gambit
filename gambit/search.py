@@ -15,7 +15,6 @@ from gambit.util.progress import iter_progress, get_progress
 def calc_signature(kmerspec: KmerSpec,
                    seq: DNASeq,
                    *,
-                   sparse: bool = True,
                    dense_out: Optional[np.ndarray] = None,
                    ) -> KmerSignature:
 	"""Calculate the k-mer signature of a DNA sequence.
@@ -34,14 +33,11 @@ def calc_signature(kmerspec: KmerSpec,
 		Note that this is still used as working space even if ``sparse=True``. Should be zeroed
 		prior to use (although if not the result will effectively be the bitwise AND between its
 		previous value and k-mers found in ``data``.
-	sparse : bool
-		If True return k-mers in sparse coordinate format rather than dense (bit vector) format.
 
 	Returns
 	-------
 	numpy.ndarray
-		If ``sparse`` is False, returns dense K-mer vector (same array as ``dense_out`` if it was
-		given). If ``sparse`` is True returns k-mers in sparse coordinate format (dtype will match
+		K-mer signature in sparse coordinate format (dtype will match
 		:func:`gambit.kmers.dense_to_sparse`).
 
 	See Also
@@ -58,13 +54,10 @@ def calc_signature(kmerspec: KmerSpec,
 			continue
 		dense_out[i] = 1
 
-	if sparse:
-		return dense_to_sparse(dense_out)
-	else:
-		return dense_out
+	return dense_to_sparse(dense_out)
 
 
-def calc_signature_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = True, dense_out: Optional[np.ndarray] = None) -> np.ndarray:
+def calc_signature_parse(kspec: KmerSpec, data, format: str, *, dense_out: Optional[np.ndarray] = None) -> KmerSignature:
 	"""Parse sequence data with ``Bio.Seq.parse()`` and calculate its k-mer signature.
 
 	Parameters
@@ -75,8 +68,6 @@ def calc_signature_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = T
 		Stream with sequence data. Readable file-like object in text mode.
 	format : str
 		Sequence file format, as interpreted by :func:`Bio.SeqIO.parse`.
-	sparse : bool
-		If True return k-mers in sparse coordinate format rather than dense (bit vector) format.
 	dense_out : numpy.ndarray
 		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.nkmers``.
 		Note that this is still used as working space even if ``sparse=True``. Should be zeroed
@@ -86,8 +77,7 @@ def calc_signature_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = T
 	Returns
 	-------
 	numpy.ndarray
-		If ``sparse`` is False, returns dense K-mer vector (same array as ``dense_out`` if it was
-		given). If ``sparse`` is True returns k-mers in sparse coordinate format (dtype will match
+		K-mer signature in sparse coordinate format (dtype will match
 		:func:`gambit.kmers.dense_to_sparse`).
 
 	See Also
@@ -101,13 +91,10 @@ def calc_signature_parse(kspec: KmerSpec, data, format: str, *, sparse: bool = T
 	for record in SeqIO.parse(data, format):
 		calc_signature(kspec, record.seq, dense_out=dense_out)
 
-	if sparse:
-		return dense_to_sparse(dense_out)
-	else:
-		return dense_out
+	return dense_to_sparse(dense_out)
 
 
-def calc_file_signature(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool = True, dense_out: Optional[np.ndarray] = None) -> np.ndarray:
+def calc_file_signature(kspec: KmerSpec, seqfile: SequenceFile, *, dense_out: Optional[np.ndarray] = None) -> KmerSignature:
 	"""Open a sequence file on disk and calculate its k-mer signature.
 
 	This works identically to :func:`.calc_signature_parse` but takes a :class:`.SequenceFile` as
@@ -119,16 +106,13 @@ def calc_file_signature(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool 
 		Spec for k-mer search.
 	seqfile
 		File to read.
-	sparse
-		See :func:`.calc_signature_parse`.
 	dense_out
 		See :func:`.calc_signature_parse`.
 
 	Returns
 	-------
 	numpy.ndarray
-		If ``sparse`` is False, returns dense K-mer vector (same array as ``dense_out`` if it was
-		given). If ``sparse`` is True returns k-mers in sparse coordinate format (dtype will match
+		K-mer signature in sparse coordinate format (dtype will match
 		:func:`gambit.kmers.dense_to_sparse`).
 
 	See Also
@@ -138,7 +122,7 @@ def calc_file_signature(kspec: KmerSpec, seqfile: SequenceFile, *, sparse: bool 
 	.calc_signature_parse
 	"""
 	with seqfile.open() as f:
-		return calc_signature_parse(kspec, f, seqfile.format, sparse=sparse, dense_out=dense_out)
+		return calc_signature_parse(kspec, f, seqfile.format, dense_out=dense_out)
 
 
 def calc_file_signatures(kspec: KmerSpec,
