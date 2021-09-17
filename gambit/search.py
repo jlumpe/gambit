@@ -1,21 +1,147 @@
 """Search for k-mer matches in sequence data."""
 
-from typing import Optional, List, Sequence
+from typing import Optional, List, Sequence, MutableSet
+from abc import abstractmethod
 from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from contextlib import nullcontext
 
 import numpy as np
 from Bio import SeqIO
 
-from gambit.kmers import DNASeq, KmerSpec, KmerSignature, find_kmers, dense_to_sparse
+from gambit.kmers import DNASeq, KmerSpec, KmerSignature, find_kmers, kmer_to_index, nkmers, \
+	index_dtype
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
+
+
+class KmerAccumulator(MutableSet[int]):
+	"""Base class for data structures which track k-mers as they are found in sequences.
+
+	Implements the ``MutableSet`` interface for k-mer indices. Indices are added via :meth:`add` or
+	:meth:`add_kmer` methods, when finished a sparse k-mer signature can be obtained from
+	:meth:`signature`\\ .
+	"""
+	k: int
+
+	def add_kmer(self, kmer: bytes):
+		"""Add a k-mer by its sequence rather than its index.
+
+		Argument may contain invalid (non-nucleotide) bytes, in which case it is ignored.
+		"""
+		if len(kmer) != self.k:
+			raise ValueError(f'Expected {self.k}-mer, argument has length {len(kmer)}')
+
+		try:
+			idx = kmer_to_index(kmer)
+		except ValueError:
+			return
+
+		self.add(idx)
+
+	@abstractmethod
+	def signature(self) -> KmerSignature:
+		"""Get signature for accumulated k-mers."""
+		pass
+
+
+class ArrayAccumulator(KmerAccumulator):
+	"""K-mer accumulator implemented as a dense boolean array.
+
+	This is pretty efficient for smaller values of ``k``, but time and space requirements increase
+	exponentially with larger values.
+	"""
+	array: np.ndarray
+
+	def __init__(self, k: int):
+		self.k = k
+		self.array = np.zeros(nkmers(k), dtype=bool)
+		self._dtype = index_dtype(self.k)
+
+	def __len__(self):
+		return self.array.sum()
+
+	def __iter__(self):
+		for i, x in enumerate(self.array):
+			if x:
+				yield self._dtype.type(i)
+
+	def __contains__(self, index: int):
+		return self.array[index]
+
+	def add(self, i: int):
+		self.array[i] = True
+
+	def discard(self, i: int):
+		self.array[i] = False
+
+	def clear(self):
+		self.array[:] = False
+
+	def signature(self) -> KmerSignature:
+		return np.flatnonzero(self.array).astype(self._dtype)
+
+
+class SetAccumulator(KmerAccumulator):
+	"""Accumulator which uses the builtin Python ``set`` class.
+
+	This has more overhead than the array version for smaller values of ``k`` but behaves much
+	better asymptotically.
+	"""
+
+	set: set
+
+	def __init__(self, k: int):
+		self.k = k
+		self.set = set()
+		self._dtype = index_dtype(self.k)
+
+	def __len__(self):
+		return len(self.set)
+
+	def __iter__(self):
+		return iter(self.set)
+
+	def __contains__(self, index):
+		return index in self.set
+
+	def clear(self):
+		self.set.clear()
+
+	def discard(self, index: int):
+		self.set.discard(index)
+
+	def add(self, index: int):
+		self.set.add(self._dtype.type(index))
+
+	def signature(self) -> KmerSignature:
+		sig = np.fromiter(self.set, dtype=self._dtype)
+		sig.sort()
+		return sig
+
+
+def default_accumulator(k: int) -> KmerAccumulator:
+	"""Get a default k-mer accumulator instance for the given value of ``k``.
+
+	Returns a :class:`.ArrayAccumulator` for ``k <= 11`` and a :class:`.SetAccumulator` for
+	``k > 11``\\ .
+	"""
+	return SetAccumulator(k) if k > 11 else ArrayAccumulator(k)
+
+
+def accumulate_kmers(accumulator: KmerAccumulator, kmerspec: KmerSpec, seq: DNASeq):
+	"""Find k-mer matches in sequence and add their indices to an accumulator."""
+	for match in find_kmers(kmerspec, seq):
+		try:
+			index = match.kmer_index()
+		except ValueError:
+			continue
+		accumulator.add(index)
 
 
 def calc_signature(kmerspec: KmerSpec,
                    seq: DNASeq,
                    *,
-                   dense_out: Optional[np.ndarray] = None,
+                   accumulator: Optional[KmerAccumulator] = None,
                    ) -> KmerSignature:
 	"""Calculate the k-mer signature of a DNA sequence.
 
@@ -28,11 +154,8 @@ def calc_signature(kmerspec: KmerSpec,
 		K-mer spec to use for search.
 	seq
 		Sequence to search within. Lowercase characters are OK and will be matched as uppercase.
-	dense_out : numpy.ndarray
-		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.nkmers``.
-		Note that this is still used as working space even if ``sparse=True``. Should be zeroed
-		prior to use (although if not the result will effectively be the bitwise AND between its
-		previous value and k-mers found in ``data``.
+	accumulator
+		TODO
 
 	Returns
 	-------
@@ -44,35 +167,31 @@ def calc_signature(kmerspec: KmerSpec,
 	--------
 	.calc_signature_parse
 	"""
-	if dense_out is None:
-		dense_out = np.zeros(kmerspec.nkmers, dtype=bool)
+	if accumulator is None:
+		accumulator = default_accumulator(kmerspec.k)
 
-	for match in find_kmers(kmerspec, seq):
-		try:
-			i = match.kmer_index()
-		except ValueError:
-			continue
-		dense_out[i] = 1
-
-	return dense_to_sparse(dense_out)
+	accumulate_kmers(accumulator, kmerspec, seq)
+	return accumulator.signature()
 
 
-def calc_signature_parse(kspec: KmerSpec, data, format: str, *, dense_out: Optional[np.ndarray] = None) -> KmerSignature:
+def calc_signature_parse(kmerspec: KmerSpec,
+                         data,
+                         format: str,
+                         *,
+                         accumulator: Optional[KmerAccumulator] = None,
+                         ) -> KmerSignature:
 	"""Parse sequence data with ``Bio.Seq.parse()`` and calculate its k-mer signature.
 
 	Parameters
 	----------
-	kspec : gambit.kmers.KmerSpec
+	kmerspec : gambit.kmers.KmerSpec
 		Spec for k-mer search.
 	data
 		Stream with sequence data. Readable file-like object in text mode.
 	format : str
 		Sequence file format, as interpreted by :func:`Bio.SeqIO.parse`.
-	dense_out : numpy.ndarray
-		Pre-allocated numpy array to write dense output to. Should be of length ``kspec.nkmers``.
-		Note that this is still used as working space even if ``sparse=True``. Should be zeroed
-		prior to use (although if not the result will effectively be the bitwise AND between its
-		previous value and k-mers found in ``data``.
+	accumulator
+		TODO
 
 	Returns
 	-------
@@ -85,16 +204,20 @@ def calc_signature_parse(kspec: KmerSpec, data, format: str, *, dense_out: Optio
 	.calc_signature
 	.calc_file_signature
 	"""
-	if dense_out is None:
-		dense_out = np.zeros(kspec.nkmers, dtype=bool)
+	if accumulator is None:
+		accumulator = default_accumulator(kmerspec.k)
 
 	for record in SeqIO.parse(data, format):
-		calc_signature(kspec, record.seq, dense_out=dense_out)
+		accumulate_kmers(accumulator, kmerspec, record.seq)
 
-	return dense_to_sparse(dense_out)
+	return accumulator.signature()
 
 
-def calc_file_signature(kspec: KmerSpec, seqfile: SequenceFile, *, dense_out: Optional[np.ndarray] = None) -> KmerSignature:
+def calc_file_signature(kspec: KmerSpec,
+                        seqfile: SequenceFile,
+                        *,
+                        accumulator: Optional[KmerAccumulator] = None,
+                        ) -> KmerSignature:
 	"""Open a sequence file on disk and calculate its k-mer signature.
 
 	This works identically to :func:`.calc_signature_parse` but takes a :class:`.SequenceFile` as
@@ -106,8 +229,8 @@ def calc_file_signature(kspec: KmerSpec, seqfile: SequenceFile, *, dense_out: Op
 		Spec for k-mer search.
 	seqfile
 		File to read.
-	dense_out
-		See :func:`.calc_signature_parse`.
+	accumulator
+		TODO
 
 	Returns
 	-------
@@ -122,7 +245,7 @@ def calc_file_signature(kspec: KmerSpec, seqfile: SequenceFile, *, dense_out: Op
 	.calc_signature_parse
 	"""
 	with seqfile.open() as f:
-		return calc_signature_parse(kspec, f, seqfile.format, dense_out=dense_out)
+		return calc_signature_parse(kspec, f, seqfile.format, accumulator=accumulator)
 
 
 def calc_file_signatures(kspec: KmerSpec,

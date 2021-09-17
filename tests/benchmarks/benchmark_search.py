@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from gambit.kmers import KmerSpec
-from gambit.search import calc_signature
+from gambit.search import calc_signature, ArrayAccumulator, SetAccumulator
 from gambit.test import random_seq
 
 
@@ -15,19 +15,29 @@ def seq(request):
 
 
 @pytest.fixture(scope='module', params=[8, 11, 14])
-def kspec_k(request):
+def k(request):
 	return request.param
 
 
 @pytest.fixture(scope='module', params=[3, 5, 7])
-def kspec_prefix(request):
-	return 'ATGACCT'[:request.param]
+def prefix_len(request):
+	return request.param
 
 
 @pytest.fixture()
-def kspec(kspec_k, kspec_prefix):
-	return KmerSpec(kspec_k, kspec_prefix)
+def kspec(k, prefix_len):
+	prefix ='ATGACCT'[:prefix_len]
+	return KmerSpec(k, prefix)
 
 
-def benchmark_calc_signature(seq, kspec, benchmark):
-	benchmark(calc_signature, kspec, seq)
+@pytest.fixture(
+	scope='module',
+	params=[pytest.param(ArrayAccumulator, id='array'), pytest.param(SetAccumulator, id='set')],
+)
+def accumulator(request):
+	return request.param
+
+
+def benchmark_calc_signature(seq, kspec, benchmark, accumulator):
+	acc = accumulator(kspec.k)
+	benchmark(calc_signature, kspec, seq, accumulator=acc)
