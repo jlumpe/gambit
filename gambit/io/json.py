@@ -45,7 +45,7 @@ def from_json(data, cls=Any):
 	return converter.structure(data, cls)
 
 
-def dump(obj, f: TextIO):
+def dump(obj, f: TextIO, **kw):
 	"""Write the JSON representation of an object to a file.
 
 	Parameters
@@ -54,9 +54,11 @@ def dump(obj, f: TextIO):
 		Object to write.
 	f
 		Writeable file object in text mode.
+	\\**kw
+		Keyword arguments to :func:`json.dump`\\ .
 	"""
 	data = to_json(obj)
-	json.dump(data, f)
+	json.dump(data, f, **kw)
 
 
 def load(f: TextIO, cls=Any):
@@ -77,19 +79,21 @@ def load(f: TextIO, cls=Any):
 	return from_json(data, cls)
 
 
-def dumps(obj) -> str:
+def dumps(obj, **kw) -> str:
 	"""Get the JSON representation of an object as a string.
 
 	Parameters
 	----------
 	obj
 		Object to write.
+	\\**kw
+		Keyword arguments to :func:`json.dumps`\\ .
 
 	Returns
 	-------
 	str
 	"""
-	return json.dumps(to_json(obj))
+	return json.dumps(to_json(obj), **kw)
 
 
 def loads(s: str, cls=Any):
