@@ -93,7 +93,6 @@ def genome_files_arg():
 		'files',
 		nargs=-1,
 		type=click.Path(exists=True, dir_okay=False),
-		required=True,
 		metavar='GENOMES...',
 	)
 

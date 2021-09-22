@@ -5,7 +5,6 @@ Test the 'gambit query' CLI command using the testdb_210818 database.
 import json
 from csv import DictReader
 from io import StringIO
-from pathlib import Path
 from copy import copy
 
 import pytest
@@ -13,7 +12,6 @@ import numpy as np
 from click.testing import CliRunner
 
 from gambit.cli import cli
-from gambit.util.misc import zip_strict
 from gambit.io.export.json import JSONResultsExporter
 from gambit.io.export.csv import CSVResultsExporter
 
@@ -48,7 +46,7 @@ def results(testdb_results, nqueries):
 	return results
 
 
-def make_args(query_files, db=None, output=None, outfmt=None, strict=False):
+def make_args(query_files=None, sigfile=None, db=None, output=None, outfmt=None, strict=False):
 	"""Make command line arguments for query file."""
 	args = []
 
@@ -62,8 +60,11 @@ def make_args(query_files, db=None, output=None, outfmt=None, strict=False):
 		args.append(f'--output={output}')
 	if outfmt is not None:
 		args.append(f'--outfmt={outfmt}')
+	if sigfile is not None:
+		args.append(f'--sigfile={sigfile}')
 
-	args.extend([str(f.path) for f in query_files])
+	if query_files is not None:
+		args.extend([str(f.path) for f in query_files])
 
 	return args
 
@@ -75,20 +76,31 @@ def export_to_buffer(results, exporter):
 	return buf
 
 
-def check_results(results_file, query_files, out_fmt, ref_results):
+def check_results(results_file,
+                  query_files,
+                  out_fmt,
+                  ref_results,
+                  check_input_path=False,
+                  input_labels=None,
+                  ):
 	"""Check results output matches reference QueryResults object.
 
 	Detailed checks of output format are already present in tests for exporter classes, just check
 	that the exported data matches an export of the reference results.
 	"""
 	if out_fmt == 'json':
-		_check_results_json(results_file, query_files, ref_results)
+		_check_results_json(results_file, query_files, ref_results, check_input_path=check_input_path, input_labels=input_labels)
 	elif out_fmt == 'csv':
-		_check_results_csv(results_file, query_files, ref_results)
+		_check_results_csv(results_file, query_files, ref_results, check_input_path=check_input_path, input_labels=input_labels)
 	else:
 		raise ValueError(f'Invalid out_fmt {out_fmt!r}')
 
-def _check_results_json(results_file, query_files, ref_results):
+def _check_results_json(results_file,
+                        query_files,
+                        ref_results,
+                        check_input_path=False,
+                        input_labels=None,
+                        ):
 	with results_file.open() as f:
 		data = json.load(f)
 
@@ -101,15 +113,25 @@ def _check_results_json(results_file, query_files, ref_results):
 	for key in ['genomeset', 'signaturesmeta', 'extra']:
 		assert data[key] == ref_data[key]
 
-	for item, ref_item, query_file in zip_strict(data['items'], ref_data['items'], query_files):
-		assert Path(item['query']['path']).name == query_file.path.name
-		assert item['query']['format'] == query_file.format
+	# for item, ref_item, query_file in zip_strict(data['items'], ref_data['items'], query_files):
+	for i, item in enumerate(data['items']):
+		if check_input_path:
+			assert item['query']['path'] == str(query_files[i].path)
+		if input_labels is not None:
+			assert item['query']['name'] == input_labels[i]
+		assert item['query']['format'] == query_files[i].format
 
+		ref_item = ref_data['items'][i]
 		assert item['predicted_taxon'] == ref_item['predicted_taxon']
 		assert item['closest_genome'] == ref_item['closest_genome']
 		assert np.isclose(item['closest_genome_distance'], ref_item['closest_genome_distance'])
 
-def _check_results_csv(results_file, query_files, ref_results):
+def _check_results_csv(results_file,
+                       query_files,
+                       ref_results,
+                       check_input_path=False,
+                       input_labels=None,
+                       ):
 	with results_file.open() as f:
 		rows = list(DictReader(f))
 
@@ -126,12 +148,17 @@ def _check_results_csv(results_file, query_files, ref_results):
 		'closest.description',
 	]
 
-	for row, ref_row, file in zip_strict(rows, ref_rows, query_files):
-		assert row['query.path'] == str(file.path)
-		assert np.isclose(float(row['closest.distance']), float(ref_row['closest.distance']))
+	# for row, ref_row, file in zip_strict(rows, ref_rows, query_files):
+	for i, row in enumerate(rows):
+		if check_input_path:
+			assert row['query.path'] == str(query_files[i].path)
+		if input_labels is not None:
+			assert row['query.name'] == input_labels[i]
+
+		assert np.isclose(float(row['closest.distance']), float(ref_rows[i]['closest.distance']))
 
 		for key in cmp_cols:
-			assert row[key] == ref_row[key]
+			assert row[key] == ref_rows[i][key]
 
 
 @pytest.mark.parametrize('out_fmt', ['csv', 'json'])
@@ -146,8 +173,8 @@ def test_full_query(testdb_files,
 	results_file = tmp_path / ('results.' + out_fmt)
 
 	args = make_args(
-		query_files,
-		db=testdb_files["root"],
+		query_files=query_files,
+		db=testdb_files['root'],
 		output=results_file,
 		outfmt=out_fmt,
 		strict=results.params.classify_strict,
@@ -158,6 +185,39 @@ def test_full_query(testdb_files,
 	assert result.exit_code == 0
 
 	check_results(results_file, query_files, out_fmt, results)
+
+
+def test_sigfile(testdb_files,
+                 query_files,
+                 testdb_query_signatures,
+                 results,
+                 tmp_path,
+                 ):
+	"""Test using signature file instead of parsing genome files."""
+
+	out_fmt = 'csv'
+	results_file = tmp_path / ('results.' + out_fmt)
+
+	args = make_args(
+		sigfile=testdb_files['query_signatures'],
+		db=testdb_files['root'],
+		output=results_file,
+		outfmt=out_fmt,
+		strict=results.params.classify_strict,
+	)
+
+	runner = CliRunner()
+	result = runner.invoke(cli, args, catch_exceptions=False)
+	assert result.exit_code == 0
+
+	check_results(
+		results_file,
+		query_files,
+		out_fmt,
+		results,
+		check_input_path=False,
+		input_labels=testdb_query_signatures.ids,
+	)
 
 
 @pytest.mark.testdb_nqueries(10)
@@ -172,14 +232,14 @@ def test_db_from_env(testdb_files,
 	results_file = tmp_path / ('results.' + out_fmt)
 
 	args = make_args(
-		query_files,
+		query_files=query_files,
 		output=results_file,
 		outfmt=out_fmt,
 		strict=results.params.classify_strict,
 	)
 
 	env = dict(
-		GAMBIT_DB_PATH=str(testdb_files["root"]),
+		GAMBIT_DB_PATH=str(testdb_files['root']),
 	)
 
 	runner = CliRunner()

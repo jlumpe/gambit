@@ -1,12 +1,13 @@
 import sys
-from typing import TextIO
+from typing import TextIO, Optional
 
 import click
 
 from .common import CLIContext, seq_file_params, get_seq_files
 from gambit.db import GAMBITDatabase
-from gambit.query import QueryParams, query_parse
+from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import ClickProgressMeter
+from gambit.signatures.hdf5 import HDF5Signatures
 
 
 def get_exporter(outfmt: str):
@@ -44,8 +45,14 @@ def get_exporter(outfmt: str):
 	default=False,
 	hidden=True,
 )
+@click.option(
+	'--sigfile',
+	type=click.Path(exists=True, dir_okay=False, readable=True),
+	help='File containing query signatures, to use in place of GENOMES.',
+)
 @click.pass_obj
 def query_cmd(ctxobj: CLIContext,
+              sigfile: Optional[str],
               output: TextIO,
               outfmt: str,
               strict: bool,
@@ -60,5 +67,19 @@ def query_cmd(ctxobj: CLIContext,
 	params = QueryParams(classify_strict=strict)
 	exporter = get_exporter(outfmt)
 
-	results = query_parse(db, seqfiles, params, progress=ClickProgressMeter)
+	if sigfile and seqfiles:
+		raise click.ClickException('The --sigfile option is mutually exclusive with GENOMES')
+
+	elif sigfile:
+		with HDF5Signatures.open(sigfile) as sigfile:
+			sigs = sigfile[:]
+		inputs = [QueryInput(id) for id in sigfile.ids]
+		results = query(db, sigs, params, inputs=inputs, progress=ClickProgressMeter)
+
+	elif seqfiles:
+		results = query_parse(db, seqfiles, params, progress=ClickProgressMeter)
+
+	else:
+		raise click.ClickException('Must supply at least one genome file or a value for --sigfile.')
+
 	exporter.export(output, results)
