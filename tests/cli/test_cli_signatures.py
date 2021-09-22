@@ -3,9 +3,8 @@
 import json
 
 import numpy as np
-from click.testing import CliRunner
 
-from gambit.cli import cli
+from gambit.cli.test import invoke_cli
 import gambit.io.json as gjson
 
 
@@ -16,8 +15,7 @@ class TestInfoCommand:
 	def test_json(self, testdb_signatures, testdb_files):
 		args = ['signatures', 'info', str(testdb_files['ref_signatures']), '-j']
 
-		runner = CliRunner()
-		result = runner.invoke(cli, args, catch_exceptions=False)
+		result = invoke_cli(args)
 		assert result.exit_code == 0
 
 		data = json.loads(result.stdout)
@@ -28,8 +26,7 @@ class TestInfoCommand:
 	def test_ids(self, testdb_signatures, testdb_files):
 		args = ['signatures', 'info', str(testdb_files['ref_signatures']), '-i']
 
-		runner = CliRunner()
-		result = runner.invoke(cli, args, catch_exceptions=False)
+		result = invoke_cli(args)
 		assert result.exit_code == 0
 
 		assert np.array_equal(result.stdout.splitlines(), testdb_signatures.ids)

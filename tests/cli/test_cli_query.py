@@ -9,9 +9,8 @@ from copy import copy
 
 import pytest
 import numpy as np
-from click.testing import CliRunner
 
-from gambit.cli import cli
+from gambit.cli.test import invoke_cli
 from gambit.io.export.json import JSONResultsExporter
 from gambit.io.export.csv import CSVResultsExporter
 
@@ -180,8 +179,7 @@ def test_full_query(testdb_files,
 		strict=results.params.classify_strict,
 	)
 
-	runner = CliRunner()
-	result = runner.invoke(cli, args)
+	result = invoke_cli(args)
 	assert result.exit_code == 0
 
 	check_results(results_file, query_files, out_fmt, results)
@@ -206,8 +204,7 @@ def test_sigfile(testdb_files,
 		strict=results.params.classify_strict,
 	)
 
-	runner = CliRunner()
-	result = runner.invoke(cli, args, catch_exceptions=False)
+	result = invoke_cli(args)
 	assert result.exit_code == 0
 
 	check_results(
@@ -242,8 +239,7 @@ def test_db_from_env(testdb_files,
 		GAMBIT_DB_PATH=str(testdb_files['root']),
 	)
 
-	runner = CliRunner()
-	result = runner.invoke(cli, args, env=env)
+	result = invoke_cli(args, env=env)
 	assert result.exit_code == 0
 
 	check_results(results_file, query_files, out_fmt, results)
