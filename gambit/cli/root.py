@@ -3,7 +3,7 @@
 import click
 
 from gambit import __version__ as GAMBIT_VERSION
-from .context import CLIContext
+from .common import CLIContext
 from .query import query_cmd
 from .signatures import signatures_group
 

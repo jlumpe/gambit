@@ -3,7 +3,7 @@ from typing import List, TextIO
 
 import click
 
-from .context import CLIContext
+from .common import CLIContext
 from gambit.db import GAMBITDatabase
 from gambit.query import QueryParams, query_parse
 from gambit.io.seq import SequenceFile
