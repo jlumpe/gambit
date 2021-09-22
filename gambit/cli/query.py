@@ -1,12 +1,11 @@
 import sys
-from typing import List, TextIO
+from typing import TextIO
 
 import click
 
-from .common import CLIContext
+from .common import CLIContext, seq_file_params, get_seq_files
 from gambit.db import GAMBITDatabase
 from gambit.query import QueryParams, query_parse
-from gambit.io.seq import SequenceFile
 from gambit.util.progress import ClickProgressMeter
 
 
@@ -27,17 +26,12 @@ def get_exporter(outfmt: str):
 
 
 @click.command(name='query')
+@seq_file_params()
 @click.option(
 	'-o', '--output',
 	type=click.File(mode='w'),
 	default=sys.stdout,
 	help='File path to write to. If omitted will write to stdout.',
-)
-@click.option(
-	'-s', '--seqfmt',
-	type=click.Choice(['fasta']),
-	default='fasta',
-	help='Format of sequence files. Currently only FASTA is supported.',
 )
 @click.option(
 	'-f', '--outfmt',
@@ -50,29 +44,21 @@ def get_exporter(outfmt: str):
 	default=False,
 	hidden=True,
 )
-@click.argument(
-	'files',
-	nargs=-1,
-	type=click.Path(exists=True, dir_okay=False),
-	required=True,
-	metavar='GENOMES...',
-)
 @click.pass_obj
 def query_cmd(ctxobj: CLIContext,
-              files: List[str],
               output: TextIO,
-              seqfmt: str,
               outfmt: str,
               strict: bool,
+              **kw,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 	gset = ctxobj.genomeset()
 	ref_sigs = ctxobj.signatures()
 	db = GAMBITDatabase(gset, ref_sigs)
 
+	seqfiles = get_seq_files(kw)
 	params = QueryParams(classify_strict=strict)
-	files = SequenceFile.from_paths(files, seqfmt)
 	exporter = get_exporter(outfmt)
 
-	results = query_parse(db, files, params, progress=ClickProgressMeter)
+	results = query_parse(db, seqfiles, params, progress=ClickProgressMeter)
 	exporter.export(output, results)
