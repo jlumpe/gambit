@@ -26,7 +26,7 @@ def get_exporter(outfmt: str):
 	assert 0
 
 
-@click.command()
+@click.command(name='query')
 @click.option(
 	'-o', '--output',
 	type=click.File(mode='w'),
@@ -58,7 +58,13 @@ def get_exporter(outfmt: str):
 	metavar='GENOMES...',
 )
 @click.pass_obj
-def query(ctxobj: CLIContext, files: List[str], output: TextIO, seqfmt: str, outfmt: str, strict: bool):
+def query_cmd(ctxobj: CLIContext,
+              files: List[str],
+              output: TextIO,
+              seqfmt: str,
+              outfmt: str,
+              strict: bool,
+              ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 	gset = ctxobj.genomeset()
 	ref_sigs = ctxobj.signatures()

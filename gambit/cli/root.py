@@ -4,6 +4,7 @@ import click
 
 from gambit import __version__ as GAMBIT_VERSION
 from .context import CLIContext
+from .query import query_cmd
 
 
 # Top-level cli group
@@ -22,5 +23,4 @@ def cli(ctx: click.Context, db_path):
 
 
 # Add sub-commands
-from .query import query
-cli.add_command(query)
+cli.add_command(query_cmd)
