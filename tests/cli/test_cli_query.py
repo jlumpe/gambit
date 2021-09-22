@@ -6,57 +6,96 @@ import json
 from csv import DictReader
 from io import StringIO
 from pathlib import Path
+from copy import copy
 
 import pytest
 import numpy as np
+from click.testing import CliRunner
 
 from gambit.cli import cli
 from gambit.util.misc import zip_strict
 from gambit.io.export.json import JSONResultsExporter
 from gambit.io.export.csv import CSVResultsExporter
-from gambit import __version__ as GAMBIT_VERSION
 
 
-@pytest.mark.parametrize('out_fmt', ['csv', 'json'])
-def test_query_cmd(testdb_files, testdb, testdb_queries, testdb_results, out_fmt, tmp_path):
-	"""Run a full query using the command line interface."""
-	results_file = tmp_path / ('results.' + out_fmt)
-	query_files = [query['file'] for query in testdb_queries]
-	params = testdb_results.params
+@pytest.fixture()
+def nqueries(request):
+	"""Number of testdb query files to use, None means use all of them.
 
-	args = [
-		f'--db={testdb_files["root"]}',
-		'query',
-		f'--output={results_file}',
-		f'--outfmt={out_fmt}',
-		'--strict' if params.classify_strict else '--no-strict',
-		*(str(f.path) for f in query_files),
-	]
+	Value is derived from argument to the "testdb_nqueries" marker, if any. This can be set on
+	specific test functions to improve speed by only using a subset of the query files.
 
-	cli.main(args, standalone_mode=False)
+	Based on this example:
+	https://docs.pytest.org/en/6.2.x/fixture.html#using-markers-to-pass-data-to-fixtures
+	"""
+	marker = request.node.get_closest_marker("testdb_nqueries")
+	return None if marker is None else marker.args[0]
 
-	# Detailed checks of output format are already present in tests for exporter classes, just check
-	# that the exported data matches an export of the reference results
+@pytest.fixture()
+def query_files(testdb_queries, nqueries):
+	"""Paths to query files."""
+	files = [query['file'] for query in testdb_queries]
+	return files if nqueries is None else files[:nqueries]
+
+@pytest.fixture()
+def results(testdb_results, nqueries):
+	"""Results object to compare output to."""
+	if nqueries is None:
+		return testdb_results
+
+	results = copy(testdb_results)
+	results.items = results.items[:nqueries]
+	return results
+
+
+def make_args(query_files, db=None, output=None, outfmt=None, strict=False):
+	"""Make command line arguments for query file."""
+	args = []
+
+	if db is not None:
+		args.append(f'--db={db}')
+
+	args.append('query')
+	args.append('--strict' if strict else '--no-strict')
+
+	if output is not None:
+		args.append(f'--output={output}')
+	if outfmt is not None:
+		args.append(f'--outfmt={outfmt}')
+
+	args.extend([str(f.path) for f in query_files])
+
+	return args
+
+
+def export_to_buffer(results, exporter):
+	buf = StringIO()
+	exporter.export(buf, results)
+	buf.seek(0)
+	return buf
+
+
+def check_results(results_file, query_files, out_fmt, ref_results):
+	"""Check results output matches reference QueryResults object.
+
+	Detailed checks of output format are already present in tests for exporter classes, just check
+	that the exported data matches an export of the reference results.
+	"""
 	if out_fmt == 'json':
-		_check_results_json(results_file, query_files, testdb_results)
+		_check_results_json(results_file, query_files, ref_results)
 	elif out_fmt == 'csv':
-		_check_results_csv(results_file, query_files, testdb_results)
+		_check_results_csv(results_file, query_files, ref_results)
 	else:
-		assert False
-
+		raise ValueError(f'Invalid out_fmt {out_fmt!r}')
 
 def _check_results_json(results_file, query_files, ref_results):
 	with results_file.open() as f:
 		data = json.load(f)
 
 	# Equivalent data for reference results
-	exporter = JSONResultsExporter()
-	buf = StringIO()
-	exporter.export(buf, ref_results)
-	buf.seek(0)
+	buf = export_to_buffer(ref_results, JSONResultsExporter())
 	ref_data = json.load(buf)
 
-	assert data['gambit_version'] == GAMBIT_VERSION
 	assert len(data['items']) == len(query_files)
 
 	for key in ['genomeset', 'signaturesmeta', 'extra']:
@@ -70,15 +109,11 @@ def _check_results_json(results_file, query_files, ref_results):
 		assert item['closest_genome'] == ref_item['closest_genome']
 		assert np.isclose(item['closest_genome_distance'], ref_item['closest_genome_distance'])
 
-
 def _check_results_csv(results_file, query_files, ref_results):
 	with results_file.open() as f:
 		rows = list(DictReader(f))
 
-	exporter = CSVResultsExporter()
-	buf = StringIO()
-	exporter.export(buf, ref_results)
-	buf.seek(0)
+	buf = export_to_buffer(ref_results, CSVResultsExporter())
 	ref_rows = list(DictReader(buf))
 
 	assert len(rows) == len(ref_rows)
@@ -97,3 +132,58 @@ def _check_results_csv(results_file, query_files, ref_results):
 
 		for key in cmp_cols:
 			assert row[key] == ref_row[key]
+
+
+@pytest.mark.parametrize('out_fmt', ['csv', 'json'])
+def test_full_query(testdb_files,
+                    query_files,
+                    results,
+                    out_fmt,
+                    tmp_path,
+                    ):
+	"""Run a full query using the command line interface."""
+
+	results_file = tmp_path / ('results.' + out_fmt)
+
+	args = make_args(
+		query_files,
+		db=testdb_files["root"],
+		output=results_file,
+		outfmt=out_fmt,
+		strict=results.params.classify_strict,
+	)
+
+	runner = CliRunner()
+	result = runner.invoke(cli, args)
+	assert result.exit_code == 0
+
+	check_results(results_file, query_files, out_fmt, results)
+
+
+@pytest.mark.testdb_nqueries(10)
+def test_db_from_env(testdb_files,
+                     query_files,
+                     results,
+                     tmp_path,
+                     ):
+	"""Test setting the database directory using an environment variable instead of an argument."""
+
+	out_fmt = 'csv'
+	results_file = tmp_path / ('results.' + out_fmt)
+
+	args = make_args(
+		query_files,
+		output=results_file,
+		outfmt=out_fmt,
+		strict=results.params.classify_strict,
+	)
+
+	env = dict(
+		GAMBIT_DB_PATH=str(testdb_files["root"]),
+	)
+
+	runner = CliRunner()
+	result = runner.invoke(cli, args, env=env)
+	assert result.exit_code == 0
+
+	check_results(results_file, query_files, out_fmt, results)
