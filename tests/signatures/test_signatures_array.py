@@ -14,53 +14,64 @@ def sigarray(request):
 	return make_signatures(8, 100, request.param)
 
 
-@pytest.fixture()
-def refarray(sigarray):
-	"""Numpy array equivalent to `sigarray`."""
-	return np.asarray(sigarray, dtype=object)
+class TestSignatureArray:
+	"""Test the SignatureArray class."""
 
+	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
+		"""Test implementation of AbstractSignatureArray interface."""
 
-class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
-	"""Test implementation of AbstractSignatureArray interface."""
+		@pytest.fixture()
+		def refarray(self, sigarray):
+			"""Numpy array equivalent to `sigarray`."""
+			return np.asarray(sigarray, dtype=object)
 
-	def check_getindex_scalar(self, sigarray, refarray, index, result, refresult):
-		super().check_getindex_scalar(sigarray, refarray, index, result, refresult)
-		assert isinstance(result, np.ndarray)
-		assert result.dtype == sigarray.dtype
+		def check_getindex_scalar(self, sigarray, refarray, index, result, refresult):
+			super().check_getindex_scalar(sigarray, refarray, index, result, refresult)
+			assert isinstance(result, np.ndarray)
+			assert result.dtype == sigarray.dtype
 
-	def check_getindex_subseq(self, sigarray, refarray, index, result, refresult):
-		super().check_getindex_subseq(sigarray, refarray, index, result, refresult)
-		assert isinstance(result, SignatureArray)
+		def check_getindex_subseq(self, sigarray, refarray, index, result, refresult):
+			super().check_getindex_subseq(sigarray, refarray, index, result, refresult)
+			assert isinstance(result, SignatureArray)
 
+	def test_uninitialized(self, sigarray):
+		"""Test creating with the uninitialized() class method."""
 
-def test_uninitialized(refarray):
-	"""Test creating with uninitialized() class method."""
+		sa2 = SignatureArray.uninitialized(sigarray.sizes())
+		assert len(sa2) == len(sigarray)
 
-	lengths = list(map(len, refarray))
-	sigarray = SignatureArray.uninitialized(lengths)
-	assert len(sigarray) == len(refarray)
+		for i, sig in enumerate(sigarray):
+			assert sigarray.sizeof(i) == len(sig)
 
-	for i in range(len(sigarray)):
-		assert sigarray.sizeof(i) == len(refarray[i])
+	def test_construct_from_list(self, sigarray):
+		"""Test construction from generic sequence type containing signatures."""
 
-
-def test_construct_from_signaturearray(sigarray):
-	"""Test construction from another SignatureArray."""
-	sa2 = SignatureArray(sigarray)
-	assert sa2.dtype == sigarray.dtype
-	assert sa2 == sigarray
-
-	for dtype in map(np.dtype, ['i8', 'u4']):
-		sa2 = SignatureArray(sigarray, dtype=dtype)
-		assert sa2.dtype == dtype
+		sa2 = SignatureArray(list(sigarray))
+		# assert sa2.dtype == sigarray.dtype
 		assert sa2 == sigarray
 
+		for dtype in map(np.dtype, ['i8', 'u4']):
+			sa2 = SignatureArray(list(sigarray), dtype=dtype)
+			assert sa2.dtype == dtype
+			assert sa2 == sigarray
 
-def test_empty():
-	"""Really an edge case, but test it anyways."""
+	def test_construct_from_signaturearray(self, sigarray):
+		"""Test construction from another SignatureArray."""
 
-	sigarray = SignatureArray([])
-	assert len(sigarray) == 0
+		sa2 = SignatureArray(sigarray)
+		assert sa2.dtype == sigarray.dtype
+		assert sa2 == sigarray
 
-	with pytest.raises(IndexError):
-		sigarray[0]
+		for dtype in map(np.dtype, ['i8', 'u4']):
+			sa2 = SignatureArray(sigarray, dtype=dtype)
+			assert sa2.dtype == dtype
+			assert sa2 == sigarray
+
+	def test_empty(self):
+		"""Really an edge case, but test it anyways."""
+
+		sigarray = SignatureArray([])
+		assert len(sigarray) == 0
+
+		with pytest.raises(IndexError):
+			sigarray[0]
