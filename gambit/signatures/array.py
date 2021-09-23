@@ -1,3 +1,5 @@
+"""Array-like objects for storing k-mer signatures."""
+
 from abc import abstractmethod
 from typing import Sequence, Optional, Union
 

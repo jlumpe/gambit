@@ -1,4 +1,4 @@
-"""Search for k-mer matches in sequence data."""
+"""Calculate k-mer signatures from sequence data."""
 
 from typing import Optional, List, Sequence, MutableSet
 from abc import abstractmethod
