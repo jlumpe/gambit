@@ -39,15 +39,16 @@ class TestSignatureArray:
 
 		sa2 = SignatureArray.uninitialized(sigarray.sizes())
 		assert len(sa2) == len(sigarray)
+		assert np.array_equal(sa2.sizes(), sigarray.sizes())
 
-		for i, sig in enumerate(sigarray):
-			assert sigarray.sizeof(i) == len(sig)
+		for i, sig in enumerate(sa2):
+			assert sa2.sizeof(i) == len(sig)
 
 	def test_construct_from_list(self, sigarray):
 		"""Test construction from generic sequence type containing signatures."""
 
 		sa2 = SignatureArray(list(sigarray))
-		# assert sa2.dtype == sigarray.dtype
+		assert sa2.dtype == sigarray.dtype
 		assert sa2 == sigarray
 
 		for dtype in map(np.dtype, ['i8', 'u4']):

@@ -88,14 +88,15 @@ class SignatureArray(ConcatenatedSignatureArray):
 		self.values = values
 		self.bounds = bounds
 
-	def __init__(self, signatures : Sequence[KmerSignature], dtype: Optional[np.dtype] = None):
+	def __init__(self, signatures: Sequence[KmerSignature], dtype: Optional[np.dtype] = None):
 		"""
 		Parameters
 		----------
 		signatures
 			Sequence of k-mer signatures.
 		dtype
-			Numpy dtype of :attr:`values` array.
+			Numpy dtype of :attr:`values` array. If None will use dtype of first element of
+			``signatures``.
 		"""
 		if isinstance(signatures, SignatureArray):
 			# Can just copy arrays directly
@@ -109,8 +110,12 @@ class SignatureArray(ConcatenatedSignatureArray):
 
 		else:
 			# Prepare with uninitialized values array
+			if dtype is None:
+				# Get dtype from first signature
+				dtype = signatures[0].dtype if signatures else np.dtype('u8')
+
 			lengths = list(map(len, signatures))
-			values, bounds = self._unint_arrays(lengths, np.dtype('u8') if dtype is None else dtype)
+			values, bounds = self._unint_arrays(lengths, dtype)
 			self._init_from_arrays(values, bounds)
 
 			# Copy signatures to values array
