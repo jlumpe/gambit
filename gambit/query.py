@@ -213,7 +213,7 @@ def query_parse(db: GAMBITDatabase,
 	\\**kw
 		Additional keyword arguments passed to :func:`.query`\\ .
 	"""
-	from gambit.search import calc_file_signatures
+	from gambit.signatures.calc import calc_file_signatures
 
 	pconf = progress_config(kw.pop('progress', None))
 

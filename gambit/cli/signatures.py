@@ -9,7 +9,7 @@ from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
 from gambit.signatures import SignaturesMeta, SignatureArray
 from gambit.signatures.hdf5 import HDF5Signatures
-from gambit.search import calc_file_signatures
+from gambit.signatures.calc import calc_file_signatures
 from gambit.util.progress import ClickProgressMeter
 
 

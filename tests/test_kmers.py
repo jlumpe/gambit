@@ -305,7 +305,7 @@ class TestKmerSpecConversion:
 		KmerSpec(7, 'ATGACGT'),  # Extend prefix and reduce k further
 	])
 	def test_convert(self, seqs, to_kspec):
-		from gambit.search import calc_signature
+		from gambit.signatures.calc import calc_signature
 
 		from_kspec = KmerSpec(11, 'ATGAC')
 

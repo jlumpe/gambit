@@ -7,11 +7,10 @@ import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-from gambit.search import calc_signature, calc_signature_parse, calc_file_signature, \
+from gambit.signatures.calc import calc_signature, calc_signature_parse, calc_file_signature, \
 	calc_file_signatures
 from gambit.kmers import KmerSpec, revcomp, dense_to_sparse, sparse_to_dense, index_to_kmer
 from gambit.test import fill_bytearray, make_kmer_seq, check_progress, SEQ_TYPES, convert_seq
-
 from gambit.io.seq import SequenceFile
 import gambit.io.util as ioutil
 from gambit.signatures import sigarray_eq

@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from gambit.kmers import KmerSpec
-from gambit.search import calc_signature, ArrayAccumulator, SetAccumulator
+from gambit.signatures.calc import calc_signature, ArrayAccumulator, SetAccumulator
 from gambit.test import random_seq
 
 
