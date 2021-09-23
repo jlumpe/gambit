@@ -38,18 +38,25 @@ def bernoulli(size: Union[int, tuple], p: float) -> np.ndarray:
 	return np.random.choice([False, True], size, p=[1 - p, p])
 
 
-def make_signatures(k: int, n: int, dtype: np.dtype = np.dtype('u8')) -> SignatureArray:
+def make_signatures(k_or_kspec: Union[int, KmerSpec], n: int, dtype: np.dtype = np.dtype('u8')) -> SignatureArray:
 	"""Make artificial k-mer signatures.
 
 	Parameters
 	----------
-	k
+	k_or_kspec
 	n
 		Number of signatures to create.
 	dtype
 		Numpy dtype of signatures.
 	"""
-	nk = nkmers(k)
+	if isinstance(k_or_kspec, int):
+		kspec = KmerSpec(k_or_kspec, 'A')
+	elif isinstance(k_or_kspec, KmerSpec):
+		kspec = k_or_kspec
+	else:
+		raise TypeError(f'Expected int or KmerSpec, got {type(k_or_kspec)}')
+
+	nk = kspec.nkmers
 
 	# Uniform probability for including a k-mer
 	# .005 is about what we see in real genomes with k=11
@@ -73,7 +80,7 @@ def make_signatures(k: int, n: int, dtype: np.dtype = np.dtype('u8')) -> Signatu
 	vec = bernoulli(nk, p) & ~core_vec
 	signatures_list.append(dense_to_sparse(vec))
 
-	return SignatureArray(signatures_list, dtype=dtype)
+	return SignatureArray(signatures_list, kspec, dtype=dtype)
 
 
 def random_seq(n: int, chars: str = 'ACGT') -> bytes:

@@ -49,6 +49,7 @@ class AbstractSignatureArrayTests:
 		"""
 		assert isinstance(result, AbstractSignatureArray)
 		assert sigarray_eq(result, refresult)
+		assert result.kmerspec == sigarray.kmerspec
 		assert result.dtype == sigarray.dtype
 
 	def check_getindex_slice(self, sigarray, refarray, index, result, refresult):

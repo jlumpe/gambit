@@ -5,6 +5,7 @@ from typing import Sequence, Optional
 import numpy as np
 
 from .base import KmerSignature, AbstractSignatureArray
+from gambit.kmers import KmerSpec
 from gambit._cython.metric import BOUNDS_DTYPE
 from gambit.util.indexing import AdvancedIndexingMixin
 
@@ -34,10 +35,10 @@ class ConcatenatedSignatureArray(AdvancedIndexingMixin, AbstractSignatureArray):
 
 		values = self.values[self.bounds[start]:self.bounds[stop]]
 		bounds = self.bounds[start:(stop + 1)] - self.bounds[start]
-		return SignatureArray.from_arrays(values, bounds)
+		return SignatureArray.from_arrays(values, bounds, self.kmerspec)
 
 	def _getitem_int_array(self, indices):
-		out = SignatureArray.uninitialized([self.sizeof(i) for i in indices], dtype=self.values.dtype)
+		out = SignatureArray.uninitialized([self.sizeof(i) for i in indices], self.kmerspec, dtype=self.values.dtype)
 		for i, idx in enumerate(indices):
 			np.copyto(out[i], self._getitem_int(idx), casting='unsafe')
 
@@ -77,27 +78,37 @@ class SignatureArray(ConcatenatedSignatureArray):
 	bounds : np.ndarray
 
 	@classmethod
-	def _unint_arrays(cls, lengths, dtype):
+	def _uninit_arrays(cls, lengths, dtype):
 		"""Get uninitialized values array and bounds array from signature lengths."""
 		bounds = np.zeros(len(lengths) + 1, dtype=BOUNDS_DTYPE)
 		np.cumsum(lengths, dtype=BOUNDS_DTYPE, out=bounds[1:])
 		values = np.empty(bounds[-1], dtype=dtype)
 		return values, bounds
 
-	def _init_from_arrays(self, values, bounds):
+	def _init_from_arrays(self, values, bounds, kmerspec):
 		self.values = values
 		self.bounds = bounds
+		self.kmerspec = kmerspec
 
-	def __init__(self, signatures: Sequence[KmerSignature], dtype: Optional[np.dtype] = None):
+	def __init__(self, signatures: Sequence[KmerSignature], kmerspec: Optional[KmerSpec] = None, dtype: Optional[np.dtype] = None):
 		"""
 		Parameters
 		----------
 		signatures
 			Sequence of k-mer signatures.
+		kmerspec
+			K-mer spec used to calculate signatures. If None will take from ``signatures`` if it is
+			an :class:`AbstractSignatureArray` instance.
 		dtype
 			Numpy dtype of :attr:`values` array. If None will use dtype of first element of
 			``signatures``.
 		"""
+		if kmerspec is None:
+			if isinstance(signatures, AbstractSignatureArray):
+				kmerspec = signatures.kmerspec
+			else:
+				raise TypeError('kmerspec cannot be None if signatures is not an instance of AbstractSignatureArray')
+
 		if isinstance(signatures, SignatureArray):
 			# Can just copy arrays directly
 			if dtype is None:
@@ -106,41 +117,43 @@ class SignatureArray(ConcatenatedSignatureArray):
 				values = signatures.values.astype(dtype)
 			bounds = signatures.bounds.copy()
 
-			self._init_from_arrays(values, bounds)
+			self._init_from_arrays(values, bounds, kmerspec)
 
 		else:
 			# Prepare with uninitialized values array
 			if dtype is None:
 				# Get dtype from first signature
-				dtype = signatures[0].dtype if signatures else np.dtype('u8')
+				dtype = signatures[0].dtype if signatures else kmerspec.index_dtype
 
 			lengths = list(map(len, signatures))
-			values, bounds = self._unint_arrays(lengths, dtype)
-			self._init_from_arrays(values, bounds)
+			values, bounds = self._uninit_arrays(lengths, dtype)
+			self._init_from_arrays(values, bounds, kmerspec)
 
 			# Copy signatures to values array
 			for i, sig in enumerate(signatures):
 				np.copyto(self[i], sig, casting='unsafe')
 
 	@classmethod
-	def from_arrays(cls, values : np.ndarray, bounds : np.ndarray) -> 'SignatureArray':
+	def from_arrays(cls, values: np.ndarray, bounds: np.ndarray, kmerspec: KmerSpec) -> 'SignatureArray':
 		"""Create directly from values and bounds arrays."""
 		sa = cls.__new__(cls)
-		sa._init_from_arrays(values, bounds)
+		sa._init_from_arrays(values, bounds, kmerspec)
 		return sa
 
 	@classmethod
-	def uninitialized(cls, lengths : Sequence[int], dtype: np.dtype = np.dtype('u8')) -> 'SignatureArray':
+	def uninitialized(cls, lengths: Sequence[int], kmerspec: KmerSpec, dtype: np.dtype = None) -> 'SignatureArray':
 		"""Create with an uninitialized values array.
 
 		Parameters
 		----------
 		lengths
 			Sequence of lengths for each sub-array/signature.
+		kmerspec
 		dtype
 			Numpy dtype of shared coordinates array.
 		"""
-		return cls.from_arrays(*cls._unint_arrays(lengths, dtype))
+		values, bounds = cls._uninit_arrays(lengths, kmerspec.index_dtype if dtype is None else dtype)
+		return cls.from_arrays(values, bounds, kmerspec)
 
 	def __repr__(self):
 		return f'<{type(self).__name__} length={len(self)} values.dtype={self.values.dtype}>'

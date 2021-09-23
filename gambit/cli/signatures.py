@@ -153,7 +153,7 @@ def create(ctxobj: CLIContext,
 		ids = [f.path.name for f in seqfiles]
 
 	sigs = calc_file_signatures(kspec, seqfiles, progress=ClickProgressMeter)
-	sigs = SignatureArray(sigs, dtype=kspec.index_dtype)
+	sigs = SignatureArray(sigs, kspec, dtype=kspec.index_dtype)
 
 	with h5.File(output, 'w') as f:
 		HDF5Signatures.create(f, kspec, sigs, ids, meta)

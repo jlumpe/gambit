@@ -3,6 +3,8 @@ from typing import NewType, Sequence, Union
 
 import numpy as np
 
+from gambit.kmers import KmerSpec
+
 #: Type for k-mer signatures (k-mer sets in sparse coordinate format)
 KmerSignature = NewType('KmerSignature', np.ndarray)
 # TODO - use nptyping package to specify dimensions and data type?
@@ -27,9 +29,12 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 
 	Attributes
 	----------
+	kmerspec
+		K-mer spec used to calculate signatures.
 	dtype
 		Numpy data type of signatures.
 	"""
+	kmerspec: KmerSpec
 	dtype: np.dtype
 
 	@abstractmethod
@@ -55,7 +60,7 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 		pass
 
 	def __eq__(self, other):
-		if isinstance(other, Sequence):
-			return sigarray_eq(self, other)
+		if isinstance(other, AbstractSignatureArray):
+			return self.kmerspec == other.kmerspec and sigarray_eq(self, other)
 		else:
 			return NotImplemented

@@ -9,6 +9,7 @@ from gambit.metric import jaccard_sparse, jaccarddist_sparse, jaccard_bits, \
 	jaccard_generic, jaccard_sparse_array, jaccard_sparse_matrix, SCORE_DTYPE, BOUNDS_DTYPE
 from gambit.signatures.convert import sparse_to_dense
 from gambit.signatures import SignatureArray
+from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
 
 
@@ -22,17 +23,15 @@ from gambit.test import make_signatures
 	],
 	scope='module',
 )
-def signatures_data(request, test_data):
-	"""Tuple of (k, SignatureArray) to test on."""
+def sigs(request, test_data):
+	"""SignatureArray to test on."""
 
 	if request.param is None:
 		# Load signatures from file
-		k = 11
-
 		with open(test_data / 'signatures/signatures.pickle', 'rb') as fobj:
 			signatures_list = pickle.load(fobj)
 
-		sigs = SignatureArray(signatures_list)
+		sigs = SignatureArray(signatures_list, KmerSpec(11, 'ATGAC'))
 
 	else:
 		# Create random signatures
@@ -41,19 +40,17 @@ def signatures_data(request, test_data):
 		np.random.seed(0)
 		sigs = make_signatures(k, 40, dtype)
 
-	return k, sigs
+	return sigs
 
 
-def test_jaccard_single(signatures_data):
+def test_jaccard_single(sigs):
 	"""Test calculating single scores at a time."""
-
-	k, sigs = signatures_data
 
 	# Iterate over all pairs
 	for i, sparse1 in enumerate(sigs):
-		dense1 = sparse_to_dense(k, sparse1)
+		dense1 = sparse_to_dense(sigs.kmerspec, sparse1)
 		for j, sparse2 in enumerate(sigs):
-			dense2 = sparse_to_dense(k, sparse2)
+			dense2 = sparse_to_dense(sigs.kmerspec, sparse2)
 
 			score = jaccard_sparse(sparse1, sparse2)
 
@@ -75,15 +72,13 @@ def test_jaccard_single(signatures_data):
 
 
 @pytest.mark.parametrize('alt_bounds_dtype', [False, True])
-def test_jaccard_sparse_array(signatures_data, alt_bounds_dtype):
+def test_jaccard_sparse_array(sigs, alt_bounds_dtype):
 	"""Test jaccard_sparse_array() function."""
-
-	k, sigs = signatures_data
 
 	# The inner Cython function takes a specific type for the bounds array.
 	# Try with this type and a different type, should be converted automatically by the outer Python func
 	if alt_bounds_dtype:
-		sigs = SignatureArray.from_arrays(sigs.values, sigs.bounds.astype('i4'))
+		sigs = SignatureArray.from_arrays(sigs.values, sigs.bounds.astype('i4'), sigs.kmerspec)
 		assert sigs.bounds.dtype != BOUNDS_DTYPE
 	else:
 		assert sigs.bounds.dtype == BOUNDS_DTYPE
@@ -123,16 +118,14 @@ class TestJaccardSparseMatrix:
 		return np.empty((len(refs), len(queries)), dtype=dtype)
 
 	@pytest.fixture()
-	def queries(self, signatures_data):
+	def queries(self, sigs):
 		"""queries argument."""
-		k, sigs = signatures_data
 		# Make it a little different than the reference signatures
 		return sigs[::2]
 
 	@pytest.fixture()
-	def refs_array(self, signatures_data):
+	def refs_array(self, sigs):
 		"""refs argument as SignatureArray."""
-		k, sigs = signatures_data
 		# Make it a little different than the query signatures
 		return sigs[5:]
 

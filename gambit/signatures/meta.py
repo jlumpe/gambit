@@ -45,14 +45,11 @@ class ReferenceSignatures(AbstractSignatureArray):
 
 	Attributes
 	----------
-	kmerspec
-		K-mer spec used to calculate signatures.
 	ids
 		Array of unique string or integer IDs for each signature. Length should be equal to length of
 		``ReferenceSignatures`` object.
 	meta
 		Other metadata describing signatures.
 	"""
-	kmerspec: KmerSpec
 	ids: Sequence
 	meta: SignaturesMeta
