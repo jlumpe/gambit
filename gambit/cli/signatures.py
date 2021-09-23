@@ -2,7 +2,6 @@ from typing import Optional, TextIO
 import sys
 
 import click
-import numpy as np
 import h5py as h5
 
 from .common import CLIContext, seq_file_params, get_seq_files

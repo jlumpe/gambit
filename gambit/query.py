@@ -1,5 +1,5 @@
 """Run queries against a GAMBIT database to predict taxonomy of genome sequences."""
-from _warnings import warn
+from warnings import warn
 from datetime import datetime
 from typing import Sequence, Optional, Union, List, Dict, Any
 
