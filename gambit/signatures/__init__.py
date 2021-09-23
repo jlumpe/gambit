@@ -1,5 +1,5 @@
 """Calculate k-mer and store collections of k-mer signatures."""
 
-from .base import KmerSignature
+from .base import KmerSignature, sigarray_eq
 from .meta import SignaturesMeta
-from .array import SignatureArray, sigarray_eq
+from .array import SignatureArray
