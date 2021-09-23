@@ -4,7 +4,8 @@ from typing import Sequence, Union
 
 import numpy as np
 
-from gambit.kmers import KmerSignature, KmerSpec, nkmers, kmer_to_index
+from .base import KmerSignature
+from gambit.kmers import KmerSpec, nkmers, kmer_to_index
 
 
 def dense_to_sparse(vec: Sequence[bool]) -> KmerSignature:

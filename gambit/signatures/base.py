@@ -1,9 +1,15 @@
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping, Any, NewType
 
+import numpy as np
 from attr import attrs, attrib
 
 from gambit.kmers import KmerSpec
 from gambit.signatures.array import AbstractSignatureArray
+
+
+#: Type for k-mer signatures (k-mer sets in sparse coordinate format)
+KmerSignature = NewType('KmerSignature', np.ndarray)
+# TODO - use nptyping package to specify dimensions and data type?
 
 
 @attrs()

@@ -8,8 +8,8 @@ from contextlib import nullcontext
 import numpy as np
 from Bio import SeqIO
 
-from gambit.kmers import DNASeq, KmerSpec, KmerSignature, find_kmers, kmer_to_index, nkmers, \
-	index_dtype
+from .base import KmerSignature
+from gambit.kmers import DNASeq, KmerSpec, find_kmers, kmer_to_index, nkmers, index_dtype
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
 

@@ -6,7 +6,7 @@ from typing import Sequence, Optional, Union
 import numpy as np
 
 from gambit._cython.metric import BOUNDS_DTYPE
-from gambit.kmers import KmerSignature
+from gambit.signatures.base import KmerSignature
 from gambit.util.indexing import AdvancedIndexingMixin
 
 

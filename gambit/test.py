@@ -6,8 +6,8 @@ from contextlib import contextmanager
 import numpy as np
 from Bio.Seq import Seq
 
-from gambit.kmers import KmerSpec, KmerSignature, kmer_to_index, revcomp, nkmers, seq_to_bytes
-from gambit.signatures import SignatureArray
+from gambit.kmers import KmerSpec, kmer_to_index, revcomp, nkmers, seq_to_bytes
+from gambit.signatures import KmerSignature, SignatureArray
 from gambit.signatures.convert import dense_to_sparse
 from gambit.query import QueryResultItem
 from gambit.classify import ClassifierResult, GenomeMatch

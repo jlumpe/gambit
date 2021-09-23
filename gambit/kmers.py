@@ -11,7 +11,7 @@ bytes containing ascii-encoded nucleotide codes.
 	sequences.
 """
 
-from typing import Union, NewType, Dict, Any, Iterator
+from typing import Union, Dict, Any, Iterator
 
 import numpy as np
 from attr import attrs, attrib
@@ -25,12 +25,6 @@ from gambit.io.json import Jsonable
 # Byte representations of the four nucleotide codes in the order used for
 # indexing k-mer sequences
 NUCLEOTIDES = b'ACGT'
-
-
-#: Type for k-mer signatures (k-mer sets in sparse coordinate format)
-KmerSignature = NewType('KmerSignature', np.ndarray)
-# TODO - use nptyping package to specify dimensions and data type?
-
 
 #: DNA sequence types accepted for k-mer search / signature calculation.
 DNASeq = Union[str, bytes, bytearray, Seq]
