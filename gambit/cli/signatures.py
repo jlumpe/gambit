@@ -4,8 +4,7 @@ import sys
 import click
 import h5py as h5
 
-from .common import CLIContext, seq_file_params, get_seq_files
-from .util import print_table
+from .common import CLIContext, seq_file_params, get_seq_files, print_table
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
 from gambit.signatures import SignaturesMeta, SignatureArray
