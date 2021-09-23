@@ -310,13 +310,13 @@ class TestKmerSpecConversion:
 		from_kspec = KmerSpec(11, 'ATGAC')
 
 		for seq in seqs:
-			from_vec = calc_signature(from_kspec, seq, sparse=False)
-			from_sig = kmers.dense_to_sparse(from_vec)
+			from_sig = calc_signature(from_kspec, seq)
+			from_vec = kmers.sparse_to_dense(from_kspec.k, from_sig)
 
 			to_vec = kmers.convert_dense(from_kspec, to_kspec, from_vec)
 			to_sig = kmers.convert_sparse(from_kspec, to_kspec, from_sig)
 
-			found_vec = calc_signature(to_kspec, seq, sparse=False)
+			found_sig = calc_signature(to_kspec, seq)
 
-			assert np.array_equal(to_vec, found_vec)
-			assert np.array_equal(to_sig, kmers.dense_to_sparse(found_vec))
+			assert np.array_equal(to_sig, found_sig)
+			assert np.array_equal(to_vec, kmers.sparse_to_dense(to_kspec.k, found_sig))
