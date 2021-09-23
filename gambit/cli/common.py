@@ -9,7 +9,8 @@ from sqlalchemy.orm import sessionmaker
 from gambit.db import locate_db_files, GAMBITDatabase
 from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
-from gambit.signatures.hdf5 import HDF5Signatures, ReferenceSignatures
+from gambit.signatures.hdf5 import HDF5Signatures
+from gambit.signatures.meta import ReferenceSignatures
 from gambit.io.seq import SequenceFile
 
 

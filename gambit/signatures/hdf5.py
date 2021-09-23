@@ -6,7 +6,7 @@ from typing import Sequence, Union, Optional
 import numpy as np
 import h5py as h5
 
-from .base import SignaturesMeta, ReferenceSignatures
+from .meta import SignaturesMeta, ReferenceSignatures
 from .array import SignatureArray, ConcatenatedSignatureArray
 from gambit.kmers import KmerSpec
 from gambit.io.util import FilePath
