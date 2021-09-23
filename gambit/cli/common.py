@@ -2,82 +2,148 @@ from typing import Optional, List, Dict, Any
 from pathlib import Path
 
 import click
-from attr import attrs, attrib
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
-from gambit.db import locate_db_files, ReferenceGenomeSet
+from gambit.db import locate_db_files, GAMBITDatabase
+from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
-from gambit.signatures.hdf5 import HDF5Signatures
+from gambit.signatures.hdf5 import HDF5Signatures, ReferenceSignatures
 from gambit.io.seq import SequenceFile
 
 
-@attrs
 class CLIContext:
 	"""Click context object for GAMBIT CLI.
 
+	Loads reference database data lazily the first time it is requested.
+
+	Currently a single option (or environment variable) is used to specify the location of the
+	database files, in the future options may be added to specify the reference genomes SQLite
+	file and genome signatures file separately. Class methods treat them as being independent.
+
 	Attributes
 	----------
+	root_context
+		Click context object from root command group.
 	db_path
 		Path to directory containing database files, specified in root command group.
+	has_genomes
+		Whether reference genome metadata is available.
+	has_signatures
+		Whether reference signatures are available.
+	has_database
+		Whether reference genome metadata and reference signatures are both available.
+	engine
+		SQLAlchemy engine connecting to genomes database.
+	Session
+		SQLAlchemy session maker for genomes database.
+	signatures
+		Reference genome signatures.
 	"""
-	db_path: Optional[Path] = attrib(default=None)
+	root_context: click.Context
+	db_path: Optional[Path]
+	has_genomes: bool
+	has_signatures: bool
+	has_database: bool
+	engine: Optional[Engine]
+	Session: Optional[sessionmaker]
+	signatures: Optional[ReferenceSignatures]
 
-	def __attrs_post_init__(self):
+	def __init__(self, root_context: click.Context):
+		"""
+		Parameters
+		----------
+		root_context
+			Click context object from root command group.
+		"""
+		self.root_context = root_context
+
+		db_path = root_context.params['db_path']
+		self.db_path = None if db_path is None else Path(db_path)
 
 		self._db_found = False
-		self._genomes_path = None
+		self._has_genomes = None
+		self._has_signatures = None
 		self._signatures_path = None
+
 		self._engine = None
-		self._session = None
 		self._Session = None
-		self._gset = None
 		self._signatures = None
 
-	def _require_db(self):
+	def _find_db(self):
+		"""Find database files."""
 		if self._db_found:
 			return
 
 		if self.db_path is None:
-			raise click.ClickException('Must supply path to database directory.')
+			self._has_genomes = self._has_signatures = False
 
-		self._genomes_path, self._signatures_path = locate_db_files(self.db_path)
+		else:
+			self._has_genomes = self._has_signatures = True
+			self._genomes_path, self._signatures_path = locate_db_files(self.db_path)
+
 		self._db_found = True
 
-	def _require_genomes(self):
-		if self._engine is not None:
+	@property
+	def has_genomes(self):
+		if not self._db_found:
+			self._find_db()
+		return self._has_genomes
+
+	@property
+	def has_signatures(self):
+		if not self._db_found:
+			self._find_db()
+		return self._has_signatures
+
+	@property
+	def has_database(self):
+		return self.has_genomes and self.has_signatures
+
+	def require_database(self):
+		"""Raise an exception if genome metadata and signatures are not available."""
+		if not self.has_database:
+			raise click.ClickException('Must supply path to database directory.')
+
+	def require_genomes(self):
+		"""Raise an exception if genome metadata is not available."""
+		self.require_database()
+
+	def require_signatures(self):
+		"""Raise an exception if signatures are not available."""
+		self.require_database()
+
+	def _init_genomes(self):
+		if self._engine is not None or not self.has_genomes:
 			return
 
-		self._require_db()
-
 		self._engine = create_engine(f'sqlite:///{self._genomes_path}')
-		self._Session = sessionmaker(self.engine(), class_=ReadOnlySession)
-		self._session = self._Session()
+		self._Session = sessionmaker(self.engine, class_=ReadOnlySession)
 
-	def engine(self) -> Engine:
-		"""SQLAlchemy engine connecting to database."""
-		self._require_genomes()
+	@property
+	def engine(self):
+		self._init_genomes()
 		return self._engine
 
-	def session(self) -> ReadOnlySession:
-		"""Create a new SQLAlchemy session for the database."""
-		self._require_genomes()
-		return self._session
+	@property
+	def Session(self):
+		self._init_genomes()
+		return self._Session
 
-	def genomeset(self) -> ReferenceGenomeSet:
-		if self._gset is None:
-			self._require_genomes()
-			self._gset = self._session.query(ReferenceGenomeSet).one()
-
-		return self._gset
-
-	def signatures(self) -> HDF5Signatures:
-		if self._signatures is None:
-			self._require_db()
+	@property
+	def signatures(self):
+		if self._signatures is None and self.has_signatures:
 			self._signatures = HDF5Signatures.open(self._signatures_path)
 
 		return self._signatures
+
+	def get_database(self) -> GAMBITDatabase:
+		"""Get reference database object."""
+		self.require_database()
+		session = self.Session()
+		gset = only_genomeset(session)
+		return GAMBITDatabase(gset, self.signatures)
 
 
 def seqfmt_option():

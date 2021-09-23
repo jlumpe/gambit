@@ -4,7 +4,6 @@ from typing import TextIO, Optional
 import click
 
 from .common import CLIContext, seq_file_params, get_seq_files
-from gambit.db import GAMBITDatabase
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import ClickProgressMeter
 from gambit.signatures.hdf5 import HDF5Signatures
@@ -59,10 +58,8 @@ def query_cmd(ctxobj: CLIContext,
               **kw,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
-	gset = ctxobj.genomeset()
-	ref_sigs = ctxobj.signatures()
-	db = GAMBITDatabase(gset, ref_sigs)
 
+	db = ctxobj.get_database()
 	seqfiles = get_seq_files(kw)
 	params = QueryParams(classify_strict=strict)
 	exporter = get_exporter(outfmt)

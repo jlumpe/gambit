@@ -24,7 +24,8 @@ def make_shell_ns(ctx) -> Dict[str, Any]:
 	from importlib import import_module
 
 	ns = dict(
-		ctx=ctx,
+		click_ctx=ctx,
+		ctx=ctx.obj,
 	)
 
 	# Import modules into namespace

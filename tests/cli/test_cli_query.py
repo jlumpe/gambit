@@ -215,31 +215,3 @@ def test_sigfile(testdb_files,
 		check_input_path=False,
 		input_labels=testdb_query_signatures.ids,
 	)
-
-
-@pytest.mark.testdb_nqueries(10)
-def test_db_from_env(testdb_files,
-                     query_files,
-                     results,
-                     tmp_path,
-                     ):
-	"""Test setting the database directory using an environment variable instead of an argument."""
-
-	out_fmt = 'csv'
-	results_file = tmp_path / ('results.' + out_fmt)
-
-	args = make_args(
-		query_files=query_files,
-		output=results_file,
-		outfmt=out_fmt,
-		strict=results.params.classify_strict,
-	)
-
-	env = dict(
-		GAMBIT_DB_PATH=str(testdb_files['root']),
-	)
-
-	result = invoke_cli(args, env=env)
-	assert result.exit_code == 0
-
-	check_results(results_file, query_files, out_fmt, results)
