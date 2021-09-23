@@ -7,7 +7,7 @@ import numpy as np
 
 from gambit.metric import jaccard_sparse, jaccarddist_sparse, jaccard_bits, \
 	jaccard_generic, jaccard_sparse_array, jaccard_sparse_matrix, SCORE_DTYPE, BOUNDS_DTYPE
-from gambit.kmers import sparse_to_dense
+from gambit.signatures.convert import sparse_to_dense
 from gambit.signatures import SignatureArray
 from gambit.test import make_signatures
 

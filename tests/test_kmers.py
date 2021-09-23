@@ -6,7 +6,7 @@ import numpy as np
 from gambit import kmers
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
-from gambit.test import random_seq, SEQ_TYPES, convert_seq, make_kmer_seq
+from gambit.test import SEQ_TYPES, convert_seq, make_kmer_seq
 
 
 # Complements to nucleotide ASCII codes
@@ -187,32 +187,6 @@ def test_find_kmers(seq_type, lower):
 	assert np.array_equal(sorted(found), sig)
 
 
-def test_dense_sparse_conversion():
-	"""Test conversion between dense and sparse representations of k-mer coordinates."""
-
-	for k in range(1, 10):
-
-		kspec = KmerSpec(k, 'ATGAC')
-
-		# Create vector with every 3rd k-mer
-		vec = np.zeros(kspec.nkmers, dtype=bool)
-		vec[np.arange(vec.size) % 3 == 0] = True
-
-		# Convert to coords
-		coords = kmers.dense_to_sparse(vec)
-
-		# Check coords
-		assert len(coords) == vec.sum()
-		for index in coords:
-			assert vec[index]
-
-		# Check coords ascending
-		assert np.all(np.diff(coords) > 0)
-
-		# Check converting back
-		assert np.array_equal(vec, kmers.sparse_to_dense(kspec, coords))
-
-
 def check_revcomp(seq, rc):
 	"""Assert the reverse complement of a sequence is correct."""
 	l = len(seq)
@@ -262,61 +236,3 @@ def test_revcomp():
 
 		check_revcomp(rc, seq2)
 		assert kmers.revcomp(rc) == seq2
-
-
-class TestKmerSpecConversion:
-	"""Test converting signatures from one KmerSpec to another."""
-
-	def test_can_convert(self):
-		from_kspec = KmerSpec(11, 'ATGAC')
-
-		compatible = [
-			KmerSpec(11, 'ATGAC'),
-			KmerSpec(8, 'ATGAC'),
-			KmerSpec(10, 'ATGACA'),
-			KmerSpec(8, 'ATGACA'),
-		]
-
-		for to_kspec in compatible:
-			assert kmers.can_convert(from_kspec, to_kspec)
-			kmers.check_can_convert(from_kspec, to_kspec)
-
-		incompatible = [
-			KmerSpec(11, 'CAGTA'),
-			KmerSpec(12, 'ATGAC'),
-			KmerSpec(11, 'ATGA'),
-			KmerSpec(11, 'ATGACT'),
-		]
-
-		for to_kspec in incompatible:
-			assert not kmers.can_convert(from_kspec, to_kspec)
-			with pytest.raises(ValueError):
-				kmers.check_can_convert(from_kspec, to_kspec)
-
-	@pytest.fixture(scope='class')
-	def seqs(self):
-		np.random.seed(0)
-		return [random_seq(100_000) for _ in range(100)]
-
-	@pytest.mark.parametrize('to_kspec', [
-		KmerSpec(10, 'ATGAC'),   # Reduce k
-		KmerSpec(8, 'ATGAC'),    # Reduce k
-		KmerSpec(9, 'ATGACGT'),  # Extend prefix
-		KmerSpec(7, 'ATGACGT'),  # Extend prefix and reduce k further
-	])
-	def test_convert(self, seqs, to_kspec):
-		from gambit.signatures.calc import calc_signature
-
-		from_kspec = KmerSpec(11, 'ATGAC')
-
-		for seq in seqs:
-			from_sig = calc_signature(from_kspec, seq)
-			from_vec = kmers.sparse_to_dense(from_kspec.k, from_sig)
-
-			to_vec = kmers.convert_dense(from_kspec, to_kspec, from_vec)
-			to_sig = kmers.convert_sparse(from_kspec, to_kspec, from_sig)
-
-			found_sig = calc_signature(to_kspec, seq)
-
-			assert np.array_equal(to_sig, found_sig)
-			assert np.array_equal(to_vec, kmers.sparse_to_dense(to_kspec.k, found_sig))
