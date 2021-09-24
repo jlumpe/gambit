@@ -197,7 +197,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		signatures
 			Array of signatures to store.
 		ids
-			Array of unique string or integer IDs for signatures in ``data``.  Defaults to
+			Array of unique string or integer IDs for signatures in ``signatures``.  Defaults to
 			consecutive integers starting from zero.
 		meta
 			Additional optional metadata to attach.
