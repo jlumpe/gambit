@@ -118,9 +118,9 @@ class TestHDF5Signatures:
 		"""Test implementation of AbstractSignatureArray."""
 
 		@pytest.fixture()
-		def sigarray(self, h5sigs):
+		def instance(self, h5sigs):
 			return h5sigs
 
 		@pytest.fixture()
-		def refarray(self, sigs):
+		def ref_instance(self, sigs):
 			return sigs

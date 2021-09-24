@@ -19,20 +19,20 @@ class TestSignatureArray:
 	"""Test the SignatureArray class."""
 
 	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
-		"""Test implementation of AbstractSignatureArray interface."""
+		"""Test implementation of the AbstractSignatureArray interface."""
 
 		@pytest.fixture()
-		def refarray(self, sigarray):
+		def instance(self, sigarray):
+			"""Instance to test."""
+			return sigarray
+
+		@pytest.fixture()
+		def ref_instance(self, sigarray):
 			"""Numpy array equivalent to `sigarray`."""
 			return np.asarray(sigarray, dtype=object)
 
-		def check_getindex_scalar(self, sigarray, refarray, index, result, refresult):
-			super().check_getindex_scalar(sigarray, refarray, index, result, refresult)
-			assert isinstance(result, np.ndarray)
-			assert result.dtype == sigarray.dtype
-
-		def check_getindex_subseq(self, sigarray, refarray, index, result, refresult):
-			super().check_getindex_subseq(sigarray, refarray, index, result, refresult)
+		def check_getindex_subseq(self, instance, ref_instance, index, result, ref_result):
+			super().check_getindex_subseq(instance, ref_instance, index, result, ref_result)
 			assert isinstance(result, SignatureArray)
 
 	def test_uninitialized(self, sigarray):
