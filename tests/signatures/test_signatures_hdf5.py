@@ -5,7 +5,7 @@ import h5py as h5
 import numpy as np
 
 from gambit.signatures.hdf5 import HDF5Signatures, read_metadata, write_metadata
-from gambit.signatures import SignaturesMeta
+from gambit.signatures import SignaturesMeta, SignatureList
 from gambit.signatures.test import AbstractSignatureArrayTests
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
@@ -113,6 +113,17 @@ class TestHDF5Signatures:
 
 		assert not h5sigs.group
 		assert not h5sigs
+
+	def test_create_from_list(self, sigs, tmp_path):
+		"""Test creating from other AbstractSignatureArray type."""
+		siglist = SignatureList(sigs)
+
+		file = tmp_path / 'test2.h5'
+		with h5.File(file, 'w') as f:
+			HDF5Signatures.create(f, siglist)
+
+		with HDF5Signatures.open(file) as h5sigs:
+			assert h5sigs == siglist
 
 	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
 		"""Test implementation of AbstractSignatureArray."""

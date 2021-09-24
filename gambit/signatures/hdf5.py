@@ -8,7 +8,9 @@ import h5py as h5
 
 from .meta import SignaturesMeta, ReferenceSignatures
 from .array import SignatureArray, ConcatenatedSignatureArray
+from .base import AbstractSignatureArray
 from gambit.kmers import KmerSpec
+from gambit._cython.metric import BOUNDS_DTYPE
 from gambit.io.util import FilePath
 
 
@@ -134,7 +136,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		write_metadata(group, meta)
 
 	@classmethod
-	def _init_datasets(cls, group: h5.Group, signatures: SignatureArray, ids: np.ndarray):
+	def _init_datasets(cls, group: h5.Group, signatures: AbstractSignatureArray, ids: np.ndarray):
 		"""Initialize datasets of group."""
 
 		if ids.dtype.kind == 'U':
@@ -149,8 +151,22 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 			raise ValueError('ids array must contain integers or strings.')
 
 		group.create_dataset('ids', data=ids, dtype=ids_dtype)
-		group.create_dataset('values', data=signatures.values)
-		group.create_dataset('bounds', data=signatures.bounds)
+
+		if isinstance(signatures, SignatureArray):
+			group.create_dataset('values', data=signatures.values)
+			group.create_dataset('bounds', data=signatures.bounds, dtype=BOUNDS_DTYPE)
+
+		else:
+			n = len(signatures)
+			sizes = np.asarray(signatures.sizes())
+
+			bounds = group.create_dataset('bounds', shape=n + 1, dtype=BOUNDS_DTYPE)
+			bounds[0] = 0
+			bounds[1:] = np.cumsum(sizes, dtype=BOUNDS_DTYPE)
+
+			values = group.create_dataset('values', shape=int(bounds[-1]), dtype=signatures.dtype)
+			for i in range(n):
+				values[bounds[i]:bounds[i + 1]] = signatures[i]
 
 	@classmethod
 	def open(cls, path: FilePath, **kw) -> 'HDF5Signatures':
@@ -168,7 +184,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	@classmethod
 	def create(cls,
 	           group: h5.Group,
-	           signatures: SignatureArray,
+	           signatures: AbstractSignatureArray,
 	           ids: Union[Sequence[int], Sequence[str], None] = None,
 	           meta: Optional[SignaturesMeta] = None,
 	           ) -> 'HDF5Signatures':
