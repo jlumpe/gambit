@@ -11,7 +11,11 @@ from gambit.util.indexing import AdvancedIndexingMixin
 
 
 def sigarray_eq(a1: Sequence[KmerSignature], a2: Sequence[KmerSignature]) -> bool:
-	"""Check two sequences of sparse k-mer signatures for equality."""
+	"""Check two sequences of sparse k-mer signatures for equality.
+
+	Unlike :meth:`.AbstractSignatureArray.__eq__` this works on any sequence type containing
+	signatures and does not use the :attr:`.AbstractSignatureArray.kmerspec` attribute.
+	"""
 	return len(a1) == len(a2) and all(map(np.array_equal, a1, a2))
 
 
@@ -60,6 +64,11 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 		pass
 
 	def __eq__(self, other):
+		"""Compare two ``AbstractSignatureArray`` instances for equality.
+
+		Two instances are considered equal if they are equivalent as sequences (see
+		:func:`.sigarray_eq`) and have the same :attr:`kmerspec`.
+		"""
 		if isinstance(other, AbstractSignatureArray):
 			return self.kmerspec == other.kmerspec and sigarray_eq(self, other)
 		else:
