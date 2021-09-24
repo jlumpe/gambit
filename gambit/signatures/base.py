@@ -10,7 +10,7 @@ KmerSignature = NewType('KmerSignature', np.ndarray)
 # TODO - use nptyping package to specify dimensions and data type?
 
 
-def sigarray_eq(a1: Sequence, a2: Sequence) -> bool:
+def sigarray_eq(a1: Sequence[KmerSignature], a2: Sequence[KmerSignature]) -> bool:
 	"""Check two sequences of sparse k-mer signatures for equality."""
 	return len(a1) == len(a2) and all(map(np.array_equal, a1, a2))
 
