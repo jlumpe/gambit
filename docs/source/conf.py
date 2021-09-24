@@ -63,6 +63,12 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 
-# -- Additional options ------------------------------------------------------
+# -- Extension options -------------------------------------------------------
+
+autodoc_default_options = {
+	'members': True,
+	'undoc-members': True,
+	'show-inheritance': True,
+}
 
 todo_include_todos = True
