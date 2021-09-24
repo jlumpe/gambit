@@ -6,7 +6,7 @@ from typing import Iterable, Sequence, Optional
 import numpy as np
 
 from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard, jaccarddist, \
-	_jaccard_parallel
+	_jaccarddist_parallel
 from gambit.signatures import KmerSignature, SignatureArray
 from gambit.signatures.base import AbstractSignatureArray
 from gambit.util.misc import chunk_slices
@@ -33,7 +33,7 @@ def jaccard_generic(set1: Iterable, set2: Iterable) -> float:
 	intersection = len(set1.intersection(set2))
 	union = n1 + n2 - intersection
 
-	return 0 if union == 0 else intersection / union
+	return 1. if union == 0 else intersection / union
 
 
 def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
@@ -47,13 +47,13 @@ def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
 	n2 = np.count_nonzero(bits2)
 	intersection = np.count_nonzero(bits1 & bits2)
 	union = n1 + n2 - intersection
-	return 0 if union == 0 else intersection / union
+	return 1. if union == 0 else intersection / union
 
 
-def jaccard_array(query: KmerSignature, refs: SignatureArray, out: np.ndarray = None, distance: bool = False) -> np.ndarray:
+def jaccarddist_array(query: KmerSignature, refs: SignatureArray, out: np.ndarray = None) -> np.ndarray:
 	"""
-	Calculate Jaccard scores between a query k-mer signature and an array of reference signatures in
-	``SignatureArray`` format.
+	Calculate Jaccard distances between a query k-mer signature and an array of reference signatures
+	in ``SignatureArray`` format.
 
 	This internally uses Cython code that runs in parallel over all signatures in ``sigarray``.
 	Because of Cython limitations ``sigarray.bounds.dtype`` must be ``np.intp``, which is usually
@@ -61,20 +61,18 @@ def jaccard_array(query: KmerSignature, refs: SignatureArray, out: np.ndarray = 
 
 	Parameters
 	----------
-	query : numpy.ndarray
+	query
 		Query k-mer signature in sparse coordinate format (sorted array of k-mer indices).
-	refs : gambit.signatures.SignatureArray
+	refs
 		Array of reference signatures.
-	out : Optional[numpy.ndarray]
+	out
 		Optional pre-allocated array to write results to. Should be the same length as ``sigarray``
 		with dtype ``np.float32``.
-	distance : bool
-		Return Jaccard distances instead of scores.
 
 	Returns
 	-------
 	numpy.ndarray
-		Jaccard score for ``query`` against each element of ``refs``.
+		Jaccard distance for ``query`` against each element of ``refs``.
 
 	See Also
 	--------
@@ -91,25 +89,21 @@ def jaccard_array(query: KmerSignature, refs: SignatureArray, out: np.ndarray = 
 	values = refs.values
 	bounds = refs.bounds.astype(BOUNDS_DTYPE, copy=False)
 
-	_jaccard_parallel(query, values, bounds, out)
-
-	if distance:
-		np.subtract(1, out, out=out)
+	_jaccarddist_parallel(query, values, bounds, out)
 
 	return out
 
 
-def jaccard_matrix(queries: Sequence[KmerSignature],
-                   refs: AbstractSignatureArray,
-                   ref_indices: Optional[Sequence[int]] = None,
-                   out: Optional[np.ndarray] = None,
-                   distance: bool = False,
-                   chunksize: Optional[int] = None,
-                   progress = None,
-                   ) -> np.ndarray:
+def jaccarddist_matrix(queries: Sequence[KmerSignature],
+                       refs: AbstractSignatureArray,
+                       ref_indices: Optional[Sequence[int]] = None,
+                       out: Optional[np.ndarray] = None,
+                       chunksize: Optional[int] = None,
+                       progress = None,
+                       ) -> np.ndarray:
 	"""
-	Calculate a Jaccard similarity/distance matrix between an array of query signatures and an
-	array of reference signatures.
+	Calculate a Jaccard distance matrix between an array of query signatures and an array of
+	reference signatures.
 
 	The main purpose of this function is to improve querying performance when the reference
 	signatures are stored in a file (e.g. using :class:`gambit.signatures.hdf5.HDF5Signatures`)
@@ -126,8 +120,6 @@ def jaccard_matrix(queries: Sequence[KmerSignature],
 		Optional, indices of ``refs`` to use.
 	out
 		(Optional) pre-allocated array to write output to.
-	distance
-		Output Jaccard distances instead of similarities.
 	chunksize
 		Divide ``refs`` into chunks of this size.
 	progress
@@ -162,7 +154,7 @@ def jaccard_matrix(queries: Sequence[KmerSignature],
 			assert isinstance(ref_chunk, SignatureArray)
 
 			for (i, query) in enumerate(queries):
-				jaccard_array(query, ref_chunk, out=out[i, ref_slice], distance=distance)
+				jaccarddist_array(query, ref_chunk, out=out[i, ref_slice])
 				meter.increment(len(ref_chunk))
 
 	return out

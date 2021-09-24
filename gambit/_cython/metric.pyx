@@ -1,6 +1,6 @@
 # cython: language_level = 3str, wraparound = False
 
-"""Cython functions for calculating k-mer similarity metrics"""
+"""Cython functions for calculating k-mer distance metrics"""
 
 cimport cython
 cimport numpy as np
@@ -39,7 +39,7 @@ def jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 	--------
 	.jaccarddist
 	"""
-	return c_jaccard(coords1, coords2)
+	return 1 - c_jaccarddist(coords1, coords2)
 
 
 def jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
@@ -69,13 +69,13 @@ def jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 	--------
 	.jaccard
 	"""
-	return 1 - c_jaccard(coords1, coords2)
+	return c_jaccarddist(coords1, coords2)
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef SCORE_T c_jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
-	"""Compute the Jaccard index between two k-mer sets in ordered coordinate format.
+cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
+	"""Compute the Jaccard distance between two k-mer sets in ordered coordinate format.
 
 	Declared with nogil so it can be run in parallel.
 	"""
@@ -112,23 +112,24 @@ cdef SCORE_T c_jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
 	u += N - i
 	u += M - j
 
-	# Avoid divide by zero, define score between empty sets to be zero
+	# Avoid divide by zero, define distance between empty sets to be zero
 	if u == 0:
 		return 0
 
 	# |A intersection B| = |A| + |B| - |A union B|
-	return <SCORE_T>(N + M - u) / u
+	# |A symdiff B|      = 2|A union B| - |A| - |B|
+	return <SCORE_T>(2 * u - N - M) / u
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def _jaccard_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[:] ref_bounds, SCORE_T[:] out):
-	"""Calculate Jaccard scores between a query k-mer set and a collection of reference sets.
+def _jaccarddist_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[:] ref_bounds, SCORE_T[:] out):
+	"""Calculate Jaccard distances between a query k-mer set and a collection of reference sets.
 
 	Data types of k-mer coordinate arrays may be 16, 32, or 64-bit signed or
 	unsigned integers, but must match.
 
-	Internally, releases the GIL in the main loop and calculates scores in parallel.
+	Internally, releases the GIL in the main loop and calculates distances in parallel.
 
 	Parameters
 	----------
@@ -141,7 +142,7 @@ def _jaccard_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[:] r
 		the slice of ``ref_coords`` between ``ref_bounds[n]`` and ``ref_bounds[n + 1]``. Length must
 		be one greater than that of``ref_coords``.
 	out : numpy.ndarray
-		Pre-allocated array to write scores to.
+		Pre-allocated array to write distances to.
 	"""
 	cdef np.intp_t N = ref_bounds.shape[0] - 1
 	cdef BOUNDS_T begin, end
@@ -150,4 +151,4 @@ def _jaccard_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[:] r
 	for i in prange(N, nogil=True, schedule='dynamic'):
 		begin = ref_bounds[i]
 		end = ref_bounds[i+1]
-		out[i] = c_jaccard(query, ref_coords[begin:end])
+		out[i] = c_jaccarddist(query, ref_coords[begin:end])

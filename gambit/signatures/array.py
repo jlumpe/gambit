@@ -60,7 +60,7 @@ class SignatureArray(ConcatenatedSignatureArray):
 	"""Stores a collection of k-mer signatures in a single contiguous Numpy array.
 
 	This format enables the calculation of many Jaccard scores in parallel, see
-	:func:`gambit.metric.jaccard_array`.
+	:func:`gambit.metric.jaccarddist_array`.
 
 	Numpy-style indexing with an array of integers or bools is supported and will return another
 	``SignatureArray``. If indexed with a contiguous slice the :attr:`values` of the returned

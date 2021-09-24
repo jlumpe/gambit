@@ -10,7 +10,7 @@ from gambit.classify import classify, reportable_taxon, ClassifierResult
 from gambit.db import GAMBITDatabase, Taxon, ReferenceGenomeSet
 from gambit.io.seq import SequenceFile
 from gambit.signatures import KmerSignature, SignaturesMeta
-from gambit.metric import jaccard_matrix
+from gambit.metric import jaccarddist_matrix
 from gambit.util.misc import zip_strict
 from gambit.util.progress import progress_config, iter_progress
 
@@ -159,11 +159,10 @@ def query(db: GAMBITDatabase,
 	# Calculate distances
 	# (This will only be about 200kB per row/query [50k float32's] so having the whole thing in
 	# memory at once isn't a big deal).
-	dmat = jaccard_matrix(
+	dmat = jaccarddist_matrix(
 		queries,
 		db.signatures,
 		ref_indices=db.sig_indices,
-		distance=True,
 		chunksize=params.chunksize,
 		progress=pconf.update(desc='Calculating distances'),
 	)
