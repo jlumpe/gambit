@@ -28,6 +28,9 @@ gambit.signatures.array
 
 .. automodule:: gambit.signatures.array
 
+   .. autoclass:: AbstractSignatureArray
+      :special-members: +__eq__
+
 
 gambit.signatures.meta
 ----------------------
@@ -51,3 +54,6 @@ gambit.signatures.hdf5
 ----------------------
 
 .. automodule:: gambit.signatures.hdf5
+
+   .. autoclass:: HDF5Signatures
+      :special-members: +__bool__
