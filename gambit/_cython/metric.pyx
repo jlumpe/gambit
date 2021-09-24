@@ -14,7 +14,7 @@ SCORE_DTYPE = np.dtype(np.float32)
 BOUNDS_DTYPE = np.dtype(np.intp)
 
 
-def jaccard_sparse(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
+def jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 	"""Compute the Jaccard index between two k-mer sets in sparse coordinate format.
 
 	Arguments are Numpy arrays containing k-mer indices in sorted order. Data types must be 16, 32,
@@ -37,12 +37,12 @@ def jaccard_sparse(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 
 	See Also
 	--------
-	.jaccarddist_sparse
+	.jaccarddist
 	"""
-	return c_jaccard_sparse(coords1, coords2)
+	return c_jaccard(coords1, coords2)
 
 
-def jaccarddist_sparse(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
+def jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 	"""Compute the Jaccard distance between two k-mer sets in sparse coordinate format.
 
 	The Jaccard distance is equal to one minus the Jaccard index.
@@ -67,14 +67,14 @@ def jaccarddist_sparse(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 
 	See Also
 	--------
-	.jaccard_sparse
+	.jaccard
 	"""
-	return 1 - c_jaccard_sparse(coords1, coords2)
+	return 1 - c_jaccard(coords1, coords2)
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef SCORE_T c_jaccard_sparse(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
+cdef SCORE_T c_jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
 	"""Compute the Jaccard index between two k-mer sets in ordered coordinate format.
 
 	Declared with nogil so it can be run in parallel.
@@ -122,7 +122,7 @@ cdef SCORE_T c_jaccard_sparse(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def _jaccard_sparse_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[:] ref_bounds, SCORE_T[:] out):
+def _jaccard_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[:] ref_bounds, SCORE_T[:] out):
 	"""Calculate Jaccard scores between a query k-mer set and a collection of reference sets.
 
 	Data types of k-mer coordinate arrays may be 16, 32, or 64-bit signed or
@@ -150,4 +150,4 @@ def _jaccard_sparse_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS
 	for i in prange(N, nogil=True, schedule='dynamic'):
 		begin = ref_bounds[i]
 		end = ref_bounds[i+1]
-		out[i] = c_jaccard_sparse(query, ref_coords[begin:end])
+		out[i] = c_jaccard(query, ref_coords[begin:end])

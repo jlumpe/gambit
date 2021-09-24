@@ -9,6 +9,6 @@ gambit.metric
    :undoc-members:
    :show-inheritance:
 
-   .. autofunction:: gambit.metric.jaccard_sparse
+   .. autofunction:: gambit.metric.jaccard
 
-   .. autofunction:: gambit.metric.jaccarddist_sparse
+   .. autofunction:: gambit.metric.jaccarddist

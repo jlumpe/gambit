@@ -5,8 +5,8 @@ from typing import Iterable, Sequence, Optional
 
 import numpy as np
 
-from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard_sparse, jaccarddist_sparse, \
-	_jaccard_sparse_parallel
+from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard, jaccarddist, \
+	_jaccard_parallel
 from gambit.signatures import KmerSignature, SignatureArray
 from gambit.signatures.base import AbstractSignatureArray
 from gambit.util.misc import chunk_slices
@@ -16,13 +16,13 @@ from gambit.util.progress import get_progress
 def jaccard_generic(set1: Iterable, set2: Iterable) -> float:
 	"""Get the Jaccard index of of two arbitrary sets.
 
-	This is primarily used as a slow, pure-Python alternative to :func:`.jaccard_sparse` to be used
+	This is primarily used as a slow, pure-Python alternative to :func:`.jaccard` to be used
 	for testing, but can also be used as a generic way to calculate the Jaccard index which works
 	with any collection or element type.
 
 	See Also
 	--------
-	.jaccard_sparse
+	.jaccard
 	.jaccard_bits
 	"""
 	if not isinstance(set1, Set):
@@ -41,7 +41,7 @@ def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
 
 	See Also
 	--------
-	.jaccard_sparse
+	.jaccard
 	"""
 	n1 = np.count_nonzero(bits1)
 	n2 = np.count_nonzero(bits2)
@@ -50,7 +50,7 @@ def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
 	return 0 if union == 0 else intersection / union
 
 
-def jaccard_sparse_array(query: KmerSignature, refs: SignatureArray, out: np.ndarray = None, distance: bool = False) -> np.ndarray:
+def jaccard_array(query: KmerSignature, refs: SignatureArray, out: np.ndarray = None, distance: bool = False) -> np.ndarray:
 	"""
 	Calculate Jaccard scores between a query k-mer signature and an array of reference signatures in
 	``SignatureArray`` format.
@@ -78,8 +78,8 @@ def jaccard_sparse_array(query: KmerSignature, refs: SignatureArray, out: np.nda
 
 	See Also
 	--------
-	.jaccard_sparse
-	.jaccarddist_sparse
+	.jaccard
+	.jaccarddist
 	"""
 	if out is None:
 		out = np.empty(len(refs), SCORE_DTYPE)
@@ -91,7 +91,7 @@ def jaccard_sparse_array(query: KmerSignature, refs: SignatureArray, out: np.nda
 	values = refs.values
 	bounds = refs.bounds.astype(BOUNDS_DTYPE, copy=False)
 
-	_jaccard_sparse_parallel(query, values, bounds, out)
+	_jaccard_parallel(query, values, bounds, out)
 
 	if distance:
 		np.subtract(1, out, out=out)
@@ -99,14 +99,14 @@ def jaccard_sparse_array(query: KmerSignature, refs: SignatureArray, out: np.nda
 	return out
 
 
-def jaccard_sparse_matrix(queries: Sequence[KmerSignature],
-                          refs: AbstractSignatureArray,
-                          ref_indices: Optional[Sequence[int]] = None,
-                          out: Optional[np.ndarray] = None,
-                          distance: bool = False,
-                          chunksize: Optional[int] = None,
-                          progress = None,
-                          ) -> np.ndarray:
+def jaccard_matrix(queries: Sequence[KmerSignature],
+                   refs: AbstractSignatureArray,
+                   ref_indices: Optional[Sequence[int]] = None,
+                   out: Optional[np.ndarray] = None,
+                   distance: bool = False,
+                   chunksize: Optional[int] = None,
+                   progress = None,
+                   ) -> np.ndarray:
 	"""
 	Calculate a Jaccard similarity/distance matrix between an array of query signatures and an
 	array of reference signatures.
@@ -162,7 +162,7 @@ def jaccard_sparse_matrix(queries: Sequence[KmerSignature],
 			assert isinstance(ref_chunk, SignatureArray)
 
 			for (i, query) in enumerate(queries):
-				jaccard_sparse_array(query, ref_chunk, out=out[i, ref_slice], distance=distance)
+				jaccard_array(query, ref_chunk, out=out[i, ref_slice], distance=distance)
 				meter.increment(len(ref_chunk))
 
 	return out
