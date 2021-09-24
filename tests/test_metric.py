@@ -10,7 +10,7 @@ from gambit.metric import jaccard_sparse, jaccarddist_sparse, jaccard_bits, \
 from gambit.signatures.convert import sparse_to_dense
 from gambit.signatures import SignatureArray
 from gambit.kmers import KmerSpec
-from gambit.test import make_signatures
+from gambit.test import make_signatures, check_progress
 
 
 @pytest.fixture(
@@ -157,7 +157,9 @@ class TestJaccardSparseMatrix:
 		else:
 			ref_indices = None
 
-		scores = jaccard_sparse_matrix(queries, refs, ref_indices=ref_indices, chunksize=chunksize)
+		with check_progress(total=expected.size) as pconf:
+			scores = jaccard_sparse_matrix(queries, refs, ref_indices=ref_indices, chunksize=chunksize, progress=pconf)
+
 		assert np.array_equal(scores, expected)
 
 	def test_distance(self, queries, refs, expected):
@@ -179,9 +181,6 @@ class TestJaccardSparseMatrix:
 		out3 = np.empty((len(refs) + 1, len(queries)), dtype=int)
 		with pytest.raises(ValueError):
 			jaccard_sparse_array(queries, refs, out3)
-
-	def test_progress(self, queries, refs, expected):
-		pass  # TODO
 
 
 def test_different_dtypes():

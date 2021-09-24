@@ -163,6 +163,6 @@ def jaccard_sparse_matrix(queries: Sequence[KmerSignature],
 
 			for (i, query) in enumerate(queries):
 				jaccard_sparse_array(query, ref_chunk, out=out[i, ref_slice], distance=distance)
-				meter.increment(ref_slice.stop - ref_slice.start)
+				meter.increment(len(ref_chunk))
 
 	return out
