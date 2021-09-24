@@ -41,6 +41,33 @@ gambit.signatures.array
    :show-inheritance:
 
 
+gambit.signatures.meta
+----------------------
+
+.. automodule:: gambit.signatures.meta
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+gambit.signatures.calc
+----------------------
+
+.. automodule:: gambit.signatures.calc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+gambit.signatures.convert
+-------------------------
+
+.. automodule:: gambit.signatures.convert
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 gambit.signatures.hdf5
 ----------------------
 

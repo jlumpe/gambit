@@ -10,14 +10,13 @@ gambit.cli
    :show-inheritance:
 
 
-gambit.cli.context
-------------------
+gambit.cli.common
+-----------------
 
-.. automodule:: gambit.cli.context
+.. automodule:: gambit.cli.common
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 
 gambit.cli.root
@@ -28,10 +27,29 @@ gambit.cli.root
    :undoc-members:
    :show-inheritance:
 
+
 gambit.cli.query
 ----------------
 
 .. automodule:: gambit.cli.query
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+gambit.cli.signatures
+---------------------
+
+.. automodule:: gambit.cli.signatures
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+gambit.cli.debug
+----------------
+
+.. automodule:: gambit.cli.debug
    :members:
    :undoc-members:
    :show-inheritance:

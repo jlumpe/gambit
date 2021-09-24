@@ -1,6 +1,7 @@
 Miscellaneous and Utility Code
 ==============================
 
+
 gambit.util
 -----------
 
@@ -41,6 +42,15 @@ gambit.util.progress
 --------------------
 
 .. automodule:: gambit.util.progress
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+gambit.util.dev
+----------------
+
+.. automodule:: gambit.util.dev
    :members:
    :undoc-members:
    :show-inheritance:
