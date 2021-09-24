@@ -54,7 +54,7 @@ class BaseJSONResultsExporter(AbstractResultsExporter):
 class JSONResultsExporter(BaseJSONResultsExporter):
 	"""Exports query results in basic JSON format.
 
-	Currently it assumes that the query was run with ``classify_strict=False``\\ , so the only
+	Currently it assumes that the query was run with ``classify_strict=False``, so the only
 	relevant information from ``ClassifierResult`` is the closest genome match.
 	"""
 

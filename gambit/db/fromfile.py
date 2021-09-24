@@ -21,9 +21,9 @@ def file_sessionmaker(path: FilePath, class_=ReadOnlySession, **kw) -> sessionma
 	path
 		Path to database file.
 	class_
-		SQLAlchemy ``Session`` subclass to use. Defaults to :class:`gambit.db.sqla.ReadOnlySession`\\ .
+		SQLAlchemy ``Session`` subclass to use. Defaults to :class:`gambit.db.sqla.ReadOnlySession`.
 	\\**kw
-		Additional keyword arguments to :class:`sqlalchemy.orm.sessionmaker`\\ .
+		Additional keyword arguments to :class:`sqlalchemy.orm.sessionmaker`.
 	"""
 	engine = create_engine(f'sqlite:///{os.fspath(path)}')
 	return sessionmaker(engine, class_=class_, **kw)

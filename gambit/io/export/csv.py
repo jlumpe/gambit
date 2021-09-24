@@ -27,7 +27,7 @@ class CSVResultsExporter(AbstractResultsExporter):
 	Attributes
 	----------
 	format_opts
-		Dialect and other formatting arguments passed to :func:`csv.write`\\ .
+		Dialect and other formatting arguments passed to :func:`csv.write`.
 	"""
 	format_opts: Dict[str, Any]
 

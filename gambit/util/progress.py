@@ -94,7 +94,7 @@ class AbstractProgressMeter(ABC):
 	def config(cls, **kw) -> 'ProgressConfig':
 		"""Create a factory function which creates instances with the given default settings.
 
-		Keyword arguments are passed on to :meth:`create`\\ .
+		Keyword arguments are passed on to :meth:`create`.
 		"""
 		return ProgressConfig(cls.create, kw)
 
@@ -141,7 +141,7 @@ def default_progress_cls() -> type:
 	"""Get the default :class:`.AbstractProgressMeter` subclass to use.
 
 	Currently returns :class:`.TqdmProgressMeter` if ``tqdm`` is importable, otherwise prints a
-	warning and returns :class:`.NullProgressMeter`\\ .
+	warning and returns :class:`.NullProgressMeter`.
 	"""
 	try:
 		from tqdm import tqdm
@@ -186,13 +186,13 @@ def get_progress(arg: ProgressArg, total: int, initial: int = 0, **kw) -> Abstra
 	by calling this function with than information along with the total length.
 
 	Accepts the following types/values for the argument:
-	- :class:`.ProgressConfig`\\ .
+	- :class:`.ProgressConfig`.
 	- ``None`` - uses :class:`.NullProgressBar`.
-	- ``True`` - uses class returned by :func:`.default_progress_cls`\\ .
-	- ``False`` - same as `None`\\ .
-	- ``str`` key - Looks up progress bar class/factory function in :data:`.REGISTRY`\\ .
+	- ``True`` - uses class returned by :func:`.default_progress_cls`.
+	- ``False`` - same as `None`.
+	- ``str`` key - Looks up progress bar class/factory function in :data:`.REGISTRY`.
 	- :class:`.AbstractProgressMeter` subclass
-	- callable - factory function. Must have same signature as :meth:`.AbstractProgressMeter.create`\\ .
+	- callable - factory function. Must have same signature as :meth:`.AbstractProgressMeter.create`.
 
 	Parameters
 	----------

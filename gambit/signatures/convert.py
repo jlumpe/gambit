@@ -57,7 +57,7 @@ def can_convert(from_kspec: KmerSpec, to_kspec: KmerSpec) -> bool:
 	"""Check if signatures from one KmerSpec can be converted to another.
 
 	Conversion is possible if ``to_kspec.prefix`` is equal to or starts with ``from_kspec.prefix``
-	and ``to_kspec.total_len <= from_kspec.total_len``\\ .
+	and ``to_kspec.total_len <= from_kspec.total_len``.
 	"""
 	return to_kspec.prefix.startswith(from_kspec.prefix) and to_kspec.total_len <= from_kspec.total_len
 
@@ -95,7 +95,7 @@ def convert_dense(from_kspec: KmerSpec, to_kspec: KmerSpec, vec: np.ndarray) -> 
 	"""Convert a k-mer signature in dense format from one ``KmerSpec`` to another.
 
 	In the ideal case, if ``vec`` is the result of ``calc_signature(from_kspec, seq, sparse=False)``
-	the output of this function should be identical to ``calc_signature(to_kspec, seq, sparse=False)``\\ .
+	the output of this function should be identical to ``calc_signature(to_kspec, seq, sparse=False)``.
 	In reality this may not hold if any potential matches of ``from_kspec`` in ``seq`` are discarded
 	due to an invalid nucleotide which is not included in the corresponding ``to_kspec`` match.
 	"""
@@ -115,7 +115,7 @@ def convert_sparse(from_kspec: KmerSpec, to_kspec: KmerSpec, sig: KmerSignature)
 	"""Convert a k-mer signature in sparse format from one ``KmerSpec`` to another.
 
 	In the ideal case, if ``sig`` is the result of ``calc_signature(from_kspec, seq)``
-	the output of this function should be identical to ``calc_signature(to_kspec, seq)``\\ .
+	the output of this function should be identical to ``calc_signature(to_kspec, seq)``.
 	In reality this may not hold if any potential matches of ``from_kspec`` in ``seq`` are discarded
 	due to an invalid nucleotide which is not included in the corresponding ``to_kspec`` match.
 	"""

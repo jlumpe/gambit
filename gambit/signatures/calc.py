@@ -20,7 +20,7 @@ class KmerAccumulator(MutableSet[int]):
 
 	Implements the ``MutableSet`` interface for k-mer indices. Indices are added via :meth:`add` or
 	:meth:`add_kmer` methods, when finished a sparse k-mer signature can be obtained from
-	:meth:`signature`\\ .
+	:meth:`signature`.
 	"""
 	k: int
 
@@ -124,7 +124,7 @@ def default_accumulator(k: int) -> KmerAccumulator:
 	"""Get a default k-mer accumulator instance for the given value of ``k``.
 
 	Returns a :class:`.ArrayAccumulator` for ``k <= 11`` and a :class:`.SetAccumulator` for
-	``k > 11``\\ .
+	``k > 11``.
 	"""
 	return SetAccumulator(k) if k > 11 else ArrayAccumulator(k)
 

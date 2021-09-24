@@ -181,7 +181,7 @@ class ClassifierResult:
 		of ``predicted_taxon``. None if no prediction was made.
 	closest_match
 		Match to closest reference genome overall. This should almost always be identical to
-		``primary_match``\\ .
+		``primary_match``.
 	warnings
 		List of non-fatal warning messages to report.
 	error

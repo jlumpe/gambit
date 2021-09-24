@@ -55,7 +55,7 @@ def dump(obj, f: TextIO, **kw):
 	f
 		Writeable file object in text mode.
 	\\**kw
-		Keyword arguments to :func:`json.dump`\\ .
+		Keyword arguments to :func:`json.dump`.
 	"""
 	data = to_json(obj)
 	json.dump(data, f, **kw)
@@ -87,7 +87,7 @@ def dumps(obj, **kw) -> str:
 	obj
 		Object to write.
 	\\**kw
-		Keyword arguments to :func:`json.dumps`\\ .
+		Keyword arguments to :func:`json.dumps`.
 
 	Returns
 	-------

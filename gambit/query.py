@@ -136,7 +136,7 @@ def query(db: GAMBITDatabase,
 		Report progress for distance matrix calculation. See
 		:func:`gambit.util.progress.get_progress` for description of allowed values.
 	\\**kw
-		Passed to ``QueryParams``\\ .
+		Passed to ``QueryParams``.
 	"""
 	if params is None:
 		params = QueryParams(**kw)
@@ -209,7 +209,7 @@ def query_parse(db: GAMBITDatabase,
 	file_labels
 		Custom to use for each file in returned results object. If None will use file names.
 	\\**kw
-		Additional keyword arguments passed to :func:`.query`\\ .
+		Additional keyword arguments passed to :func:`.query`.
 	"""
 	from gambit.signatures.calc import calc_file_signatures
 
