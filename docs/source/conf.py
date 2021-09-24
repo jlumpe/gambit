@@ -70,4 +70,8 @@ autodoc_default_options = {
 	'show-inheritance': True,
 }
 
+autodoc_class_signature = 'separated'
+autodoc_member_order = 'groupwise'
+autodoc_typehints = 'description'
+
 todo_include_todos = True

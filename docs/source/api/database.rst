@@ -24,17 +24,14 @@ gambit.db.sqla
 
 .. automodule:: gambit.db.sqla
    :no-members:
-   :no-undoc-members:
 
    .. autoclass:: JsonString
+      :exclude-members: __init__, __new__
       :no-members:
-      :no-undoc-members:
-      :no-inherited-members:
 
    .. autoclass:: ReadOnlySession
+      :exclude-members: __init__, __new__
       :no-members:
-      :no-undoc-members:
-      :no-inherited-members:
 
 
 gambit.db.fromfile
