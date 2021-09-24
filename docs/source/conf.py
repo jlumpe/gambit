@@ -22,7 +22,7 @@ copyright = '2021, Jared Lumpe'
 author = 'Jared Lumpe'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.2'
+release = '0.3.0'
 
 
 # -- General configuration ---------------------------------------------------
