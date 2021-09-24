@@ -9,6 +9,7 @@ import numpy as np
 from Bio import SeqIO
 
 from .base import KmerSignature
+from .array import SignatureList
 from gambit.kmers import DNASeq, KmerSpec, find_kmers, kmer_to_index, nkmers, index_dtype
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
@@ -254,7 +255,7 @@ def calc_file_signatures(kspec: KmerSpec,
                          concurrency: Optional[str] = 'threads',
                          max_workers: Optional[int] = None,
                          executor: Optional[Executor] = None,
-                         ) -> List[KmerSignature]:
+                         ) -> SignatureList:
 	"""Parse and calculate k-mer signatures for multiple sequence files.
 
 	Parameters
@@ -273,10 +274,6 @@ def calc_file_signatures(kspec: KmerSpec,
 	executor
 		Instance of class:`concurrent.futures.Executor` to use for concurrency. Overrides the
 		``concurrency`` and ``max_workers`` arguments.
-
-	Returns
-	-------
-		List of signatures in sparse coordinate format.
 
 	See Also
 	--------
@@ -318,4 +315,4 @@ def calc_file_signatures(kspec: KmerSpec,
 
 		assert all(sig is not None for sig in sigs)
 
-	return sigs
+	return SignatureList(sigs, kspec)
