@@ -2,4 +2,4 @@
 
 from .base import KmerSignature, sigarray_eq
 from .meta import SignaturesMeta
-from .array import SignatureArray
+from .array import SignatureArray, SignatureList

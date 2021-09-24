@@ -1,6 +1,6 @@
 """Array-like objects for storing k-mer signatures."""
 
-from typing import Sequence, Optional
+from typing import Sequence, Optional, Iterable, MutableSequence
 
 import numpy as np
 
@@ -157,3 +157,63 @@ class SignatureArray(ConcatenatedSignatureArray):
 
 	def __repr__(self):
 		return f'<{type(self).__name__} length={len(self)} values.dtype={self.values.dtype}>'
+
+
+class SignatureList(AdvancedIndexingMixin, AbstractSignatureArray, MutableSequence[KmerSignature]):
+	"""Stores a collection of k-mer signatures in a standard Python list.
+
+	Compared to :class:`SignatureArray` this isn't as efficient to calculate Jaccard scores with,
+	but supports mutation and won't have to copy signatures to a new array on creation.
+	"""
+
+	def __init__(self, signatures: Iterable[KmerSignature], kmerspec: Optional[KmerSpec] = None, dtype: Optional[np.dtype] = None):
+		"""
+		Parameters
+		----------
+		signatures
+			Iterable of k-mer signatures.
+		kmerspec
+			K-mer spec used to calculate signatures. If None will take from ``signatures`` if it is
+			an :class:`AbstractSignatureArray` instance.
+		dtype
+			Numpy dtype of signatures. If None will use dtype of first element of
+			``signatures``.
+		"""
+		self._list = list(signatures)
+
+		if kmerspec is not None:
+			self.kmerspec = kmerspec
+		elif isinstance(signatures, AbstractSignatureArray):
+			self.kmerspec = signatures.kmerspec
+		else:
+			raise TypeError('kmerspec cannot be None if signatures is not an instance of AbstractSignatureArray')
+
+		if dtype is not None:
+			self.dtype = dtype
+		elif isinstance(signatures, AbstractSignatureArray):
+			self.dtype = signatures.dtype
+		elif len(self._list) > 0:
+			self.dtype = self._list[0].dtype
+		else:
+			self.dtype = self.kmerspec.index_dtype
+
+	def __len__(self):
+		return len(self._list)
+
+	def __iter__(self):
+		return iter(self._list)
+
+	def _getitem_int(self, i: int):
+		return self._list[i]
+
+	def _getitem_int_array(self, indices: np.ndarray):
+		return SignatureList([self._list[i] for i in indices], self.kmerspec, self.dtype)
+
+	def __setitem__(self, i: int, sig: KmerSignature):
+		self._list[i] = sig
+
+	def __delitem__(self, i: int):
+		del self._list[i]
+
+	def insert(self, i: int, sig: KmerSignature):
+		self._list.insert(i, sig)

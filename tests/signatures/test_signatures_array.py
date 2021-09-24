@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 
-from gambit.signatures import SignatureArray
+from gambit.signatures import SignatureArray, SignatureList
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
 from gambit.signatures.test import AbstractSignatureArrayTests
@@ -87,3 +87,62 @@ class TestSignatureArray:
 
 		with pytest.raises(IndexError):
 			sigarray[0]
+
+
+class TestSignatureList:
+	"""Test the SignatureList class."""
+
+	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
+		"""Test implementation of AbstractSignatureArray interface."""
+
+		@pytest.fixture()
+		def instance(self, sigarray):
+			"""Instance to test."""
+			return SignatureList(sigarray)
+
+		@pytest.fixture()
+		def ref_instance(self, sigarray):
+			"""Numpy array equivalent to `sigarray`."""
+			return np.asarray(sigarray, dtype=object)
+
+		def check_getindex_subseq(self, instance, ref_instance, index, result, ref_result):
+			super().check_getindex_subseq(instance, ref_instance, index, result, ref_result)
+			assert isinstance(result, SignatureList)
+
+	def test_construct_from_list(self, sigarray):
+		"""Test construction from generic sequence type containing signatures."""
+
+		sl = SignatureList(list(sigarray), sigarray.kmerspec)
+		assert sl.dtype == sigarray.dtype
+		assert sl == sigarray
+
+		# Set different dtype
+		for dtype in map(np.dtype, ['i8', 'u4']):
+			sl = SignatureList(list(sigarray), sigarray.kmerspec, dtype=dtype)
+			assert sl.dtype == dtype
+			assert sl == sigarray
+
+	def test_construct_from_signaturearray(self, sigarray):
+		"""Test construction from another AbstractSignatureArray instance."""
+
+		sl = SignatureList(sigarray)
+		assert sl.kmerspec == sigarray.kmerspec
+		assert sl.dtype == sigarray.dtype
+		assert sl == sigarray
+
+		# Set different dtype
+		for dtype in map(np.dtype, ['i8', 'u4']):
+			sl = SignatureList(sigarray, dtype=dtype)
+			assert sl.dtype == dtype
+			assert sl == sigarray
+
+		# Set different kmerspec
+		kspec = KmerSpec(sigarray.kmerspec.k, sigarray.kmerspec.prefix_str + 'A')
+		sl = SignatureList(sigarray, kspec)
+		assert sl.kmerspec == kspec
+		assert sl != sigarray
+
+	def test_empty(self, sigarray):
+		"""Test construction from empty list."""
+		sl = SignatureList([], sigarray.kmerspec)
+		assert sl.dtype == sigarray.kmerspec.index_dtype
