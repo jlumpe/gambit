@@ -37,7 +37,6 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 	kmerspec: KmerSpec
 	dtype: np.dtype
 
-	@abstractmethod
 	def sizeof(self, index: int) -> int:
 		"""Get the size/length of the signature at the given index.
 
@@ -50,6 +49,7 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 		index
 			Index of signature in array.
 		"""
+		return len(self[index])
 
 	def sizes(self) -> Sequence[int]:
 		"""Get the sizes of all signatures in the array."""
