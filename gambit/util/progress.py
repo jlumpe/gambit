@@ -186,13 +186,14 @@ def get_progress(arg: ProgressArg, total: int, initial: int = 0, **kw) -> Abstra
 	by calling this function with than information along with the total length.
 
 	Accepts the following types/values for the argument:
-	- :class:`.ProgressConfig`.
+
+	- :class:`.ProgressConfig`
 	- ``None`` - uses :class:`.NullProgressBar`.
 	- ``True`` - uses class returned by :func:`.default_progress_cls`.
-	- ``False`` - same as `None`.
+	- ``False`` - same as ``None``.
 	- ``str`` key - Looks up progress bar class/factory function in :data:`.REGISTRY`.
 	- :class:`.AbstractProgressMeter` subclass
-	- callable - factory function. Must have same signature as :meth:`.AbstractProgressMeter.create`.
+	- ``callable`` - factory function. Must have same signature as :meth:`.AbstractProgressMeter.create`.
 
 	Parameters
 	----------
