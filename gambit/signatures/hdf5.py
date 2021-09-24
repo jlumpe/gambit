@@ -134,7 +134,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		write_metadata(group, meta)
 
 	@classmethod
-	def _init_datasets(cls, group: h5.Group, data: SignatureArray, ids: np.ndarray):
+	def _init_datasets(cls, group: h5.Group, signatures: SignatureArray, ids: np.ndarray):
 		"""Initialize datasets of group."""
 
 		if ids.dtype.kind == 'U':
@@ -148,9 +148,9 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		else:
 			raise ValueError('ids array must contain integers or strings.')
 
-		group.create_dataset('values', data=data.values)
-		group.create_dataset('bounds', data=data.bounds)
 		group.create_dataset('ids', data=ids, dtype=ids_dtype)
+		group.create_dataset('values', data=signatures.values)
+		group.create_dataset('bounds', data=signatures.bounds)
 
 	@classmethod
 	def open(cls, path: FilePath, **kw) -> 'HDF5Signatures':
@@ -168,8 +168,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	@classmethod
 	def create(cls,
 	           group: h5.Group,
-	           kmerspec: KmerSpec,
-	           data: SignatureArray,
+	           signatures: SignatureArray,
 	           ids: Union[Sequence[int], Sequence[str], None] = None,
 	           meta: Optional[SignaturesMeta] = None,
 	           ) -> 'HDF5Signatures':
@@ -179,9 +178,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		----------
 		group
 			HDF5 group to store data in.
-		kmerspec
-			``KmerSpec`` used to calculate the signatures.
-		data
+		signatures
 			Array of signatures to store.
 		ids
 			Array of unique string or integer IDs for signatures in ``data``.  Defaults to
@@ -191,16 +188,16 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		"""
 
 		if ids is None:
-			ids = np.arange(len(data))
+			ids = np.arange(len(signatures))
 		else:
 			ids = np.asarray(ids)
-			if ids.shape != (len(data),):
+			if ids.shape != (len(signatures),):
 				raise ValueError('Length of ids must match length of data')
 
 		if meta is None:
 			meta = SignaturesMeta()
 
-		cls._init_attrs(group, kmerspec, meta)
-		cls._init_datasets(group, data, ids)
+		cls._init_attrs(group, signatures.kmerspec, meta)
+		cls._init_datasets(group, signatures, ids)
 
 		return cls(group)

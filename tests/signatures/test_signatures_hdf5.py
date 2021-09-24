@@ -54,7 +54,7 @@ class TestHDF5Signatures:
 	@pytest.fixture(scope='class', params=[(1000, 'u8'), (1000, 'i4'), (0, 'u8')])
 	def sigs(self, request, kspec):
 		n, dtype = request.param
-		return make_signatures(kspec.k, n, dtype)
+		return make_signatures(kspec, n, dtype)
 
 	@pytest.fixture(scope='class')
 	def meta(self):
@@ -73,12 +73,12 @@ class TestHDF5Signatures:
 			assert 0
 
 	@pytest.fixture(scope='class')
-	def h5file(self, tmp_path_factory, sigs, kspec, sig_ids, meta):
+	def h5file(self, tmp_path_factory, sigs, sig_ids, meta):
 		"""Write signatures to file and return file name."""
 		fname = tmp_path_factory.mktemp('HDF5FileSignatures') / 'test.h5'
 
 		with h5.File(fname, 'w') as f:
-			HDF5Signatures.create(f, kspec, sigs, ids=sig_ids, meta=meta)
+			HDF5Signatures.create(f, sigs, ids=sig_ids, meta=meta)
 
 		return fname
 
@@ -88,9 +88,9 @@ class TestHDF5Signatures:
 		with h5.File(h5file, 'r') as f:
 			yield HDF5Signatures(f)
 
-	def test_attrs(self, h5sigs, sigs, kspec, sig_ids, meta):
+	def test_attrs(self, h5sigs, sigs, sig_ids, meta):
 		"""Test basic attributes."""
-		assert h5sigs.kmerspec == kspec
+		assert h5sigs.kmerspec == sigs.kmerspec
 		assert h5sigs.dtype == sigs.values.dtype
 		assert np.array_equal(h5sigs.ids, sig_ids)
 		assert h5sigs.meta == meta
