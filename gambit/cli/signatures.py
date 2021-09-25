@@ -156,4 +156,4 @@ def create(ctxobj: CLIContext,
 	sigs = SignatureArray(sigs, kspec, dtype=kspec.index_dtype)
 
 	with h5.File(output, 'w') as f:
-		HDF5Signatures.create(f, kspec, sigs, ids, meta)
+		HDF5Signatures.create(f, sigs, ids, meta)
