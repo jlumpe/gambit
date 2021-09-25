@@ -42,10 +42,21 @@ def signatures_group():
 @click.argument(
 	'file',
 	type=click.Path(exists=True, dir_okay=False),
+	required=False,
 )
-def info(file: str, json: bool, pretty: bool, ids: bool):
-	"""Inspect GAMBIT signature files."""
-	sigs = HDF5Signatures.open(file)
+@click.pass_obj
+def info(ctx: CLIContext, file: str, json: bool, pretty: bool, ids: bool):
+	"""Inspect GAMBIT signature files.
+
+	If FILE is not given will use signatures from reference database defined at the root level.
+	"""
+
+	if file is not None:
+		sigs = HDF5Signatures.open(file)
+	elif ctx.has_signatures:
+		sigs = ctx.signatures
+	else:
+		raise click.ClickException('Must give a value for FILE or specify a reference database.')
 
 	if ids:
 		if json:

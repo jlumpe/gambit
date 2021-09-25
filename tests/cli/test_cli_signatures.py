@@ -23,8 +23,14 @@ class TestInfoCommand:
 
 		# TODO: check
 
-	def test_json(self, base_args, testdb_signatures):
-		result = invoke_cli([*base_args, '-j'])
+	@pytest.mark.parametrize('use_ref_sigs', [False, True])
+	def test_json(self, use_ref_sigs, testdb_files, testdb_signatures):
+		if use_ref_sigs:
+			args = [f'--db={testdb_files["root"]}', 'signatures', 'info', '--json']
+		else:
+			args = ['signatures', 'info', str(testdb_files['ref_signatures']), '--json']
+
+		result = invoke_cli(args)
 		assert result.exit_code == 0
 
 		data = json.loads(result.stdout)
