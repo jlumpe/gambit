@@ -1,4 +1,4 @@
-"""Calculate k-mer and store collections of k-mer signatures."""
+"""Calculate and store collections of k-mer signatures."""
 
 from .base import KmerSignature
 from .meta import SignaturesMeta
