@@ -3,7 +3,6 @@ from typing import Optional, Mapping, Any, Sequence
 
 from attr import attrs, attrib
 
-from gambit.kmers import KmerSpec
 from .array import AbstractSignatureArray
 
 

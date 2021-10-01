@@ -6,7 +6,6 @@ from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor
 from contextlib import nullcontext
 
 import numpy as np
-from Bio import SeqIO
 
 from .base import KmerSignature
 from .array import SignatureList
