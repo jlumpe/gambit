@@ -125,6 +125,19 @@ class TestHDF5Signatures:
 		with HDF5Signatures.open(file) as h5sigs:
 			assert h5sigs == siglist
 
+	@pytest.mark.parametrize('from_list', [False, True])
+	@pytest.mark.parametrize('compression_level', [None, 7])
+	def test_compression(self, from_list, compression_level, sigs, tmp_path):
+		"""Test creating with gzip compression."""
+		create_from = SignatureList(sigs) if from_list else sigs
+
+		file = tmp_path / 'test-compressed.h5'
+		with h5.File(file, 'w') as f:
+			HDF5Signatures.create(f, create_from, compression='gzip', compression_opts=compression_level)
+
+		with HDF5Signatures.open(file) as h5sigs:
+			assert h5sigs == sigs
+
 	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
 		"""Test implementation of AbstractSignatureArray."""
 

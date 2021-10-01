@@ -135,8 +135,11 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		write_metadata(group, meta)
 
 	@classmethod
-	def _init_datasets(cls, group: h5.Group, signatures: AbstractSignatureArray, ids: np.ndarray):
+	def _init_datasets(cls, group: h5.Group, signatures: AbstractSignatureArray, ids: np.ndarray, values_kw = None):
 		"""Initialize datasets of group."""
+
+		if values_kw is None:
+			values_kw = dict()
 
 		if ids.dtype.kind == 'U':
 			# h5py doesn't support writing Numpy U data type
@@ -152,7 +155,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		group.create_dataset('ids', data=ids, dtype=ids_dtype)
 
 		if isinstance(signatures, SignatureArray):
-			group.create_dataset('values', data=signatures.values)
+			group.create_dataset('values', data=signatures.values, **values_kw)
 			group.create_dataset('bounds', data=signatures.bounds, dtype=BOUNDS_DTYPE)
 
 		else:
@@ -163,7 +166,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 			bounds[0] = 0
 			bounds[1:] = np.cumsum(sizes, dtype=BOUNDS_DTYPE)
 
-			values = group.create_dataset('values', shape=int(bounds[-1]), dtype=signatures.dtype)
+			values = group.create_dataset('values', shape=int(bounds[-1]), dtype=signatures.dtype, **values_kw)
 			for i in range(n):
 				values[bounds[i]:bounds[i + 1]] = signatures[i]
 
@@ -186,6 +189,9 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	           signatures: AbstractSignatureArray,
 	           ids: Union[Sequence[int], Sequence[str], None] = None,
 	           meta: Optional[SignaturesMeta] = None,
+	           *,
+	           compression: Optional[str] = None,
+	           compression_opts = None,
 	           ) -> 'HDF5Signatures':
 		"""Store k-mer signatures and associated metadata in an HDF5 group.
 
@@ -200,6 +206,13 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 			consecutive integers starting from zero.
 		meta
 			Additional optional metadata to attach.
+		compression
+			Compression type for values array. One of ``['gzip', 'lzf', 'szip']``. See the
+			section on
+			`compression filters <https://docs.h5py.org/en/stable/high/dataset.html#lossless-compression-filters>`_
+			in ``h5py``'s documentation.
+		compression_opts
+			Sets compression level (0-9) for gzip compression, no effect for other types.
 		"""
 
 		if ids is None:
@@ -212,7 +225,9 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		if meta is None:
 			meta = SignaturesMeta()
 
+		kw = dict(compression=compression, compression_opts=compression_opts)
+
 		cls._init_attrs(group, signatures.kmerspec, meta)
-		cls._init_datasets(group, signatures, ids)
+		cls._init_datasets(group, signatures, ids, values_kw=kw)
 
 		return cls(group)
