@@ -1,14 +1,20 @@
 K-mer signatures
 ================
 
+gambit.seq
+-----------
+
+.. automodule:: gambit.seq
+
+   .. autofunction:: gambit.seq.revcomp
+
+
 gambit.kmers
 ------------
 
 .. automodule:: gambit.kmers
 
    .. autofunction:: gambit.kmers.index_to_kmer
-
-   .. autofunction:: gambit.kmers.revcomp
 
 
 gambit.signatures

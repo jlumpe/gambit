@@ -3,23 +3,11 @@
 import pytest
 import numpy as np
 
+from gambit.seq import SEQ_TYPES, NUCLEOTIDES, revcomp
 from gambit import kmers
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
 from gambit.test import convert_seq, make_kmer_seq
-
-
-# Complements to nucleotide ASCII codes
-NUC_COMPLEMENTS = {
-	65: 84,
-	84: 65,
-	71: 67,
-	67: 71,
-	97: 116,
-	116: 97,
-	103: 99,
-	99: 103,
-}
 
 
 class TestIndices:
@@ -40,7 +28,7 @@ class TestIndices:
 	def test_nucleotide_order(self):
 		"""Check k-mer indices correspond to defined nucleotide order."""
 
-		for i, nuc in enumerate(kmers.NUCLEOTIDES):
+		for i, nuc in enumerate(NUCLEOTIDES):
 			assert kmers.kmer_to_index(bytes([nuc])) == i
 
 	def test_index_conversion(self):
@@ -55,14 +43,14 @@ class TestIndices:
 				# Check getting kmer from index
 				kmer = kmers.index_to_kmer(index, k)
 				assert len(kmer) == k
-				assert set(kmers.NUCLEOTIDES).issuperset(kmer)
+				assert set(NUCLEOTIDES).issuperset(kmer)
 
 				# Check conversion back to index
-				for T in kmers.SEQ_TYPES:
+				for T in SEQ_TYPES:
 					assert kmers.kmer_to_index(convert_seq(kmer, T)) == index
 					assert kmers.kmer_to_index(convert_seq(kmer.lower(), T)) == index
 
-					rc = kmers.revcomp(kmer)
+					rc = revcomp(kmer)
 					assert kmers.kmer_to_index_rc(convert_seq(rc, T)) == index
 					assert kmers.kmer_to_index_rc(convert_seq(rc.lower(), T)) == index
 
@@ -76,7 +64,7 @@ class TestKmerSpec:
 
 	def test_constructor(self):
 		# Prefix conversion
-		for T in kmers.SEQ_TYPES:
+		for T in SEQ_TYPES:
 			assert KmerSpec(11, convert_seq('ATGAC', T)).prefix == b'ATGAC'
 			assert KmerSpec(11, convert_seq('atgac', T)).prefix == b'ATGAC'
 
@@ -135,7 +123,7 @@ class TestKmerSpec:
 
 
 @pytest.mark.parametrize('lower', [False, True])
-@pytest.mark.parametrize('seq_type', kmers.SEQ_TYPES)
+@pytest.mark.parametrize('seq_type', SEQ_TYPES)
 def test_find_kmers(seq_type, lower):
 	"""Test the find_kmers() function and KmerMatch class."""
 
@@ -166,11 +154,11 @@ def test_find_kmers(seq_type, lower):
 
 		matched = convert_seq(seq[kmer_indices], bytes).upper()
 		if match.reverse:
-			matched = kmers.revcomp(matched)
+			matched = revcomp(matched)
 
 		matched_full = convert_seq(seq[full_indices], bytes).upper()
 		if match.reverse:
-			matched_full = kmers.revcomp(matched_full)
+			matched_full = revcomp(matched_full)
 
 		assert matched_full == kspec.prefix + matched
 		assert match.kmer().upper() == matched
@@ -178,61 +166,10 @@ def test_find_kmers(seq_type, lower):
 		try:
 			index = kmers.kmer_to_index(matched)
 		except ValueError:
-			assert any(c not in kmers.NUCLEOTIDES for c in matched.upper())
+			assert any(c not in NUCLEOTIDES for c in matched.upper())
 			continue
 
 		assert match.kmer_index() == index
 		found.append(index)
 
 	assert np.array_equal(sorted(found), sig)
-
-
-def check_revcomp(seq, rc):
-	"""Assert the reverse complement of a sequence is correct."""
-	l = len(seq)
-	for i in range(l):
-		assert rc[l - i - 1] == NUC_COMPLEMENTS.get(seq[i], seq[i])
-
-
-def test_revcomp():
-	"""Test gambit._cython.kmers.revcomp."""
-
-	# Check empty
-	assert kmers.revcomp(b'') == b''
-
-	# Check one-nucleotide values
-	for nuc1, nuc2 in NUC_COMPLEMENTS.items():
-		b1, b2 = [bytes([n]) for n in [nuc1, nuc2]]
-		assert kmers.revcomp(b1) == b2
-		assert kmers.revcomp(b1.lower()) == b2.lower()
-
-	# Check single invalid code
-	assert kmers.revcomp(b'N') == b'N'
-	assert kmers.revcomp(b'n') == b'n'
-
-	# Check all 6-mers
-	k = 6
-	for i in range(kmers.nkmers(k)):
-		kmer = kmers.index_to_kmer(i, k)
-
-		rc = kmers.revcomp(kmer)
-
-		check_revcomp(rc, kmer)
-		check_revcomp(rc.lower(), kmer.lower())
-
-		assert kmers.revcomp(rc) == kmer
-		assert kmers.revcomp(rc.lower()) == kmer.lower()
-
-	# Check longer seqs with invalid nucleotides
-	seq = bytearray(b'ATGCatgc')
-
-	for i in range(len(seq)):
-
-		array = bytearray(seq)
-		array[i] = ord(b'N')
-		seq2 = bytes(array)
-
-		rc = kmers.revcomp(seq2)
-
-		check_revcomp(rc, seq2)
-		assert kmers.revcomp(rc) == seq2
