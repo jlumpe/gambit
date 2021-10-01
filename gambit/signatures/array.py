@@ -84,7 +84,7 @@ class ConcatenatedSignatureArray(AdvancedIndexingMixin, AbstractSignatureArray):
 		K-mer signatures concatenated into single numpy-like array.
 	bounds
 		Numpy-like array storing indices bounding each individual k-mer signature in ``values``.
-		The ``i``\ th signature is at ``values[bounds[i]:bounds[i + 1]]``.
+		The ``i``\\ th signature is at ``values[bounds[i]:bounds[i + 1]]``.
 	"""
 
 	def __len__(self):
@@ -137,7 +137,7 @@ class SignatureArray(ConcatenatedSignatureArray):
 		K-mer signatures concatenated into single Numpy array.
 	bounds
 		Array storing indices bounding each individual k-mer signature in :attr:`values`.
-		The ``i``\ th signature is at ``values[bounds[i]:bounds[i + 1]]``.
+		The ``i``\\ th signature is at ``values[bounds[i]:bounds[i + 1]]``.
 	"""
 	values : np.ndarray
 	bounds : np.ndarray

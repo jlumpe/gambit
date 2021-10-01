@@ -1,4 +1,4 @@
-"""Convert signatures between representations or from one KmerSpec to another."""
+"""Convert signatures between representations or from one ``KmerSpec`` to another."""
 
 from typing import Sequence, Union
 
@@ -13,7 +13,7 @@ def dense_to_sparse(vec: Sequence[bool]) -> KmerSignature:
 
 	Parameters
 	----------
-	vec : numpy.ndarray
+	vec
 		Boolean vector indicating which k-mers are present.
 
 	Returns
@@ -33,9 +33,9 @@ def sparse_to_dense(k_or_kspec: Union[int, KmerSpec],  coords: KmerSignature) ->
 
 	Parameters
 	----------
-	k_or_kspec : Union[int, KmerSpec]
+	k_or_kspec
 		Value of k or a :class:`.KmerSpec` instance.
-	coords : numpy.ndarray
+	coords
 		Sparse coordinate array.
 
 	Returns
