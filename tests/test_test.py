@@ -6,7 +6,7 @@ import numpy as np
 from gambit.test import make_signatures, random_seq, fill_bytearray, make_kmer_seq, check_progress
 from gambit.kmers import KmerSpec, kmer_to_index, nkmers
 from gambit.seq import revcomp
-from gambit.signatures.convert import dense_to_sparse
+from gambit.sigs.convert import dense_to_sparse
 from gambit.util.progress import get_progress
 
 

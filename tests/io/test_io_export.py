@@ -8,7 +8,7 @@ import numpy as np
 from gambit.query import QueryResults, QueryResultItem, QueryInput, QueryParams
 from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import ReferenceGenomeSet, Genome
-from gambit.signatures import SignaturesMeta
+from gambit.sigs import SignaturesMeta
 from gambit.io.seq import SequenceFile
 from gambit.io.json import to_json
 from gambit.util.misc import zip_strict

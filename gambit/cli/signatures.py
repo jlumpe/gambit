@@ -7,9 +7,9 @@ import h5py as h5
 from .common import CLIContext, seq_file_params, get_seq_files, print_table
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
-from gambit.signatures import SignaturesMeta, SignatureArray
-from gambit.signatures.hdf5 import HDF5Signatures
-from gambit.signatures.calc import calc_file_signatures
+from gambit.sigs import SignaturesMeta, SignatureArray
+from gambit.sigs.hdf5 import HDF5Signatures
+from gambit.sigs.calc import calc_file_signatures
 from gambit.util.progress import ClickProgressMeter
 
 

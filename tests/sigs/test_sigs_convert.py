@@ -1,9 +1,9 @@
-"""Test the gambit.signatures.convert module."""
+"""Test the gambit.sigs.convert module."""
 
 import pytest
 import numpy as np
 
-from gambit.signatures.convert import dense_to_sparse, sparse_to_dense, can_convert, \
+from gambit.sigs.convert import dense_to_sparse, sparse_to_dense, can_convert, \
 	check_can_convert, convert_dense, convert_sparse
 from gambit.kmers import KmerSpec
 from gambit.test import random_seq
@@ -75,7 +75,7 @@ class TestKmerSpecConversion:
 		KmerSpec(7, 'ATGACGT'),  # Extend prefix and reduce k further
 	])
 	def test_convert(self, seqs, to_kspec):
-		from gambit.signatures.calc import calc_signature
+		from gambit.sigs.calc import calc_signature
 
 		from_kspec = KmerSpec(11, 'ATGAC')
 

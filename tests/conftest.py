@@ -79,14 +79,14 @@ def testdb_copy(testdb_files):
 @pytest.fixture(scope='session')
 def testdb_signatures(testdb_files):
 	"""K-mer signatures for testdb reference genomes."""
-	from gambit.signatures.hdf5 import HDF5Signatures
+	from gambit.sigs.hdf5 import HDF5Signatures
 
 	return HDF5Signatures.open(testdb_files['ref_signatures'])
 
 @pytest.fixture(scope='session')
 def testdb_query_signatures(testdb_files):
 	"""K-mer signatures for testdb query genomes."""
-	from gambit.signatures.hdf5 import HDF5Signatures
+	from gambit.sigs.hdf5 import HDF5Signatures
 
 	return HDF5Signatures.open(testdb_files['query_signatures'])
 

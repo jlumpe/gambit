@@ -7,8 +7,8 @@ import numpy as np
 
 from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard, jaccarddist, \
 	_jaccarddist_parallel
-from gambit.signatures import KmerSignature, SignatureArray
-from gambit.signatures.array import AbstractSignatureArray
+from gambit.sigs import KmerSignature, SignatureArray
+from gambit.sigs.array import AbstractSignatureArray
 from gambit.util.misc import chunk_slices
 from gambit.util.progress import get_progress
 
@@ -106,7 +106,7 @@ def jaccarddist_matrix(queries: Sequence[KmerSignature],
 	reference signatures.
 
 	The main purpose of this function is to improve querying performance when the reference
-	signatures are stored in a file (e.g. using :class:`gambit.signatures.hdf5.HDF5Signatures`)
+	signatures are stored in a file (e.g. using :class:`gambit.sigs.hdf5.HDF5Signatures`)
 	by loading them in chunks (via the ``chunksize`` parameter) instead of all in one go.
 
 	Parameters

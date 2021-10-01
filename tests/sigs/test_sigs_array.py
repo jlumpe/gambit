@@ -1,12 +1,12 @@
-"""Test gambit.signatures.SignatureArray."""
+"""Test gambit.sigs.SignatureArray."""
 
 import pytest
 import numpy as np
 
-from gambit.signatures import SignatureArray, SignatureList
+from gambit.sigs import SignatureArray, SignatureList
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
-from gambit.signatures.test import AbstractSignatureArrayTests
+from gambit.sigs.test import AbstractSignatureArrayTests
 
 
 @pytest.fixture(params=[None, 'i8', 'u4'])

@@ -69,7 +69,7 @@ def locate_db_files(path: FilePath) -> Tuple[Path, Path]:
 
 def load_database(genomes_file: FilePath, signatures_file: FilePath) -> GAMBITDatabase:
 	"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
-	from gambit.signatures.hdf5 import HDF5Signatures
+	from gambit.sigs.hdf5 import HDF5Signatures
 
 	session = file_sessionmaker(genomes_file)()
 	gset = only_genomeset(session)

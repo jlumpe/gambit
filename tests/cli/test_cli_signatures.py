@@ -7,8 +7,8 @@ import numpy as np
 
 from gambit.cli.test import invoke_cli
 import gambit.io.json as gjson
-from gambit.signatures import SignaturesMeta
-from gambit.signatures.hdf5 import HDF5Signatures
+from gambit.sigs import SignaturesMeta
+from gambit.sigs.hdf5 import HDF5Signatures
 
 
 class TestInfoCommand:

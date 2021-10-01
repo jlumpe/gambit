@@ -3,7 +3,7 @@ from typing import Sequence
 from sqlalchemy.orm import Session, object_session
 
 from .models import ReferenceGenomeSet, AnnotatedGenome, genomes_by_id_subset
-from gambit.signatures.meta import ReferenceSignatures
+from gambit.sigs.meta import ReferenceSignatures
 
 
 class GAMBITDatabase:

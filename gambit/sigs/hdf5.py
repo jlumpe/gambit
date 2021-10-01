@@ -66,7 +66,7 @@ def read_metadata(group: h5.Group) -> SignaturesMeta:
 class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	"""Stores a set of k-mer signatures and associated metadata in an HDF5 group.
 
-	Inherits from :class:`gambit.signatures.base.AbstractSignatureArray`, so behaves as a sequence of
+	Inherits from :class:`gambit.sigs.base.AbstractSignatureArray`, so behaves as a sequence of
 	k-mer signatures supporting Numpy-style advanced indexing.
 
 	Behaves as a context manager which yields itself on enter and closes the underlying HDF5 file

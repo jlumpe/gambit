@@ -9,7 +9,7 @@ from gambit import __version__ as GAMBIT_VERSION
 from gambit.classify import classify, reportable_taxon, ClassifierResult
 from gambit.db import GAMBITDatabase, Taxon, ReferenceGenomeSet
 from gambit.io.seq import SequenceFile
-from gambit.signatures import KmerSignature, SignaturesMeta
+from gambit.sigs import KmerSignature, SignaturesMeta
 from gambit.metric import jaccarddist_matrix
 from gambit.util.misc import zip_strict
 from gambit.util.progress import progress_config, iter_progress
@@ -211,7 +211,7 @@ def query_parse(db: GAMBITDatabase,
 	\\**kw
 		Additional keyword arguments passed to :func:`.query`.
 	"""
-	from gambit.signatures.calc import calc_file_signatures
+	from gambit.sigs.calc import calc_file_signatures
 
 	pconf = progress_config(kw.pop('progress', None))
 

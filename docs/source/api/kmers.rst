@@ -17,49 +17,49 @@ gambit.kmers
    .. autofunction:: gambit.kmers.index_to_kmer
 
 
-gambit.signatures
+gambit.sigs
 -----------------
 
-.. automodule:: gambit.signatures
+.. automodule:: gambit.sigs
 
 
-gambit.signatures.base
+gambit.sigs.base
 ----------------------
 
-.. automodule:: gambit.signatures.base
+.. automodule:: gambit.sigs.base
 
 
-gambit.signatures.array
+gambit.sigs.array
 -----------------------
 
-.. automodule:: gambit.signatures.array
+.. automodule:: gambit.sigs.array
 
    .. autoclass:: AbstractSignatureArray
       :special-members: +__eq__
 
 
-gambit.signatures.meta
+gambit.sigs.meta
 ----------------------
 
-.. automodule:: gambit.signatures.meta
+.. automodule:: gambit.sigs.meta
 
 
-gambit.signatures.calc
+gambit.sigs.calc
 ----------------------
 
-.. automodule:: gambit.signatures.calc
+.. automodule:: gambit.sigs.calc
 
 
-gambit.signatures.convert
+gambit.sigs.convert
 -------------------------
 
-.. automodule:: gambit.signatures.convert
+.. automodule:: gambit.sigs.convert
 
 
-gambit.signatures.hdf5
+gambit.sigs.hdf5
 ----------------------
 
-.. automodule:: gambit.signatures.hdf5
+.. automodule:: gambit.sigs.hdf5
 
    .. autoclass:: HDF5Signatures
       :special-members: +__bool__

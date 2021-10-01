@@ -1,12 +1,12 @@
-"""Test gambit.signatures.hdf5."""
+"""Test gambit.sigs.hdf5."""
 
 import pytest
 import h5py as h5
 import numpy as np
 
-from gambit.signatures.hdf5 import HDF5Signatures, read_metadata, write_metadata
-from gambit.signatures import SignaturesMeta, SignatureList
-from gambit.signatures.test import AbstractSignatureArrayTests
+from gambit.sigs.hdf5 import HDF5Signatures, read_metadata, write_metadata
+from gambit.sigs import SignaturesMeta, SignatureList
+from gambit.sigs.test import AbstractSignatureArrayTests
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
 
