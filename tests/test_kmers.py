@@ -6,7 +6,7 @@ import numpy as np
 from gambit import kmers
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
-from gambit.test import SEQ_TYPES, convert_seq, make_kmer_seq
+from gambit.test import convert_seq, make_kmer_seq
 
 
 # Complements to nucleotide ASCII codes
@@ -58,7 +58,7 @@ class TestIndices:
 				assert set(kmers.NUCLEOTIDES).issuperset(kmer)
 
 				# Check conversion back to index
-				for T in SEQ_TYPES:
+				for T in kmers.SEQ_TYPES:
 					assert kmers.kmer_to_index(convert_seq(kmer, T)) == index
 					assert kmers.kmer_to_index(convert_seq(kmer.lower(), T)) == index
 
@@ -76,7 +76,7 @@ class TestKmerSpec:
 
 	def test_constructor(self):
 		# Prefix conversion
-		for T in SEQ_TYPES:
+		for T in kmers.SEQ_TYPES:
 			assert KmerSpec(11, convert_seq('ATGAC', T)).prefix == b'ATGAC'
 			assert KmerSpec(11, convert_seq('atgac', T)).prefix == b'ATGAC'
 
@@ -135,7 +135,7 @@ class TestKmerSpec:
 
 
 @pytest.mark.parametrize('lower', [False, True])
-@pytest.mark.parametrize('seq_type', SEQ_TYPES)
+@pytest.mark.parametrize('seq_type', kmers.SEQ_TYPES)
 def test_find_kmers(seq_type, lower):
 	"""Test the find_kmers() function and KmerMatch class."""
 

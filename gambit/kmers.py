@@ -26,8 +26,10 @@ from gambit.io.json import Jsonable
 # indexing k-mer sequences
 NUCLEOTIDES = b'ACGT'
 
-#: DNA sequence types accepted for k-mer search / signature calculation.
-DNASeq = Union[str, bytes, bytearray, Seq]
+SEQ_TYPES = (str, bytes, bytearray, Seq)
+
+#: Union of DNA sequence types accepted for k-mer search / signature calculation.
+DNASeq = Union[SEQ_TYPES]
 
 #: Sequence types accepted directly by native (Cython) code.
 DNASeqBytes = Union[bytes, bytearray]
