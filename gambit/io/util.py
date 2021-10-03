@@ -1,12 +1,13 @@
 """Utility code for reading/writing data files."""
 
 import os
-from typing import Union, Optional, IO, ContextManager
+from typing import Union, Optional, IO, ContextManager, Iterable, TypeVar
 from contextlib import nullcontext
 
 #: Alias for types which can represent a file system path
 FilePath = Union[str, os.PathLike]
 
+T = TypeVar('T')
 
 COMPRESSED_OPENERS = {None: open}
 
@@ -34,7 +35,11 @@ def _open_gzip(path, mode, **kwargs):
 	return gzip.open(path, mode=mode, **kwargs)
 
 
-def open_compressed(compression: Optional[str], path: FilePath, mode: Optional[str] = None, **kwargs):
+def open_compressed(compression: Optional[str],
+                    path: FilePath,
+                    mode: Optional[str] = None,
+                    **kwargs,
+                    ) -> IO:
 	"""Open a file with compression method specified by a string.
 
 	Parameters
@@ -52,7 +57,7 @@ def open_compressed(compression: Optional[str], path: FilePath, mode: Optional[s
 
 	Returns
 	-------
-	io.BufferedIOBase
+	IO
 		Open file object.
 	"""
 
@@ -65,7 +70,7 @@ def open_compressed(compression: Optional[str], path: FilePath, mode: Optional[s
 	return opener(os.fsdecode(path), mode=mode, **kwargs)
 
 
-class ClosingIterator:
+class ClosingIterator(Iterable[T]):
 	"""Wraps an iterator which reads from a stream, closes the stream when finished.
 
 	Used to wrap return values from functions which do some sort of lazy IO
@@ -119,7 +124,7 @@ class ClosingIterator:
 		self.fobj.close()
 
 	@property
-	def closed(self):
+	def closed(self) -> bool:
 		return self.fobj.closed
 
 	def __enter__(self):

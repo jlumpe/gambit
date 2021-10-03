@@ -1,12 +1,12 @@
 """Read and parse sequence files and calculate their k-mer signatures."""
 
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, IO, Iterable
 
 from Bio import SeqIO
 from attr import attrs, attrib
 
-from .util import open_compressed, ClosingIterator
+from .util import FilePath, open_compressed, ClosingIterator
 
 
 @attrs(frozen=True, slots=True)
@@ -17,7 +17,7 @@ class SequenceFile:
 
 	Parameters
 	----------
-	path : Union[pathlib.Path, str]
+	path : Union[os.PathLike, str]
 		Value of :attr:`path` attribute. May be string or path-like object.
 	format : str
 		Value of :attr:`format` attribute.
@@ -39,7 +39,7 @@ class SequenceFile:
 	format: str = attrib()
 	compression: Optional[str] = attrib(default=None)
 
-	def open(self, mode: str = 'r', **kwargs):
+	def open(self, mode: str = 'r', **kwargs) -> IO:
 		"""
 		Open a stream to the file, with compression/decompression applied
 		transparently.
@@ -57,11 +57,12 @@ class SequenceFile:
 
 		Returns
 		-------
-		Stream to file in given mode.
+		IO
+			Stream to file in given mode.
 		"""
 		return open_compressed(self.compression, self.path, mode, **kwargs)
 
-	def parse(self, **kwargs):
+	def parse(self, **kwargs) -> ClosingIterator[SeqIO.SeqRecord]:
 		"""Open the file and lazily parse its contents.
 
 		Returns iterator over sequence data in file. File is parsed lazily,
@@ -100,7 +101,11 @@ class SequenceFile:
 			return SequenceFile(self.path.absolute(), self.format, self.compression)
 
 	@classmethod
-	def from_paths(cls, paths, format: str, compression: Optional[str] = None) -> List['SequenceFile']:
+	def from_paths(cls,
+	               paths: Iterable[FilePath],
+	               format: str,
+	               compression: Optional[str] = None,
+	               ) -> List['SequenceFile']:
 		"""
 		Create many instances at once from a collection of paths and a single
 		format and compression type.
@@ -109,9 +114,9 @@ class SequenceFile:
 		----------
 		paths
 			Collection of paths as strings or path-like objects.
-		format : str
+		format
 			Sequence file format of files.
-		compression : str
+		compression
 			Compression method of files.
 		"""
 		return [cls(path, format, compression) for path in paths]
