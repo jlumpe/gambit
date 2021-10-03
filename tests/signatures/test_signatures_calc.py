@@ -23,7 +23,8 @@ class TestCalcSignature:
 	"""Test the calc_signature() function."""
 
 	@pytest.mark.parametrize('seq_type', SEQ_TYPES)
-	def test_basic(self, seq_type):
+	def test_single(self, seq_type):
+		"""Test with single signature as argument."""
 
 		np.random.seed(0)
 		seq_bytes, expected = make_kmer_seq(KSPEC, 100000, 50, 10)
@@ -42,6 +43,16 @@ class TestCalcSignature:
 		result = calc_signature(KSPEC, seq.lower())
 		assert np.array_equal(result, expected)
 
+	@pytest.mark.parametrize('seq_type', SEQ_TYPES)
+	def test_multiple(self, seq_type):
+		"""Test with list signatures as argument."""
+
+		np.random.seed(0)
+		seqs, sig = make_kmer_seqs(KSPEC, 10, 10000, 50, 10)
+		seqs2 = [convert_seq(seq, seq_type) for seq in seqs]
+
+		result = calc_signature(KSPEC, seqs2)
+		assert np.array_equal(result, sig)
 
 	def test_bounds(self):
 		"""Test k-mer finding at beginning and end of sequence to catch errors with search bounds."""
@@ -65,7 +76,6 @@ class TestCalcSignature:
 		found = calc_signature(kspec, seq)
 
 		assert np.array_equal(found, [0, 1])
-
 
 	def test_overlapping(self):
 		"""Test k-mer finding when k-mers overlap with each other.

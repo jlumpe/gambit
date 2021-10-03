@@ -1,6 +1,6 @@
 """Calculate k-mer signatures from sequence data."""
 
-from typing import Optional, List, Sequence, MutableSet
+from typing import Optional, Sequence, MutableSet, Union, Iterable
 from abc import abstractmethod
 from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from contextlib import nullcontext
@@ -10,7 +10,7 @@ from Bio import SeqIO
 
 from .base import KmerSignature
 from .array import SignatureList
-from gambit.kmers import DNASeq, KmerSpec, find_kmers, kmer_to_index, nkmers, index_dtype
+from gambit.kmers import SEQ_TYPES, DNASeq, KmerSpec, find_kmers, kmer_to_index, nkmers, index_dtype
 from gambit.io.seq import SequenceFile
 from gambit.util.progress import iter_progress, get_progress
 
@@ -140,38 +140,42 @@ def accumulate_kmers(accumulator: KmerAccumulator, kmerspec: KmerSpec, seq: DNAS
 
 
 def calc_signature(kmerspec: KmerSpec,
-                   seq: DNASeq,
+                   seqs: Union[DNASeq, Iterable[DNASeq]],
                    *,
                    accumulator: Optional[KmerAccumulator] = None,
                    ) -> KmerSignature:
-	"""Calculate the k-mer signature of a DNA sequence.
+	"""Calculate the k-mer signature of a DNA sequence or set of sequences.
 
-	Searches sequence both backwards and forwards (reverse complement). The sequence may contain
+	Searches sequences both backwards and forwards (reverse complement). Sequences may contain
 	invalid characters (not one of the four nucleotide codes) which will simply not be matched.
 
 	Parameters
 	----------
-	kmerspec : .KmerSpec
+	kmerspec
 		K-mer spec to use for search.
-	seq
-		Sequence to search within. Lowercase characters are OK and will be matched as uppercase.
+	seqs
+		Sequence or sequences to search within. Lowercase characters are OK.
 	accumulator
 		TODO
 
 	Returns
 	-------
 	numpy.ndarray
-		K-mer signature in sparse coordinate format (dtype will match
-		:func:`gambit.kmers.dense_to_sparse`).
+		K-mer signature in sparse coordinate format. Data type will be ``kspec.index_dtype``.
 
 	See Also
 	--------
-	.calc_signature_parse
+	.calc_file_signature
 	"""
+	if isinstance(seqs, SEQ_TYPES):
+		seqs = [seqs]
+
 	if accumulator is None:
 		accumulator = default_accumulator(kmerspec.k)
 
-	accumulate_kmers(accumulator, kmerspec, seq)
+	for seq in seqs:
+		accumulate_kmers(accumulator, kmerspec, seq)
+
 	return accumulator.signature()
 
 
