@@ -7,8 +7,7 @@ import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-from gambit.signatures.calc import calc_signature, calc_signature_parse, calc_file_signature, \
-	calc_file_signatures
+from gambit.signatures.calc import calc_signature, calc_file_signature, calc_file_signatures
 from gambit.kmers import SEQ_TYPES, KmerSpec, revcomp, index_to_kmer
 from gambit.test import fill_bytearray, make_kmer_seq, make_kmer_seqs, check_progress, convert_seq
 from gambit.io.seq import SequenceFile
@@ -154,18 +153,6 @@ class TestCalcFileSignatures:
 			files.append(file)
 
 		return files
-
-	def test_calc_signature_parse(self, record_sets, format):
-		"""Test the calc_signature_parse function."""
-
-		for records, sig in record_sets:
-			# Parse from buffer
-			buf = StringIO()
-			SeqIO.write(records, buf, format)
-			buf.seek(0)
-
-			result = calc_signature_parse(KSPEC, buf, 'fasta')
-			assert np.array_equal(result, sig)
 
 	def test_calc_file_signature(self, record_sets, files):
 		"""Test the calc_file_signature function."""

@@ -179,45 +179,6 @@ def calc_signature(kmerspec: KmerSpec,
 	return accumulator.signature()
 
 
-def calc_signature_parse(kmerspec: KmerSpec,
-                         data,
-                         format: str,
-                         *,
-                         accumulator: Optional[KmerAccumulator] = None,
-                         ) -> KmerSignature:
-	"""Parse sequence data with ``Bio.Seq.parse()`` and calculate its k-mer signature.
-
-	Parameters
-	----------
-	kmerspec : gambit.kmers.KmerSpec
-		Spec for k-mer search.
-	data
-		Stream with sequence data. Readable file-like object in text mode.
-	format : str
-		Sequence file format, as interpreted by :func:`Bio.SeqIO.parse`.
-	accumulator
-		TODO
-
-	Returns
-	-------
-	numpy.ndarray
-		K-mer signature in sparse coordinate format (dtype will match
-		:func:`gambit.kmers.dense_to_sparse`).
-
-	See Also
-	--------
-	.calc_signature
-	.calc_file_signature
-	"""
-	if accumulator is None:
-		accumulator = default_accumulator(kmerspec.k)
-
-	for record in SeqIO.parse(data, format):
-		accumulate_kmers(accumulator, kmerspec, record.seq)
-
-	return accumulator.signature()
-
-
 def calc_file_signature(kspec: KmerSpec,
                         seqfile: SequenceFile,
                         *,
@@ -247,10 +208,9 @@ def calc_file_signature(kspec: KmerSpec,
 	--------
 	.calc_signature
 	.calc_file_signatures
-	.calc_signature_parse
 	"""
-	with seqfile.open() as f:
-		return calc_signature_parse(kspec, f, seqfile.format, accumulator=accumulator)
+	with seqfile.parse() as records:
+		return calc_signature(kspec, (record.seq for record in records))
 
 
 def calc_file_signatures(kspec: KmerSpec,
