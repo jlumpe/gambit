@@ -78,16 +78,11 @@ class ClosingIterator:
 	Attributes
 	----------
 	fobj
-
 		The underlying file-like object or stream which the instance is
 		responsible for closing
-
 	iterator
-
 		The iterator which the instance wraps.
-
 	closed
-
 		Read-only boolean property, mirrors the same attribute of :attr:`fobj`.
 
 	Parameters

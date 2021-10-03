@@ -26,12 +26,12 @@ class SequenceFile:
 
 	Attributes
 	----------
-	path : pathlib.Path
+	path
 		Path to the file.
-	format : str
+	format
 		String describing the file format as interpreted by
 		:func:`Bio.SeqIO.parse`, e.g. ``'fasta'``.
-	compression : str or None
+	compression
 		String describing compression method of the file, e.g. ``'gzip'``. None
 		means no compression. See :func:`gambit.io.util.open_compressed`.
 	"""
