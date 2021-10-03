@@ -1,14 +1,13 @@
 """Helper functions for tests."""
 
-from typing import Optional, Tuple, Union, ContextManager
+from typing import Optional, Tuple, Union, ContextManager, List
 from contextlib import contextmanager
 
 import numpy as np
-from Bio.Seq import Seq
 
-from gambit.kmers import SEQ_TYPES, KmerSpec, kmer_to_index, revcomp, seq_to_bytes
+from gambit.kmers import KmerSpec, kmer_to_index, revcomp, seq_to_bytes
 from gambit.signatures import KmerSignature, SignatureArray
-from gambit.signatures.convert import dense_to_sparse
+from gambit.signatures.convert import dense_to_sparse, sparse_to_dense
 from gambit.query import QueryResultItem
 from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.util.progress import TestProgressMeter, ProgressConfig, progress_config, capture_progress
@@ -122,7 +121,10 @@ def fill_bytearray(pattern: bytes, n: int) -> bytearray:
 	return array
 
 
-def make_kmer_seq(kspec: KmerSpec, seqlen: int, kmer_interval: int, n_interval: Optional[int] = None
+def make_kmer_seq(kspec: KmerSpec,
+                  seqlen: int,
+                  kmer_interval: int,
+                  n_interval: Optional[int] = None,
                   ) -> Tuple[bytes, KmerSignature]:
 	"""Create a DNA sequence with a known k-mer signature.
 
@@ -180,6 +182,32 @@ def make_kmer_seq(kspec: KmerSpec, seqlen: int, kmer_interval: int, n_interval: 
 		seq_array[p:p + kspec.total_len] = match
 
 	return bytes(seq_array), dense_to_sparse(vec)
+
+
+def make_kmer_seqs(kspec: KmerSpec,
+                   nseqs: int,
+                   seqlen: int,
+                   kmer_interval: int,
+                   n_interval: Optional[int] = None,
+                   ) -> Tuple[List[bytes], KmerSignature]:
+	"""Create a set of DNA sequences with known combined signature."""
+
+	seqs = []
+	vec = np.zeros(kspec.nkmers, dtype=bool)
+
+	for i in range(nseqs):
+		seq, sig = make_kmer_seq(kspec, seqlen, kmer_interval, n_interval)
+
+		# Combine vectors of all sequences
+		vec |= sparse_to_dense(kspec, sig)
+
+		# Convert every other sequence to lower case, just to switch things up...
+		if i % 2:
+			seq = seq.lower()
+
+		seqs.append(seq)
+
+	return seqs, dense_to_sparse(vec)
 
 
 def compare_genome_matches(match1: Optional[GenomeMatch], match2: Optional[GenomeMatch]) -> bool:
