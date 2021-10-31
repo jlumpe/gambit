@@ -13,7 +13,7 @@ from csv import DictReader
 from gambit.io.seq import SequenceFile
 from gambit.db import load_database_from_dir
 from gambit.query import QueryParams, query_parse
-from gambit.io.export.archive import ResultsArchiveWriter
+from gambit.io.results.archive import ResultsArchiveWriter
 from gambit.util.misc import zip_strict
 
 

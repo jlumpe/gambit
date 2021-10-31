@@ -11,8 +11,8 @@ import pytest
 import numpy as np
 
 from gambit.cli.test import invoke_cli
-from gambit.io.export.json import JSONResultsExporter
-from gambit.io.export.csv import CSVResultsExporter
+from gambit.io.results.json import JSONResultsExporter
+from gambit.io.results.csv import CSVResultsExporter
 
 
 @pytest.fixture()

@@ -19,34 +19,34 @@ gambit.io.json
 .. automodule:: gambit.io.json
 
 
-gambit.io.export
+gambit.io.results
 ----------------
 
-.. automodule:: gambit.io.export
+.. automodule:: gambit.io.results
 
 
-gambit.io.export.base
+gambit.io.results.base
 ---------------------
 
-.. automodule:: gambit.io.export.base
+.. automodule:: gambit.io.results.base
 
 
-gambit.io.export.json
+gambit.io.results.json
 ---------------------
 
-.. automodule:: gambit.io.export.json
+.. automodule:: gambit.io.results.json
 
 
-gambit.io.export.csv
+gambit.io.results.csv
 --------------------
 
-.. automodule:: gambit.io.export.csv
+.. automodule:: gambit.io.results.csv
 
 
-gambit.io.export.archive
+gambit.io.results.archive
 ------------------------
 
-.. automodule:: gambit.io.export.archive
+.. automodule:: gambit.io.results.archive
 
 
 gambit.io.util

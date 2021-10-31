@@ -11,15 +11,15 @@ from gambit.sigs.hdf5 import HDF5Signatures
 
 def get_exporter(outfmt: str):
 	if outfmt == 'csv':
-		from gambit.io.export.csv import CSVResultsExporter
+		from gambit.io.results.csv import CSVResultsExporter
 		return CSVResultsExporter()
 
 	if outfmt == 'json':
-		from gambit.io.export.json import JSONResultsExporter
+		from gambit.io.results.json import JSONResultsExporter
 		return JSONResultsExporter()
 
 	if outfmt == 'archive':
-		from gambit.io.export.archive import ResultsArchiveWriter
+		from gambit.io.results.archive import ResultsArchiveWriter
 		return ResultsArchiveWriter(install_info=True)
 
 	assert 0
