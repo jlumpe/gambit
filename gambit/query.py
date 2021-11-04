@@ -6,7 +6,8 @@ from typing import Sequence, Optional, Union, List, Dict, Any
 from attr import attrs, attrib
 
 from gambit import __version__ as GAMBIT_VERSION
-from gambit.classify import classify, reportable_taxon, ClassifierResult
+from gambit.classify import classify, ClassifierResult
+from gambit.db.models import reportable_taxon
 from gambit.db import GAMBITDatabase, Taxon, ReferenceGenomeSet
 from gambit.io.seq import SequenceFile
 from gambit.sigs import KmerSignature, SignaturesMeta

@@ -118,26 +118,6 @@ def consensus_taxon(taxa: Iterable[Taxon]) -> Tuple[Optional[Taxon], Set[Taxon]]
 	return (trunk[0], others)
 
 
-def reportable_taxon(taxon: Taxon) -> Optional[Taxon]:
-	"""Find the first reportable taxon in a linage.
-
-	Parameters
-	----------
-	taxon
-		Taxon to start looking from.
-
-	Returns
-	-------
-	Optional[Taxon]
-		Most specific taxon in ancestry with ``report=True``, or ``None`` if none found.
-	"""
-	for t in taxon.ancestors(incself=True):
-		if t.report:
-			return t
-
-	return None
-
-
 @attrs()
 class GenomeMatch:
 	"""Match between a query and a single reference genome.
