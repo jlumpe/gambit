@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Sequence, Optional, Union, List, Dict, Any
 
 from attr import attrs, attrib
+import numpy as np
 
 from gambit import __version__ as GAMBIT_VERSION
 from gambit.classify import classify, ClassifierResult
@@ -168,24 +169,37 @@ def query(db: GAMBITDatabase,
 		progress=pconf.update(desc='Calculating distances'),
 	)
 
-	items = []
-
 	# Classify inputs and create result items
 	with iter_progress(inputs, pconf, desc='Classifying') as inputs_iter:
-		for i, input in enumerate(inputs_iter):
-			clsresult = classify(db.genomes, dmat[i, :], strict=params.classify_strict)
-			report_taxon = None if clsresult.predicted_taxon is None else reportable_taxon(clsresult.predicted_taxon)
-			items.append(QueryResultItem(
-				input=input,
-				classifier_result=clsresult,
-				report_taxon=report_taxon,
-			))
+		items = [get_result_item(db, params, dmat[i, :], input) for i, input in enumerate(inputs_iter)]
 
 	return QueryResults(
 		items=items,
 		params=params,
 		genomeset=db.genomeset,
 		signaturesmeta=db.signatures.meta,
+	)
+
+
+def get_result_item(db:GAMBITDatabase, params: QueryParams, dists: np.ndarray, input: QueryInput) -> QueryResultItem:
+	"""Perform classification and create result item object for single query input.
+
+	Parameters
+	----------
+	db
+	params
+	dists
+		Distances from query to reference genomes.
+	input
+	"""
+
+	clsresult = classify(db.genomes, dists, strict=params.classify_strict)
+	report_taxon = None if clsresult.predicted_taxon is None else reportable_taxon(clsresult.predicted_taxon)
+
+	return QueryResultItem(
+		input=input,
+		classifier_result=clsresult,
+		report_taxon=report_taxon,
 	)
 
 
@@ -208,7 +222,7 @@ def query_parse(db: GAMBITDatabase,
 		``QueryParams`` instance defining parameter values. If None will take values from additional
 		keyword arguments or use defaults.
 	file_labels
-		Custom to use for each file in returned results object. If None will use file names.
+		Custom labels to use for each file in returned results object. If None will use file names.
 	\\**kw
 		Additional keyword arguments passed to :func:`.query`.
 	"""
