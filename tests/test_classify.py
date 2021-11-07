@@ -3,7 +3,6 @@
 import pytest
 
 from gambit.classify import matching_taxon, find_matches, consensus_taxon
-from gambit.db.models import reportable_taxon
 from gambit.db import Taxon
 
 
@@ -58,7 +57,3 @@ def test_consensus_taxon(testdb_session):
 	assert consensus_taxon([A1, A2]) == (None, {A1, A2})
 	assert consensus_taxon([A1_B1, A2]) == (None, {A1_B1, A2})
 	assert consensus_taxon([A1, A1_B1, A2]) == (None, {A1, A1_B1, A2})
-
-
-def test_reportable_taxon():
-	pass  # TODO

@@ -327,3 +327,19 @@ class TestGenomeIDMapping:
 			ids_incomplete = ids[:-1]
 
 			# TODO
+
+
+def test_reportable_taxon():
+	"Test reportable_taxon() function."
+	assert models.reportable_taxon(None) is None
+
+	t = Taxon(report=True)
+	assert models.reportable_taxon(t) is t
+
+	t = Taxon(report=False)
+	assert models.reportable_taxon(t) is None
+
+	t1 = Taxon(report=False)
+	t2 = Taxon(report=True)
+	t1.parent = t2
+	assert models.reportable_taxon(t1) is t2

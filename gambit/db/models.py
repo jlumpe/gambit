@@ -547,19 +547,22 @@ def genomes_by_id_subset(genomeset: ReferenceGenomeSet,
 	return genomes_out, idxs_out
 
 
-def reportable_taxon(taxon: Taxon) -> Optional[Taxon]:
+def reportable_taxon(taxon: Optional[Taxon]) -> Optional[Taxon]:
 	"""Find the first reportable taxon in a linage.
 
 	Parameters
 	----------
 	taxon
-		Taxon to start looking from.
+		Taxon to start looking from. None values are passed through.
 
 	Returns
 	-------
 	Optional[Taxon]
 		Most specific taxon in ancestry with ``report=True``, or ``None`` if none found.
 	"""
+	if taxon is None:
+		return None
+
 	for t in taxon.ancestors(incself=True):
 		if t.report:
 			return t
