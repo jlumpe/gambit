@@ -1,0 +1,79 @@
+# Changelog
+
+## 0.3.0
+
+* CLI updates
+	* `gambit query` now accepts query signatures from a signature file.
+	* New command group `gambit signatures` with `info` and `create` subcommands.
+	* New `debug` command group (hidden).
+* Performance enhancements
+	* Signature calculation for multiple sequence files can be run in parallel.
+	* Signature calculation with large `k` much faster.
+	* Benchmarks for signature calculation.
+* Documentation
+	* Installation instructions
+	* More complete CLI docs
+* API and internals
+	* Major refactor to `gambit.kmers` and `gambit.signatures`
+	* `find_kmers()` renamed to `calc_signature()` and moved to `gambit.signatures.calc`, related
+		functions also renamed and moved.
+	* Refactored k-mer search into new `find_kmers()` function, which finds locations of prefix
+		matches in sequence.
+	* Several other classes and functions moved from `gambit.kmers` to `gambit.signatures` submodules.
+	* Rearrangement of stuff within `gambit.signatures`.
+	* Added required `kmerspec` attribute to `AbstractKmerArray`.
+	* Renamed some `KmerSpec` attributes
+	* Rename `gambit.kmers.reverse_complement()` -> `revcomp()`
+	* Refactor of Jaccard functions
+	* Removed `_sparse` from function names
+	* Array and matrix functions now calculate distance only, renamed from `jaccard_*` to `jaccarddist_*`
+* New features
+	* Most functions which take DNA sequences now accept `str`, `bytes`, or `Bio.Seq.Seq`.
+	* Convert signatures between compatible `KmerSpec`s.
+	* `HDF5Signatures` `close()` method and context manager.
+* Other
+	* Updated Cython `kmers` code.
+	* Many updates/improvements to tests.
+
+
+## 0.2.2
+
+* Replace `testdb_210126` with `testdb_210818`. Small enough to include all files, including reference signatures and query sequences, in version control.
+* Store pre-calculated query results for tests.
+* Some other minor test improvements and bug fixes.
+
+
+## 0.2.1
+
+* Added license
+* Add `setuptools` to runtime dependencies
+* Minor docstring edits
+
+
+## 0.2.0
+
+* User-facing
+	* Rework JSON results format to be simpler and hide internal details
+	* Add CSV results format (default)
+	* Display progress while querying
+	* Increase query performance and decrease memory usage
+* Internal
+	* Major redesign of `GAMBITDatabase` and query funcs
+	* `GAMBITDatabase` stores indices of reference signatures instead of loading them all up front
+	* Read reference signatures in chunks when calculating distance matrix
+	* Maintain reference to SQLAlchemy Session object on `GAMBITDatabase`.
+	* `strict` classification parameter
+	* Enables new behavior of finding and reconciling all matching taxa
+	* Defaults to off, which results old behavior of using only closest match
+	* Fix bug in `consensus_taxon()` and add tests
+	* Flexible, generic progress monitoring API
+	* Add to long-running functions like querying, distance matrix calculation, and k-mer finding
+	* "archive" export format for saving full result data.
+	* Lots of test improvements
+	* More type annotations
+	* Update API docs
+
+
+## 0.1.0
+
+Initial version.
