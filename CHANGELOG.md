@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.0
+
+* CLI
+	* `signatures info` subcommand uses current reference DB by default.
+* Documentation
+	* Some improvements to API docs.
+* API and internals
+    * `calc_signature()` function can take multiple sequences as input.
+    * Remove `calc_signature()` function.
+	* Refactoring
+		* Rename `gambit.signatures` -> `gambit.sigs`.
+		* Rename `gambit.io.export` -> `gambit.io.results`
+		* Move generic sequence code from `gambit.kmers` to `gambit.seq`.
+		* Moved some other stuff between modules.
+	* Improvements to `gambit.sigs.hdf5.HDF5Signatures`
+		* Improvements to `.create()` method.
+		* Support compression.
+
+
 ## 0.3.0
 
 * CLI updates
