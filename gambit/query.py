@@ -9,7 +9,7 @@ import numpy as np
 from gambit import __version__ as GAMBIT_VERSION
 from gambit.classify import classify, ClassifierResult
 from gambit.db.models import reportable_taxon
-from gambit.db import GAMBITDatabase, Taxon, ReferenceGenomeSet
+from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet
 from gambit.io.seq import SequenceFile
 from gambit.sigs import KmerSignature, SignaturesMeta
 from gambit.metric import jaccarddist_matrix
@@ -111,7 +111,7 @@ class QueryResults:
 	extra: Dict[str, Any] = attrib(factory=dict)
 
 
-def query(db: GAMBITDatabase,
+def query(db: ReferenceDatabase,
           queries: Sequence[KmerSignature],
           params: Optional[QueryParams] = None,
           *,
@@ -181,7 +181,7 @@ def query(db: GAMBITDatabase,
 	)
 
 
-def get_result_item(db:GAMBITDatabase, params: QueryParams, dists: np.ndarray, input: QueryInput) -> QueryResultItem:
+def get_result_item(db:ReferenceDatabase, params: QueryParams, dists: np.ndarray, input: QueryInput) -> QueryResultItem:
 	"""Perform classification and create result item object for single query input.
 
 	Parameters
@@ -203,7 +203,7 @@ def get_result_item(db:GAMBITDatabase, params: QueryParams, dists: np.ndarray, i
 	)
 
 
-def query_parse(db: GAMBITDatabase,
+def query_parse(db: ReferenceDatabase,
                 files: Sequence[SequenceFile],
                 params: Optional[QueryParams] = None,
                 *,

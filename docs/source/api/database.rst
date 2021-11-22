@@ -7,10 +7,10 @@ gambit.db
 .. automodule:: gambit.db
 
 
-gambit.db.gambitdb
-------------------
+gambit.db.refdb
+---------------
 
-.. automodule:: gambit.db.gambitdb
+.. automodule:: gambit.db.refdb
 
 
 gambit.db.models

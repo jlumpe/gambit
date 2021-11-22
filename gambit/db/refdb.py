@@ -9,7 +9,7 @@ from gambit.sigs.meta import ReferenceSignatures
 from gambit.io.util import FilePath
 
 
-class GAMBITDatabase:
+class ReferenceDatabase:
 	"""Object containing reference genomes, their k-mer signatures, and associated data.
 
 	This is all that is needed at runtime to run queries.
@@ -99,17 +99,17 @@ def locate_db_files(path: FilePath) -> Tuple[Path, Path]:
 	return genomes_matches[0], signatures_matches[0]
 
 
-def load_database(genomes_file: FilePath, signatures_file: FilePath) -> GAMBITDatabase:
+def load_database(genomes_file: FilePath, signatures_file: FilePath) -> ReferenceDatabase:
 	"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
 	from gambit.sigs.hdf5 import HDF5Signatures
 
 	session = file_sessionmaker(genomes_file)()
 	gset = only_genomeset(session)
 	sigs = HDF5Signatures.open(signatures_file)
-	return GAMBITDatabase(gset, sigs)
+	return ReferenceDatabase(gset, sigs)
 
 
-def load_database_from_dir(path: FilePath) -> GAMBITDatabase:
+def load_database_from_dir(path: FilePath) -> ReferenceDatabase:
 	"""
 	Load complete database given directory containing SQLite genomes database file and HDF5
 	signatures file.

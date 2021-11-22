@@ -10,6 +10,7 @@
     * `calc_signature()` function can take multiple sequences as input.
     * Remove `calc_signature()` function.
 	* Refactoring
+		* Rename `GAMBITDatabase` -> `ReferenceDatabase`, `gambit.db.gambitdb` -> `.refdb`
 		* Rename `gambit.signatures` -> `gambit.sigs`.
 		* Rename `gambit.io.export` -> `gambit.io.results`
 		* Move generic sequence code from `gambit.kmers` to `gambit.seq`.

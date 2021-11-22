@@ -92,12 +92,12 @@ def testdb_query_signatures(testdb_files):
 
 @pytest.fixture(scope='session')
 def testdb(testdb_session, testdb_signatures):
-	"""Full GAMBITDatabase object for test db."""
-	from gambit.db import GAMBITDatabase, ReferenceGenomeSet
+	"""Full ReferenceDatabase object for test db."""
+	from gambit.db import ReferenceDatabase, ReferenceGenomeSet
 
 	session = testdb_session()
 	gset = session.query(ReferenceGenomeSet).one()
-	return GAMBITDatabase(gset, testdb_signatures)
+	return ReferenceDatabase(gset, testdb_signatures)
 
 @pytest.fixture(scope='session')
 def testdb_queries(testdb, testdb_files):

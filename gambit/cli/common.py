@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
-from gambit.db import locate_db_files, GAMBITDatabase
+from gambit.db import locate_db_files, ReferenceDatabase
 from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
 from gambit.sigs.hdf5 import HDF5Signatures
@@ -139,12 +139,12 @@ class CLIContext:
 
 		return self._signatures
 
-	def get_database(self) -> GAMBITDatabase:
+	def get_database(self) -> ReferenceDatabase:
 		"""Get reference database object."""
 		self.require_database()
 		session = self.Session()
 		gset = only_genomeset(session)
-		return GAMBITDatabase(gset, self.signatures)
+		return ReferenceDatabase(gset, self.signatures)
 
 
 def seqfmt_option():
