@@ -7,8 +7,8 @@
 * Documentation
 	* Some improvements to API docs.
 * API and internals
-    * `calc_signature()` function can take multiple sequences as input.
-    * Remove `calc_signature()` function.
+	* `calc_signature()` function can take multiple sequences as input.
+	* Remove `calc_signature_parse()` function.
 	* Refactoring
 		* Rename `GAMBITDatabase` -> `ReferenceDatabase`, `gambit.db.gambitdb` -> `.refdb`
 		* Rename `gambit.signatures` -> `gambit.sigs`.
