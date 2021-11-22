@@ -99,7 +99,7 @@ def locate_db_files(path: FilePath) -> Tuple[Path, Path]:
 	return genomes_matches[0], signatures_matches[0]
 
 
-def load_database(genomes_file: FilePath, signatures_file: FilePath) -> ReferenceDatabase:
+def load_db(genomes_file: FilePath, signatures_file: FilePath) -> ReferenceDatabase:
 	"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
 	from gambit.sigs.hdf5 import HDF5Signatures
 
@@ -109,7 +109,7 @@ def load_database(genomes_file: FilePath, signatures_file: FilePath) -> Referenc
 	return ReferenceDatabase(gset, sigs)
 
 
-def load_database_from_dir(path: FilePath) -> ReferenceDatabase:
+def load_db_from_dir(path: FilePath) -> ReferenceDatabase:
 	"""
 	Load complete database given directory containing SQLite genomes database file and HDF5
 	signatures file.
@@ -122,4 +122,4 @@ def load_database_from_dir(path: FilePath) -> ReferenceDatabase:
 		If files cannot be located in directory.
 	"""
 	genomes_file, signatures_file = locate_db_files(path)
-	return load_database(genomes_file, signatures_file)
+	return load_db(genomes_file, signatures_file)

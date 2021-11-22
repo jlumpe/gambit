@@ -11,7 +11,7 @@ from pathlib import Path
 from csv import DictReader
 
 from gambit.io.seq import SequenceFile
-from gambit.db import load_database_from_dir
+from gambit.db import load_db_from_dir
 from gambit.query import QueryParams, query_parse
 from gambit.io.results.archive import ResultsArchiveWriter
 from gambit.util.misc import zip_strict
@@ -82,7 +82,7 @@ def check_results(queries, results):
 def main():
 	queries = load_query_data()
 	query_files = [query['file'] for query in queries]
-	db = load_database_from_dir('')
+	db = load_db_from_dir('')
 
 	writer = ResultsArchiveWriter()
 
