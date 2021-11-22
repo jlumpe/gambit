@@ -49,40 +49,33 @@ def check_results(queries, results):
 		assert clsresult.success
 		assert clsresult.error is None
 
-		if results.params.classify_strict:
-			if query['predicted']:
-				assert predicted is not None
+		if query['predicted']:
+			assert predicted is not None
+			assert clsresult.primary_match is not None
+
+			if results.params.classify_strict:
 				assert predicted.name == query['predicted']
-				assert clsresult.primary_match is not None
 				assert clsresult.primary_match.genome.description == query['primary']
-				assert item.report_taxon is (predicted if predicted.report else predicted.parent)
 
 			else:
-				assert predicted is None
-				assert clsresult.primary_match is None
-				assert item.report_taxon is None
-
-			assert clsresult.closest_match.genome.description == query['closest']
-			assert bool(clsresult.warnings) == query['warnings']
-
-		else:
-			if query['predicted']:
 				assert clsresult.primary_match == clsresult.closest_match
 				assert predicted is clsresult.primary_match.matched_taxon
-				assert item.report_taxon is (predicted if predicted.report else predicted.parent)
 
-			else:
-				assert predicted is None
-				assert clsresult.primary_match is None
-				assert item.report_taxon is None
+			assert item.report_taxon is (predicted if predicted.report else predicted.parent)
 
-			assert clsresult.closest_match.genome.description == query['closest']
+		else:
+			assert predicted is None
+			assert clsresult.primary_match is None
+			assert item.report_taxon is None
+
+		assert clsresult.closest_match.genome.description == query['closest']
+		assert bool(clsresult.warnings) == (results.params.classify_strict and query['warnings'])
 
 
 def main():
 	queries = load_query_data()
 	query_files = [query['file'] for query in queries]
-	db = load_db_from_dir('')
+	db = load_db_from_dir('.')
 
 	writer = ResultsArchiveWriter(pretty=True)
 
