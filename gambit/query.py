@@ -135,7 +135,7 @@ def query(db: ReferenceDatabase,
 		object. Only used for reporting, does not any other aspect of results. Items can be
 		``QueryInput``, ``SequenceFile`` or ``str``.
 	progress
-		Report progress for distance matrix calculation. See
+		Report progress for distance matrix calculation and classification. See
 		:func:`gambit.util.progress.get_progress` for description of allowed values.
 	\\**kw
 		Passed to ``QueryParams``.

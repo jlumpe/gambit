@@ -16,7 +16,10 @@ def test_data():
 
 @pytest.fixture(autouse=True)
 def raise_numpy_errors():
-	"""Raise exceptions for all Numpy errors in all tests."""
+	"""Raise exceptions for all Numpy errors in all tests.
+
+	NOTE: this doesn't affect operations with Numpy scalars and so has limited usefulness.
+	"""
 
 	old_settings = np.seterr(all='raise')
 
