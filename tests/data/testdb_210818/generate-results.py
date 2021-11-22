@@ -84,7 +84,7 @@ def main():
 	query_files = [query['file'] for query in queries]
 	db = load_db_from_dir('')
 
-	writer = ResultsArchiveWriter()
+	writer = ResultsArchiveWriter(pretty=True)
 
 	for label, params in PARAMS.items():
 		results = query_parse(db, query_files, params)
