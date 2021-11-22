@@ -1,11 +1,12 @@
 """Custom types and other utilities for SQLAlchemy."""
+import os
 
-import json
-
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.types import TypeDecorator, String
-from sqlalchemy.orm.session import Session
 
 import gambit.io.json as gjson
+from gambit.io import FilePath
 
 
 class ReadOnlySession(Session):
@@ -34,3 +35,24 @@ class JsonString(TypeDecorator):
 
 	def process_result_value(self, value, dialect):
 		return None if value is None else gjson.loads(value)
+
+
+def file_sessionmaker(path: FilePath, readonly: bool = True, cls: type = None, **kw) -> sessionmaker:
+	"""Get an SQLAlchemy ``sessionmaker`` for an sqlite database file.
+
+	Parameters
+	----------
+	path
+		Path to database file.
+	readonly
+		Sets the default value for ``class_``.
+	cls
+		SQLAlchemy ``Session`` subclass to use. Defaults to :class:`gambit.db.sqla.ReadOnlySession`
+		if ``readonly=True``, otherwise uses the standard SQLAlchemy session type.
+	\\**kw
+		Additional keyword arguments to :class:`sqlalchemy.orm.sessionmaker`.
+	"""
+	if cls is None:
+		cls = ReadOnlySession if readonly else Session
+	engine = create_engine(f'sqlite:///{os.fspath(path)}')
+	return sessionmaker(engine, class_=cls, **kw)

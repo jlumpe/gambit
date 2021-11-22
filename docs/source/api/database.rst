@@ -34,12 +34,6 @@ gambit.db.sqla
       :no-members:
 
 
-gambit.db.fromfile
-------------------
-
-.. automodule:: gambit.db.fromfile
-
-
 gambit.db.migrate
 -----------------
 
