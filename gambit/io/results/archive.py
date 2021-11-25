@@ -13,7 +13,7 @@ import gambit.io.json as gjson
 from gambit.io.util import FilePath, maybe_open
 from gambit.util.misc import singledispatchmethod, type_singledispatchmethod
 from gambit.util.typing import is_optional, unwrap_optional
-from .json import BaseJSONResultsExporter, asdict_default
+from .base import asdict_default, BaseJSONResultsExporter
 
 
 def _todict(obj, attrs):

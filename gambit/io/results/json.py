@@ -1,53 +1,11 @@
 """Export results to JSON."""
 
-import json
-from typing import Union, TextIO
+from attr import attrs, asdict
 
-from attr import attrs, attrib, asdict
-
-from .base import AbstractResultsExporter
+from .base import _todict, BaseJSONResultsExporter
 from gambit.query import QueryResultItem, QueryResults, QueryInput
 from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome
-import gambit.io.json as gjson
-from gambit.io.util import FilePath, maybe_open
 from gambit.util.misc import singledispatchmethod
-
-
-def _todict(obj, attrs):
-	return {a: getattr(obj, a) for a in attrs}
-
-
-def asdict_method(recurse=False, **kw):
-	"""Create a ``to_json`` method which calls :func:`attrs.asdict` with the given options."""
-	def method(self, obj):
-		return asdict(obj, recurse=recurse, **kw)
-	return method
-
-
-asdict_default = asdict_method()
-
-
-@attrs()
-class BaseJSONResultsExporter(AbstractResultsExporter):
-	"""Base class for JSON exporters.
-
-	Subclasses need to implement the ``to_json`` method.
-
-	Attributes
-	----------
-	pretty
-		Write in more human-readable but less compact format. Defaults to False.
-	"""
-	pretty: bool = attrib(default=False)
-
-	def to_json(self, obj):
-		"""Convert object to JSON-compatible format (need not work recursively)."""
-		return gjson.to_json(obj)
-
-	def export(self, file_or_path: Union[FilePath, TextIO], results: QueryResults):
-		opts = dict(indent=4, sort_keys=True) if self.pretty else dict()
-		with maybe_open(file_or_path, 'w') as f:
-			json.dump(results, f, default=self.to_json, **opts)
 
 
 @attrs()
