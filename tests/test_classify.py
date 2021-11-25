@@ -2,8 +2,8 @@
 
 import pytest
 
-from gambit.classify import matching_taxon, find_matches, consensus_taxon
-from gambit.db import Taxon
+from gambit.classify import matching_taxon, find_matches, consensus_taxon, GenomeMatch
+from gambit.db import Taxon, AnnotatedGenome
 
 
 def test_matching_taxon():
@@ -57,3 +57,18 @@ def test_consensus_taxon(testdb_session):
 	assert consensus_taxon([A1, A2]) == (None, {A1, A2})
 	assert consensus_taxon([A1_B1, A2]) == (None, {A1_B1, A2})
 	assert consensus_taxon([A1, A1_B1, A2]) == (None, {A1, A1_B1, A2})
+
+
+class TestGenomeMatch:
+	"""Test the GenomeMatch class."""
+
+	def test_matched_taxon_default(self):
+		"""Test default for the matched_taxon attribute."""
+
+		t1 = Taxon(distance_threshold=.5)
+		t2 = Taxon(distance_threshold=.2, parent=t1)
+		g = AnnotatedGenome(taxon=t2)
+
+		assert GenomeMatch(g, .1) == GenomeMatch(g, .1, t2)
+		assert GenomeMatch(g, .3) == GenomeMatch(g, .3, t1)
+		assert GenomeMatch(g, .6) == GenomeMatch(g, .6, None)

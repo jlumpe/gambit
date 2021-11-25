@@ -142,7 +142,7 @@ class GenomeMatch:
 
 	@matched_taxon.default
 	def _matched_taxon_default(self):
-		return matching_taxon(self.genome, self.distance)
+		return matching_taxon(self.genome.taxon, self.distance)
 
 
 @attrs()
