@@ -14,31 +14,31 @@ gambit.io.json
 
 
 gambit.io.results
-----------------
+-----------------
 
 .. automodule:: gambit.io.results
 
 
 gambit.io.results.base
----------------------
+----------------------
 
 .. automodule:: gambit.io.results.base
 
 
 gambit.io.results.json
----------------------
+----------------------
 
 .. automodule:: gambit.io.results.json
 
 
 gambit.io.results.csv
---------------------
+---------------------
 
 .. automodule:: gambit.io.results.csv
 
 
 gambit.io.results.archive
-------------------------
+-------------------------
 
 .. automodule:: gambit.io.results.archive
 
