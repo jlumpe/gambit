@@ -10,7 +10,7 @@ This script should be re-run whenever the expected results change.
 from pathlib import Path
 from csv import DictReader
 
-from gambit.io.seq import SequenceFile
+from gambit.seq import SequenceFile
 from gambit.db import load_db_from_dir
 from gambit.query import QueryParams, query_parse
 from gambit.io.results.archive import ResultsArchiveWriter

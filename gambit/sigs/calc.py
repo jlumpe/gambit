@@ -10,8 +10,7 @@ import numpy as np
 from .base import KmerSignature
 from .array import SignatureList
 from gambit.kmers import KmerSpec, find_kmers, kmer_to_index, nkmers, index_dtype
-from gambit.seq import SEQ_TYPES, DNASeq
-from gambit.io.seq import SequenceFile
+from gambit.seq import SEQ_TYPES, DNASeq, SequenceFile
 from gambit.util.progress import iter_progress, get_progress
 
 

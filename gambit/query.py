@@ -10,7 +10,7 @@ from gambit import __version__ as GAMBIT_VERSION
 from gambit.classify import classify, ClassifierResult
 from gambit.db.models import reportable_taxon
 from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet
-from gambit.io.seq import SequenceFile
+from gambit.seq import SequenceFile
 from gambit.sigs import KmerSignature, SignaturesMeta
 from gambit.metric import jaccarddist_matrix
 from gambit.util.misc import zip_strict

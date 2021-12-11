@@ -14,6 +14,7 @@
 		* Rename `gambit.signatures` -> `gambit.sigs`.
 		* Rename `gambit.io.export` -> `gambit.io.results`
 		* Move generic sequence code from `gambit.kmers` to `gambit.seq`.
+		* Merge `gambit.io.seq` -> `gambit.seq`.
 		* Rename `load_database*` funcs -> `load_db*`.
 		* Moved some other stuff between modules.
 	* Improvements to `gambit.sigs.hdf5.HDF5Signatures`

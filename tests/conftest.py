@@ -105,7 +105,7 @@ def testdb(testdb_session, testdb_signatures):
 @pytest.fixture(scope='session')
 def testdb_queries(testdb, testdb_files):
 	"""Query files and their expected results."""
-	from gambit.io.seq import SequenceFile
+	from gambit.seq import SequenceFile
 
 	genomes_dir = testdb_files['query_genomes']
 

@@ -11,7 +11,7 @@ from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
 from gambit.sigs.hdf5 import HDF5Signatures
 from gambit.sigs.meta import ReferenceSignatures
-from gambit.io.seq import SequenceFile
+from gambit.seq import SequenceFile
 
 
 class CLIContext:

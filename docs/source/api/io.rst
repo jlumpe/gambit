@@ -7,12 +7,6 @@ gambit.io
 .. automodule:: gambit.io
 
 
-gambit.io.seq
--------------
-
-.. automodule:: gambit.io.seq
-
-
 gambit.io.json
 --------------
 

@@ -9,9 +9,8 @@ from Bio.Seq import Seq
 
 from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_signatures
 from gambit.kmers import KmerSpec, index_to_kmer
-from gambit.seq import SEQ_TYPES, revcomp
+from gambit.seq import SEQ_TYPES, revcomp, SequenceFile
 from gambit.test import fill_bytearray, make_kmer_seq, make_kmer_seqs, check_progress, convert_seq
-from gambit.io.seq import SequenceFile
 import gambit.io.util as ioutil
 from gambit.sigs import sigarray_eq
 
