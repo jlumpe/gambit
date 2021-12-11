@@ -12,6 +12,7 @@
 	* Refactoring
 		* Rename `GAMBITDatabase` -> `ReferenceDatabase`, `gambit.db.gambitdb` -> `.refdb`
 		* Rename `gambit.signatures` -> `gambit.sigs`.
+		* Merge `gambit.sigs.array`, `gambit.sigs.meta` -> `gambit.sigs.base`
 		* Rename `gambit.io.export` -> `gambit.io.results`
 		* Move generic sequence code from `gambit.kmers` to `gambit.seq`.
 		* Merge `gambit.io.seq` -> `gambit.seq`.

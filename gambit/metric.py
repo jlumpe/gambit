@@ -7,8 +7,7 @@ import numpy as np
 
 from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard, jaccarddist, \
 	_jaccarddist_parallel
-from gambit.sigs import KmerSignature, SignatureArray
-from gambit.sigs.array import AbstractSignatureArray
+from gambit.sigs.base import KmerSignature, SignatureArray, AbstractSignatureArray
 from gambit.util.misc import chunk_slices
 from gambit.util.progress import get_progress
 

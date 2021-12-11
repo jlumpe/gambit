@@ -1,4 +1,4 @@
-"""Test gambit.sigs.SignatureArray."""
+"""Test gambit.sigs.base."""
 
 import pytest
 import numpy as np

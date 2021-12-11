@@ -28,20 +28,8 @@ gambit.sigs.base
 
 .. automodule:: gambit.sigs.base
 
-
-gambit.sigs.array
------------------------
-
-.. automodule:: gambit.sigs.array
-
    .. autoclass:: AbstractSignatureArray
       :special-members: +__eq__
-
-
-gambit.sigs.meta
-----------------------
-
-.. automodule:: gambit.sigs.meta
 
 
 gambit.sigs.calc
