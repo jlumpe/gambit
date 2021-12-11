@@ -2,13 +2,11 @@
 root = true
 
 
-# Match all files...
 [*]
 end_of_line = lf
 
 
-# Python files
-[*.py]
+[*.{py,md}]
 charset = utf-8
 indent_style = tab
 tab_width = 4
