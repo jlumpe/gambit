@@ -5,7 +5,7 @@ from sqlalchemy.orm import object_session
 
 from .models import ReferenceGenomeSet, AnnotatedGenome, genomes_by_id_subset, only_genomeset
 from .sqla import file_sessionmaker
-from gambit.sigs.base import ReferenceSignatures
+from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.io.util import FilePath
 
 
@@ -101,11 +101,9 @@ def locate_db_files(path: FilePath) -> Tuple[Path, Path]:
 
 def load_db(genomes_file: FilePath, signatures_file: FilePath) -> ReferenceDatabase:
 	"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
-	from gambit.sigs.hdf5 import HDF5Signatures
-
 	session = file_sessionmaker(genomes_file)()
 	gset = only_genomeset(session)
-	sigs = HDF5Signatures.open(signatures_file)
+	sigs = load_signatures(signatures_file)
 	return ReferenceDatabase(gset, sigs)
 
 

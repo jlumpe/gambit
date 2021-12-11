@@ -171,19 +171,6 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 				values[bounds[i]:bounds[i + 1]] = signatures[i]
 
 	@classmethod
-	def open(cls, path: FilePath, **kw) -> 'HDF5Signatures':
-		"""Open from file.
-
-		Parameters
-		----------
-		path
-			File to open.
-		\\**kw
-			Additional keyword arguments to :func:`h5py.File`.
-		"""
-		return cls(h5.File(path, **kw))
-
-	@classmethod
 	def create(cls,
 	           group: h5.Group,
 	           signatures: AbstractSignatureArray,
@@ -231,3 +218,42 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		cls._init_datasets(group, signatures, ids, values_kw=kw)
 
 		return cls(group)
+
+
+def load_signatures_hdf5(path: FilePath, **kw) -> HDF5Signatures:
+	"""Open HDF5 signature file.
+
+	Parameters
+	----------
+	path
+		File to open.
+	\\**kw
+		Additional keyword arguments to :func:`h5py.File`.
+	"""
+	return HDF5Signatures(h5.File(path, **kw))
+
+
+def dump_signatures_hdf5(path: FilePath,
+                         signatures: AbstractSignatureArray,
+                         ids: Union[Sequence[int], Sequence[str], None] = None,
+                         meta: Optional[SignaturesMeta] = None,
+                         **kw,
+                         ):
+	"""Write k-mer signatures and associated metadata to an HDF5 file.
+
+	Parameters
+	----------
+	path
+		File to write to.
+	signatures
+		Array of signatures to store.
+	ids
+		Array of unique string or integer IDs for signatures in ``signatures``.  Defaults to
+		consecutive integers starting from zero.
+	meta
+		Additional optional metadata to attach.
+	\\**kw
+		Additional keyword arguments to :meth:`HDF5Signatures.create`.
+	"""
+	with h5.File(path, 'w') as f:
+		HDF5Signatures.create(f, signatures, ids, meta, **kw)

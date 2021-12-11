@@ -2,13 +2,11 @@ from typing import Optional, TextIO
 import sys
 
 import click
-import h5py as h5
 
 from .common import CLIContext, seq_file_params, get_seq_files, print_table
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
-from gambit.sigs import SignaturesMeta, SignatureArray
-from gambit.sigs.hdf5 import HDF5Signatures
+from gambit.sigs import SignaturesMeta, SignatureArray, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
 from gambit.util.progress import ClickProgressMeter
 
@@ -52,7 +50,7 @@ def info(ctx: CLIContext, file: str, json: bool, pretty: bool, ids: bool):
 	"""
 
 	if file is not None:
-		sigs = HDF5Signatures.open(file)
+		sigs = load_signatures(file)
 	elif ctx.has_signatures:
 		sigs = ctx.signatures
 	else:
@@ -166,5 +164,4 @@ def create(ctxobj: CLIContext,
 	sigs = calc_file_signatures(kspec, seqfiles, progress=ClickProgressMeter)
 	sigs = SignatureArray(sigs, kspec, dtype=kspec.index_dtype)
 
-	with h5.File(output, 'w') as f:
-		HDF5Signatures.create(f, sigs, ids, meta)
+	dump_signatures(output, sigs, ids, meta)

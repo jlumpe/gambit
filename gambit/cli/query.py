@@ -6,7 +6,7 @@ import click
 from .common import CLIContext, seq_file_params, get_seq_files
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import ClickProgressMeter
-from gambit.sigs.hdf5 import HDF5Signatures
+from gambit.sigs import load_signatures
 
 
 def get_exporter(outfmt: str):
@@ -68,7 +68,7 @@ def query_cmd(ctxobj: CLIContext,
 		raise click.ClickException('The --sigfile option is mutually exclusive with GENOMES')
 
 	elif sigfile:
-		with HDF5Signatures.open(sigfile) as sigfile:
+		with load_signatures(sigfile) as sigfile:
 			sigs = sigfile[:]
 		inputs = [QueryInput(id) for id in sigfile.ids]
 		results = query(db, sigs, params, inputs=inputs, progress=ClickProgressMeter)

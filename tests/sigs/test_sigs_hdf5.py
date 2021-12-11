@@ -4,7 +4,7 @@ import pytest
 import h5py as h5
 import numpy as np
 
-from gambit.sigs.hdf5 import HDF5Signatures, read_metadata, write_metadata
+from gambit.sigs.hdf5 import read_metadata, write_metadata, load_signatures_hdf5, dump_signatures_hdf5
 from gambit.sigs import SignaturesMeta, SignatureList
 from gambit.sigs.test import AbstractSignatureArrayTests
 from gambit.kmers import KmerSpec
@@ -76,17 +76,14 @@ class TestHDF5Signatures:
 	def h5file(self, tmp_path_factory, sigs, sig_ids, meta):
 		"""Write signatures to file and return file name."""
 		fname = tmp_path_factory.mktemp('HDF5FileSignatures') / 'test.h5'
-
-		with h5.File(fname, 'w') as f:
-			HDF5Signatures.create(f, sigs, ids=sig_ids, meta=meta)
-
+		dump_signatures_hdf5(fname, sigs, sig_ids, meta)
 		return fname
 
 	@pytest.fixture()
 	def h5sigs(self, h5file):
 		"""Open HDF5Signatures object."""
-		with h5.File(h5file, 'r') as f:
-			yield HDF5Signatures(f)
+		with load_signatures_hdf5(h5file) as sigs:
+			yield sigs
 
 	def test_attrs(self, h5sigs, sigs, sig_ids, meta):
 		"""Test basic attributes."""
@@ -119,10 +116,9 @@ class TestHDF5Signatures:
 		siglist = SignatureList(sigs)
 
 		file = tmp_path / 'test2.h5'
-		with h5.File(file, 'w') as f:
-			HDF5Signatures.create(f, siglist)
+		dump_signatures_hdf5(file, siglist)
 
-		with HDF5Signatures.open(file) as h5sigs:
+		with load_signatures_hdf5(file) as h5sigs:
 			assert h5sigs == siglist
 
 	@pytest.mark.parametrize('from_list', [False, True])
@@ -132,10 +128,9 @@ class TestHDF5Signatures:
 		create_from = SignatureList(sigs) if from_list else sigs
 
 		file = tmp_path / 'test-compressed.h5'
-		with h5.File(file, 'w') as f:
-			HDF5Signatures.create(f, create_from, compression='gzip', compression_opts=compression_level)
+		dump_signatures_hdf5(file, create_from, compression='gzip', compression_opts=compression_level)
 
-		with HDF5Signatures.open(file) as h5sigs:
+		with load_signatures_hdf5(file) as h5sigs:
 			assert h5sigs == sigs
 
 	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):

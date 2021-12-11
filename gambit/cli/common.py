@@ -9,8 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from gambit.db import locate_db_files, ReferenceDatabase
 from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
-from gambit.sigs.hdf5 import HDF5Signatures
-from gambit.sigs.base import ReferenceSignatures
+from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.seq import SequenceFile
 
 
@@ -135,7 +134,7 @@ class CLIContext:
 	@property
 	def signatures(self):
 		if self._signatures is None and self.has_signatures:
-			self._signatures = HDF5Signatures.open(self._signatures_path)
+			self._signatures = load_signatures(self._signatures_path)
 
 		return self._signatures
 

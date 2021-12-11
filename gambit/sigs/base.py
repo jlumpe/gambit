@@ -7,6 +7,7 @@ from attr import attrs, attrib
 from gambit.kmers import KmerSpec
 from gambit._cython.metric import BOUNDS_DTYPE
 from gambit.util.indexing import AdvancedIndexingMixin
+from gambit.io import FilePath
 
 
 #: Type for k-mer signatures (k-mer sets in sparse coordinate format)
@@ -334,3 +335,53 @@ class ReferenceSignatures(AbstractSignatureArray):
 	"""
 	ids: Sequence
 	meta: SignaturesMeta
+
+
+def load_signatures(path: FilePath, **kw) -> AbstractSignatureArray:
+	"""Load signatures from file.
+
+	Currently the only format used to store signatures is the one in :mod:`gambit.sigs.hdf5`, but
+	there may be more in the future. The format should be determined automatically.
+
+	Parameters
+	----------
+	path
+		File to open.
+	\\**kw
+		Additional keyword arguments to :func:`h5py.File`.
+	"""
+	from .hdf5 import load_signatures_hdf5
+	return load_signatures_hdf5(path, **kw)
+
+
+def dump_signatures(path: FilePath,
+                    signatures: AbstractSignatureArray,
+                    ids: Union[Sequence[int], Sequence[str], None] = None,
+                    meta: Optional[SignaturesMeta] = None,
+                    format: str = 'hdf5',
+                    **kw,
+                    ):
+	"""Write k-mer signatures and associated metadata to a file.
+
+	Parameters
+	----------
+	path
+		File to write to.
+	signatures
+		Array of signatures to store.
+	ids
+		Array of unique string or integer IDs for signatures in ``signatures``.  Defaults to
+		consecutive integers starting from zero.
+	meta
+		Additional optional metadata to attach.
+	format
+		Format to use. Currently the only valid value is `'hdf5'`.
+	\\**kw
+		Additional keyword arguments depending on format.
+	"""
+	if format == 'hdf5':
+		from .hdf5 import dump_signatures_hdf5
+		dump_signatures_hdf5(path, signatures, ids, meta, **kw)
+
+	else:
+		raise ValueError(f'Invalid format {format!r}')

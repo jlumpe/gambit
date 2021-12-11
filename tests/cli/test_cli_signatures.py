@@ -7,8 +7,7 @@ import numpy as np
 
 from gambit.cli.test import invoke_cli
 import gambit.io.json as gjson
-from gambit.sigs import SignaturesMeta
-from gambit.sigs.hdf5 import HDF5Signatures
+from gambit.sigs import SignaturesMeta, load_signatures
 
 
 class TestInfoCommand:
@@ -88,7 +87,7 @@ class TestCreateCommand:
 	def check_output_factory(self, outfile, seq_files, testdb_query_signatures):
 
 		def check_output(default_ids=True):
-			out = HDF5Signatures.open(outfile)
+			out = load_signatures(outfile)
 
 			assert out.kmerspec == testdb_query_signatures.kmerspec
 			assert out[:] == testdb_query_signatures[:self.NGENOMES]

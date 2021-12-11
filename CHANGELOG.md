@@ -21,6 +21,7 @@
 	* Improvements to `gambit.sigs.hdf5.HDF5Signatures`
 		* Improvements to `.create()` method.
 		* Support compression.
+	* Format-independent functions for reading/writing signature data.
 
 
 ## 0.3.0
