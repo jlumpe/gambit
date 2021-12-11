@@ -1,4 +1,5 @@
 """Run queries against a GAMBIT database to predict taxonomy of genome sequences."""
+
 from warnings import warn
 from datetime import datetime
 from typing import Sequence, Optional, Union, List, Dict, Any
@@ -7,7 +8,8 @@ from attr import attrs, attrib
 import numpy as np
 
 from gambit import __version__ as GAMBIT_VERSION
-from gambit.classify import classify, ClassifierResult, compare_classifier_results
+from gambit.classify import classify, ClassifierResult, GenomeMatch, compare_classifier_results, \
+	compare_genome_matches
 from gambit.db.models import reportable_taxon
 from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet
 from gambit.seq import SequenceFile
@@ -28,9 +30,12 @@ class QueryParams:
 	chunksize
 		Number of reference signatures to process at a time. ``None`` means no chunking is performed.
 		Defaults to 1000.
+	report_closest
+		Number of closest genomes to report in results. Does not affect classification.
 	"""
 	classify_strict: bool = attrib(default=False)
 	chunksize: int = attrib(default=1000)
+	report_closest: int = attrib(default=10)
 
 
 @attrs()
@@ -75,10 +80,14 @@ class QueryResultItem:
 		Result of running classifier.
 	report_taxon
 		Final taxonomy prediction to be reported to the user.
+	closest_genomes
+		List of closest reference genomes to query. Length determined by
+		:attr:`.QueryParams.report_closest`.
 	"""
 	input: QueryInput = attrib()
 	classifier_result: ClassifierResult = attrib()
 	report_taxon: Optional[Taxon] = attrib(default=None)
+	closest_genomes: List[GenomeMatch] = attrib(factory=list)
 
 
 def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool:
@@ -86,8 +95,18 @@ def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool
 
 	Does not compare the value of the ``input`` attributes.
 	"""
-	return item1.report_taxon == item2.report_taxon and \
-	       compare_classifier_results(item1.classifier_result, item2.classifier_result)
+	if item1.report_taxon != item2.report_taxon:
+		return False
+	if not compare_classifier_results(item1.classifier_result, item2.classifier_result):
+		return False
+	if len(item1.closest_genomes) != len(item2.closest_genomes):
+		return False
+
+	for m1, m2 in zip(item1.closest_genomes, item2.closest_genomes):
+		if not compare_genome_matches(m1, m2):
+			return False
+
+	return True
 
 
 @attrs(repr=False)
@@ -201,14 +220,14 @@ def get_result_item(db:ReferenceDatabase, params: QueryParams, dists: np.ndarray
 		Distances from query to reference genomes.
 	input
 	"""
-
 	clsresult = classify(db.genomes, dists, strict=params.classify_strict)
-	report_taxon = None if clsresult.predicted_taxon is None else reportable_taxon(clsresult.predicted_taxon)
+	closest = [GenomeMatch(db.genomes[i], dists[i]) for i in np.argsort(dists)[:params.report_closest]]
 
 	return QueryResultItem(
 		input=input,
 		classifier_result=clsresult,
-		report_taxon=report_taxon,
+		report_taxon=reportable_taxon(clsresult.predicted_taxon),
+		closest_genomes=closest,
 	)
 
 

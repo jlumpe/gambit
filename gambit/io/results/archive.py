@@ -115,7 +115,7 @@ class ResultsArchiveReader:
 	@_from_json.register(AnnotatedGenome)
 	def _genome_from_json(self, cls, data, ctx):
 		key = data['key']
-		gset_id = ctx['genomeset_id']
+		gset_id = ctx['genomeset'].id
 		return self.session.query(AnnotatedGenome)\
 			.join(Genome)\
 			.filter(AnnotatedGenome.genome_set_id == gset_id, Genome.key == key)\
@@ -124,14 +124,21 @@ class ResultsArchiveReader:
 	@_from_json.register(Taxon)
 	def _taxon_from_json(self, cls, data, ctx):
 		key = data['key']
-		gset_id = ctx['genomeset_id']
+		gset_id = ctx['genomeset'].id
 		return self.session.query(Taxon).filter_by(genome_set_id=gset_id, key=key).one()
+
+	@_from_json.register(QueryResultItem)
+	def _result_item_from_json(self, cls, data, ctx):
+		values = dict(
+			closest_genomes=[self._from_json(GenomeMatch, genome_data, ctx) for genome_data in data['closest_genomes']],
+		)
+		return self._attrs_from_json(QueryResultItem, data, ctx, values)
 
 	def results_from_json(self, data):
 		genomeset = self._from_json(ReferenceGenomeSet, data['genomeset'], dict())
 
 		# Add genome set to context so the correct AnnotatedGenomes can be loaded.
-		ctx = dict(genomeset_id=genomeset.id)
+		ctx = dict(genomeset=genomeset)
 
 		items = [self._from_json(QueryResultItem, item, ctx) for item in data['items']]
 		return self._attrs_from_json(QueryResults, data, ctx, dict(genomeset=genomeset, items=items))

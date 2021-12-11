@@ -73,6 +73,7 @@ def results(session):
 			input=QueryInput(f'query-{i}', SequenceFile(f'query-{i}.fasta', 'fasta')),
 			classifier_result=cr,
 			report_taxon=None if predicted is None else predicted.parent if i % 4 == 0 else predicted,
+			closest_genomes=[cr.closest_match],
 		))
 
 	# Set one input file to None

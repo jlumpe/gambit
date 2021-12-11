@@ -2,6 +2,10 @@
 
 ## 0.4.0
 
+* New features
+    * Query results
+        * Results include list of closest reference genomes. This is only reported in JSON-based output
+          formats.
 * CLI
 	* `signatures info` subcommand uses current reference DB by default.
 * Documentation

@@ -18,8 +18,8 @@ from gambit.util.misc import zip_strict
 
 
 PARAMS = {
-	'non_strict': QueryParams(classify_strict=False),
-	'strict': QueryParams(classify_strict=True),
+	'non_strict': QueryParams(classify_strict=False, report_closest=10),
+	'strict': QueryParams(classify_strict=True, report_closest=10),
 }
 
 
@@ -46,8 +46,13 @@ def check_results(queries, results):
 		predicted = clsresult.predicted_taxon
 
 		assert item.input.file == query['file']
+
+		# No errors
 		assert clsresult.success
 		assert clsresult.error is None
+
+		# Check if warnings expected (only if in strict mode)
+		assert bool(clsresult.warnings) == (results.params.classify_strict and query['warnings'])
 
 		if query['predicted']:
 			assert predicted is not None
@@ -68,8 +73,13 @@ def check_results(queries, results):
 			assert clsresult.primary_match is None
 			assert item.report_taxon is None
 
-		assert clsresult.closest_match.genome.description == query['closest']
-		assert bool(clsresult.warnings) == (results.params.classify_strict and query['warnings'])
+		# Closest matches
+		assert len(item.closest_genomes) == results.params.report_closest
+		assert item.closest_genomes[0] == clsresult.closest_match
+		assert item.closest_genomes[0].genome.description == query['closest']
+
+		for i in range(1, results.params.report_closest):
+			assert item.closest_genomes[i].distance >= item.closest_genomes[i-1].distance
 
 
 def main():

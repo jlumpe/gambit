@@ -16,6 +16,26 @@ def cmp_json_attrs(data, obj, attrnames):
 	for attr in attrnames:
 		assert data[attr] == getattr(obj, attr)
 
+def cmp_taxon_json(taxon_data, taxon):
+	cmp_json_attrs(taxon_data, taxon, ['id', 'key', 'name', 'ncbi_id', 'rank', 'distance_threshold'])
+
+def cmp_annnotatedgenome_json(genome_data, genome):
+	assert genome_data['id'] == genome.genome_id
+	cmp_json_attrs(
+		genome_data,
+		genome,
+		['key', 'description', 'organism', 'ncbi_db', 'ncbi_id', 'genbank_acc', 'refseq_acc'],
+	)
+	for taxon_data, taxon in zip_strict(genome_data['taxonomy'], genome.taxon.ancestors(True)):
+		cmp_taxon_json(taxon_data, taxon)
+
+def cmp_genomematch_json(match_data, match):
+	assert np.isclose(match_data['distance'], match.distance)
+	cmp_annnotatedgenome_json(match_data['genome'], match.genome)
+
+	assert (match_data['matched_taxon'] is None) == (match.matched_taxon is None)
+	if match.matched_taxon is not None:
+		cmp_taxon_json(match_data['matched_taxon'], match.matched_taxon)
 
 def check_json_results(file: TextIO,
                        results: QueryResults,
@@ -71,21 +91,12 @@ def check_json_results(file: TextIO,
 		if item.report_taxon is None:
 			assert predicted_data is None
 		else:
-			cmp_json_attrs(predicted_data, item.report_taxon, ['id', 'key', 'name', 'ncbi_id', 'rank'])
+			cmp_taxon_json(predicted_data, item.report_taxon)
 			assert np.isclose(predicted_data['distance_threshold'], item.report_taxon.distance_threshold)
 
-		closest = item.classifier_result.closest_match
-		assert np.isclose(item_data['closest_genome_distance'], item.classifier_result.closest_match.distance)
-
-		cmp_json_attrs(
-			item_data['closest_genome'],
-			closest.genome,
-			['key', 'description', 'organism', 'ncbi_db', 'ncbi_id', 'genbank_acc', 'refseq_acc'],
-		)
-		assert item_data['closest_genome']['id'] == closest.genome.genome_id
-
-		for taxon, taxon_data in zip_strict(closest.genome.taxon.ancestors(True), item_data['closest_genome']['taxonomy']):
-			cmp_json_attrs(taxon_data, taxon, ['id', 'key', 'name', 'ncbi_id', 'rank', 'distance_threshold'])
+		# Closest genomes
+		for match, match_data in zip_strict(item.closest_genomes, item_data['closest_genomes']):
+			cmp_genomematch_json(match_data, match)
 
 
 def check_csv_results(file: TextIO,
@@ -134,5 +145,6 @@ def check_csv_results(file: TextIO,
 			assert row['predicted.ncbi_id'] == str(item.report_taxon.ncbi_id or '')
 			assert np.isclose(float(row['predicted.threshold']), item.report_taxon.distance_threshold)
 
-		assert np.isclose(float(row['closest.distance']), item.classifier_result.closest_match.distance)
-		assert row['closest.description'] == item.classifier_result.closest_match.genome.description
+		closest = item.closest_genomes[0]
+		assert np.isclose(float(row['closest.distance']), closest.distance)
+		assert row['closest.description'] == closest.genome.description

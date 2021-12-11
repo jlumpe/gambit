@@ -21,6 +21,78 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.8993710875511169,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-1"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9003623127937317,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-1"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9012567400932312,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-3"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9018181562423706,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-4"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9031674265861511,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-3"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9032549858093262,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-5"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9036903977394104,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-4"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9038634300231934,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-2"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9039497375488281,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-4"
+                    },
+                    "matched_taxon": null
+                },
+                {
+                    "distance": 0.9049773812294006,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-2"
+                    },
+                    "matched_taxon": null
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -58,6 +130,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.3835078477859497,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.5812065005302429,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.5835240483283997,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.6002277731895447,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.6052036285400391,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.6061294078826904,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.6071019768714905,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.6109215021133423,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.6122449040412903,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.6133032441139221,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -97,6 +261,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.06593406945466995,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.07656250149011612,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.0777604952454567,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.09133126586675644,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.09413580596446991,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.31874144077301025,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3201634883880615,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3201634883880615,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.32786884903907776,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3292349874973297,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -136,6 +392,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08878504484891891,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.09442724287509918,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.09737248718738556,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.11162079870700836,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.11230769008398056,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3242506682872772,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.33197832107543945,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.33692723512649536,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.33918920159339905,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.34496644139289856,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -175,6 +523,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.0794912576675415,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.0812101885676384,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.08598726242780685,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.0874403789639473,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.09004739671945572,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.34153005480766296,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.34965986013412476,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.35470667481422424,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3549257814884186,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3558863401412964,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -214,6 +654,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.06902086734771729,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.07802547514438629,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.08557844907045364,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.0873015895485878,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.09305993467569351,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.32967033982276917,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.33469945192337036,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3401360511779785,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3469387888908386,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                },
+                {
+                    "distance": 0.3492496609687805,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B1_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -253,6 +785,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.31039324402809143,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3132867217063904,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3328690826892853,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3333333432674408,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.33470508456230164,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3361227214336395,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3392857015132904,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.34116020798683167,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3470507562160492,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.34752747416496277,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -292,6 +916,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08095238357782364,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C1"
+                    }
+                },
+                {
+                    "distance": 0.08598726242780685,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C1"
+                    }
+                },
+                {
+                    "distance": 0.09033280611038208,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C1"
+                    }
+                },
+                {
+                    "distance": 0.09320694953203201,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C1"
+                    }
+                },
+                {
+                    "distance": 0.11320754885673523,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.31460675597190857,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.34068965911865234,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.346049040555954,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3504736125469208,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3527815341949463,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -331,6 +1047,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08268330991268158,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C2"
+                    }
+                },
+                {
+                    "distance": 0.09006211161613464,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C2"
+                    }
+                },
+                {
+                    "distance": 0.09273570030927658,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.09287925809621811,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.09457364678382874,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3264462947845459,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3360655605792999,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.34370771050453186,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3487109839916229,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.34912043809890747,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -370,6 +1178,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.07460317760705948,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.07814992219209671,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.08702531456947327,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.09162717312574387,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.09890110045671463,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.33886584639549255,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3465753495693207,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3482993245124817,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3492496609687805,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3506849408149719,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -409,6 +1309,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08212560415267944,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.08346709609031677,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.10031846910715103,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.103833869099617,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.10601265728473663,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.34210526943206787,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3471074402332306,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3562586009502411,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.35879945755004883,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                },
+                {
+                    "distance": 0.3611491024494171,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -448,6 +1440,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.2859259247779846,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.30320701003074646,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.31168830394744873,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.31896552443504333,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.31942445039749146,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.32225432991981506,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3232758641242981,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3290414810180664,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3295292556285858,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3295292556285858,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -487,6 +1571,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.05183946341276169,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.06156405806541443,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.07615894079208374,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.07768595218658447,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.08702791482210159,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.3182481825351715,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.34094151854515076,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.34375,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.34375,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.343839555978775,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -526,6 +1702,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.07717569917440414,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C2"
+                    }
+                },
+                {
+                    "distance": 0.08702791482210159,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C2"
+                    }
+                },
+                {
+                    "distance": 0.09390445053577423,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.09477124363183975,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.10130719095468521,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3318840563297272,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3527738153934479,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3674614429473877,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3743016719818115,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.375,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -565,6 +1833,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.07960198819637299,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.08264462649822235,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.09046052396297455,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.09060955792665482,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.09344262629747391,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.3448275923728943,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.36299434304237366,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.36376404762268066,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3665730357170105,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.37062937021255493,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -604,6 +1964,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08045977354049683,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.08538588136434555,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.09375,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.09640523046255112,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.10423452407121658,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.3476394712924957,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3595505654811859,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3618513345718384,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3633802831172943,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                },
+                {
+                    "distance": 0.3683473467826843,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A1_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A1_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -643,6 +2095,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.5576679110527039,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.5811648368835449,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.59186190366745,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.6080096960067749,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.6162227392196655,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.619904100894928,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.6220095753669739,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.6244019269943237,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.625,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.6257449388504028,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -682,6 +2226,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.3007407486438751,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.31313130259513855,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3140740692615509,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.31470587849617004,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.31610044836997986,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3166421353816986,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3172514736652374,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.31911763548851013,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.31911763548851013,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.32258063554763794,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -721,6 +2357,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.06802721321582794,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.06984667479991913,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.07130730152130127,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.0792580097913742,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.09090909361839294,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3392070531845093,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3400000035762787,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3444283604621887,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.34643375873565674,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.35217392444610596,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -760,6 +2488,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.06655289977788925,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.07363013923168182,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.0771869644522667,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.08177172392606735,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.09813874959945679,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3333333432674408,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3499999940395355,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3504398763179779,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3516642451286316,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3552631437778473,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -799,6 +2619,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08153077960014343,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.08180300146341324,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.08457711338996887,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.08803986757993698,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.1062091514468193,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3498542308807373,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.35014408826828003,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.35930734872817993,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3649425208568573,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3650793731212616,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -838,6 +2750,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.061433445662260056,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.07445008307695389,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.0810810774564743,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.08614864945411682,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.10367892682552338,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.34637680649757385,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3508005738258362,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.35087719559669495,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3517441749572754,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                },
+                {
+                    "distance": 0.3518248200416565,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B1_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -877,6 +2881,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.32608696818351746,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3357558250427246,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.33621934056282043,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.33719247579574585,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3405483365058899,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.34202897548675537,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3429811894893646,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3429811894893646,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3462643623352051,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.34637680649757385,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -916,6 +3012,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08774834126234055,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C1"
+                    }
+                },
+                {
+                    "distance": 0.1003289446234703,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.10784313827753067,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.10965630412101746,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.11129296571016312,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.33715924620628357,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3380884528160095,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.34285715222358704,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3428981304168701,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.343304842710495,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -955,6 +3143,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.07563025504350662,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C2"
+                    }
+                },
+                {
+                    "distance": 0.08040200918912888,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C2"
+                    }
+                },
+                {
+                    "distance": 0.09030100703239441,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.09166666865348816,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.09181969612836838,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3347701132297516,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.33959537744522095,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.33959537744522095,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.34057971835136414,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3457675874233246,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -994,6 +3274,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08637873828411102,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.0925619825720787,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.09752066433429718,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.09917355328798294,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.10965630412101746,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.28994083404541016,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3047337234020233,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.31120944023132324,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.3122238516807556,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.31563422083854675,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1033,6 +3405,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.0792580097913742,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.08221476525068283,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.08221476525068283,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.09030100703239441,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.09849749505519867,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.30690160393714905,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.31478771567344666,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.31571218371391296,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.32163742184638977,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.32507288455963135,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1072,6 +3536,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.2992592453956604,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3026706278324127,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.30588236451148987,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3118594288825989,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3123167157173157,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3163265287876129,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3186490535736084,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3201174736022949,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3208092451095581,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3216885030269623,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1111,6 +3667,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.05574324354529381,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.05882352963089943,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.06688962876796722,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.06700167804956436,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.08278145641088486,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.31609195470809937,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.32309940457344055,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.32614943385124207,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3274596035480499,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.33381712436676025,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1150,6 +3798,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08103727549314499,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C2"
+                    }
+                },
+                {
+                    "distance": 0.097444087266922,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.1041666641831398,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.1082802563905716,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.11661341786384583,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3544303774833679,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3580419719219208,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3589385449886322,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3630041778087616,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.36625513434410095,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1189,6 +3929,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.09195402264595032,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.09609120339155197,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.09771987050771713,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.10227272659540176,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.10967741906642914,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.35983264446258545,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3650568127632141,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.36714285612106323,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.36990153789520264,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.37288135290145874,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1228,6 +4060,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.0762711837887764,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.07952622324228287,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.09075630456209183,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.10281923413276672,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.10333333164453506,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.3285302519798279,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3386628031730652,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3420669436454773,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.3492063581943512,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                },
+                {
+                    "distance": 0.34971097111701965,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1267,6 +4191,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.5517693161964417,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.5531628727912903,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.5765765905380249,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.605597972869873,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.6086404323577881,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.6150895357131958,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.615286648273468,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.6156763434410095,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.6168582439422607,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                },
+                {
+                    "distance": 0.617157518863678,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1306,6 +4322,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.2979066073894501,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.30337077379226685,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.32428115606307983,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3285256326198578,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.330143541097641,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3317384421825409,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3328000009059906,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.33386582136154175,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.33598726987838745,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.337579607963562,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1345,6 +4453,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08633093535900116,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C1"
+                    }
+                },
+                {
+                    "distance": 0.10053859651088715,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.10160427540540695,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.10973451286554337,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.11032028496265411,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.32496076822280884,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3405909836292267,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.36335402727127075,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3732718825340271,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.375,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1384,6 +4584,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08639705926179886,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.10163339227437973,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.1034482792019844,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.1090909093618393,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C2"
+                    }
+                },
+                {
+                    "distance": 0.11934900283813477,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3253968358039856,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3333333432674408,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3563579320907593,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3570300042629242,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.35849055647850037,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1423,6 +4715,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.07289719581604004,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.0746268630027771,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.07992564886808395,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.09124767035245895,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.1031307578086853,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C3"
+                    }
+                },
+                {
+                    "distance": 0.3253205120563507,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3333333432674408,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3333333432674408,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.33547350764274597,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3392283022403717,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1462,6 +4846,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08133086562156677,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.08719851821660995,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.09558823704719543,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.09576427191495895,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1_C4"
+                    }
+                },
+                {
+                    "distance": 0.11818181723356247,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.32371795177459717,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3290734887123108,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3300970792770386,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3365539312362671,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                },
+                {
+                    "distance": 0.3376205861568451,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B1_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B1"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1501,6 +4977,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.30420711636543274,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.323199987411499,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3354530930519104,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.33702531456947327,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3386327624320984,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3444976210594177,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.34700316190719604,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.35229068994522095,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3529411852359772,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3565768599510193,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1540,6 +5108,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.07169117778539658,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C1"
+                    }
+                },
+                {
+                    "distance": 0.09420289844274521,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C1"
+                    }
+                },
+                {
+                    "distance": 0.09800363332033157,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.0981818214058876,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.10307414084672928,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.31621187925338745,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.34025558829307556,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.35182249546051025,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3523809611797333,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.35545024275779724,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1579,6 +5239,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.0883977934718132,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C2"
+                    }
+                },
+                {
+                    "distance": 0.09671533107757568,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C2"
+                    }
+                },
+                {
+                    "distance": 0.09742647409439087,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C2"
+                    }
+                },
+                {
+                    "distance": 0.1090909093618393,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C2"
+                    }
+                },
+                {
+                    "distance": 0.12252252548933029,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3296000063419342,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.35331231355667114,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.36320754885673523,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.36406248807907104,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3649289011955261,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1618,6 +5370,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.0992647036910057,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.10439560562372208,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.10477941483259201,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C3"
+                    }
+                },
+                {
+                    "distance": 0.11272726953029633,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.11818181723356247,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3068181872367859,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3365231156349182,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3486529290676117,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3501577377319336,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.35182249546051025,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1657,6 +5501,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.06928838789463043,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.076492540538311,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.09007352590560913,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.09023941308259964,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.10865561664104462,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2_C4"
+                    }
+                },
+                {
+                    "distance": 0.3333333432674408,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.36477985978126526,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.37282779812812805,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3753893971443176,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                },
+                {
+                    "distance": 0.3765625059604645,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B2_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1696,6 +5632,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.33023256063461304,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3549848794937134,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.36377474665641785,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3643292784690857,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3702579736709595,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3757575750350952,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3772455155849457,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.37821483612060547,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.378539502620697,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3802395164966583,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1735,6 +5763,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.07942238450050354,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.08453237265348434,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.08812949806451797,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C1"
+                    }
+                },
+                {
+                    "distance": 0.09642857313156128,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.10338681191205978,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.35866260528564453,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3669724762439728,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3709428012371063,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.37254902720451355,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.37367624044418335,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1774,6 +5894,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.07678245007991791,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C2-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C2"
+                    }
+                },
+                {
+                    "distance": 0.09420289844274521,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C2-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C2"
+                    }
+                },
+                {
+                    "distance": 0.10126582533121109,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C2-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C2"
+                    }
+                },
+                {
+                    "distance": 0.10469313710927963,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C2-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C2"
+                    }
+                },
+                {
+                    "distance": 0.11171171069145203,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.39242425560951233,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.39393940567970276,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3954545557498932,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3963691294193268,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.39642325043678284,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1813,6 +6025,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.09122806787490845,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.09440559148788452,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.10726643353700638,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.1340206116437912,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.13752122223377228,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C3"
+                    }
+                },
+                {
+                    "distance": 0.3501529097557068,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3611532747745514,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3632287085056305,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.36953243613243103,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3740573227405548,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1852,6 +6156,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.08695652335882187,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.10892856866121292,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.11010830104351044,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.11408199369907379,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.11428571492433548,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3_C4"
+                    }
+                },
+                {
+                    "distance": 0.3473520278930664,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.35429447889328003,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.36124029755592346,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.3632148504257202,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                },
+                {
+                    "distance": 0.36532506346702576,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A3_B3_C1-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A3_B3"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1891,6 +6287,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.17784711718559265,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.1838006228208542,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.18437500298023224,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.19129082560539246,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.1953488439321518,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.20461538434028625,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.20465116202831268,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.20620155334472656,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.20743034780025482,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                },
+                {
+                    "distance": 0.21638330817222595,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2_B2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1930,6 +6418,98 @@
                 "success": true,
                 "warnings": []
             },
+            "closest_genomes": [
+                {
+                    "distance": 0.4705093801021576,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.4725568890571594,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.47587132453918457,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.4795244336128235,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.47999998927116394,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-2"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.48216643929481506,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-3"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.4834437072277069,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-4"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.4860186278820038,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C4-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.48812663555145264,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-5"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                },
+                {
+                    "distance": 0.4907894730567932,
+                    "genome": {
+                        "key": "gambit/testdb_210818/A2_B2_C3-1"
+                    },
+                    "matched_taxon": {
+                        "key": "gambit/testdb_210818/A2"
+                    }
+                }
+            ],
             "input": {
                 "file": {
                     "compression": null,
@@ -1945,7 +6525,8 @@
     ],
     "params": {
         "chunksize": 1000,
-        "classify_strict": false
+        "classify_strict": false,
+        "report_closest": 10
     },
     "signaturesmeta": {
         "description": "Database containing artificial genomes, to be used for end-to-end testing",
@@ -1958,5 +6539,5 @@
         "name": "testdb_210818",
         "version": "1.0"
     },
-    "timestamp": "2021-11-21T20:21:38.260420"
+    "timestamp": "2021-12-11T19:45:29.130942"
 }
