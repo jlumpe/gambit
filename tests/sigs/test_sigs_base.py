@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 
-from gambit.sigs import SignatureArray, SignatureList
+from gambit.sigs import SignatureArray, SignatureList, AnnotatedSignatures, sigarray_eq, SignaturesMeta
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
 from gambit.sigs.test import AbstractSignatureArrayTests
@@ -146,3 +146,40 @@ class TestSignatureList:
 		"""Test construction from empty list."""
 		sl = SignatureList([], sigarray.kmerspec)
 		assert sl.dtype == sigarray.kmerspec.index_dtype
+
+
+class TestAnnotatedSignatures:
+	"""Test the AnnotatedSignatures class."""
+
+	@pytest.mark.parametrize('with_metadata', [False, True])
+	def test_basic(self, sigarray, with_metadata):
+
+		if with_metadata:
+			ids = [f'id-{i + 1}' for i in range(len(sigarray))]
+			meta = SignaturesMeta(name='test')
+			annotated = AnnotatedSignatures(sigarray, ids, meta)
+		else:
+			annotated = AnnotatedSignatures(sigarray)
+
+		assert sigarray_eq(annotated, sigarray)
+		assert annotated.kmerspec == sigarray.kmerspec
+		assert annotated.dtype == sigarray.dtype
+
+		if with_metadata:
+			assert np.array_equal(annotated.ids, ids)
+			assert annotated.meta == meta
+		else:
+			assert np.array_equal(annotated.ids, range(len(sigarray)))
+			assert annotated.meta == SignaturesMeta()
+
+	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
+
+		@pytest.fixture()
+		def instance(self, sigarray):
+			"""Instance to test."""
+			return AnnotatedSignatures(sigarray)
+
+		@pytest.fixture()
+		def ref_instance(self, sigarray):
+			"""Numpy array equivalent to `sigarray`."""
+			return np.asarray(sigarray, dtype=object)

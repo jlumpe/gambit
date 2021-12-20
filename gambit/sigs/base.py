@@ -348,6 +348,55 @@ class ReferenceSignatures(AbstractSignatureArray):
 	meta: SignaturesMeta
 
 
+class AnnotatedSignatures(ReferenceSignatures):
+	"""Wrapper around a signature array which adds ``id`` and ``meta`` attributes."""
+	signatures: AbstractSignatureArray
+
+	def __init__(self,
+	             signatures: AbstractSignatureArray,
+	             ids: Optional[Sequence] = None,
+	             meta: Optional[SignaturesMeta] = None,
+	             ):
+		"""
+		Parameters
+		----------
+		signatures
+			Signature array to wrap.
+		ids
+			Unique IDs for signatures. Defaults to consecutive integers starting from zero.
+		meta
+			Additional metadata describing signatures.
+		"""
+		if ids is None:
+			ids = range(len(signatures))
+		elif len(ids) != len(signatures):
+			raise ValueError('Number of ids does not match number of signatures')
+
+		if meta is None:
+			meta = SignaturesMeta()
+
+		self.signatures = signatures
+		self.ids = ids
+		self.meta = meta
+
+	@property
+	def kmerspec(self):
+		return self.signatures.kmerspec
+
+	@property
+	def dtype(self):
+		return self.signatures.dtype
+
+	def __len__(self):
+		return len(self.signatures)
+
+	def __iter__(self):
+		return iter(self.signatures)
+
+	def __getitem__(self, index):
+		return self.signatures[index]
+
+
 def load_signatures(path: FilePath, **kw) -> AbstractSignatureArray:
 	"""Load signatures from file.
 
