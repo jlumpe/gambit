@@ -8,7 +8,7 @@ import numpy as np
 from gambit.metric import jaccard, jaccarddist, jaccard_bits, jaccard_generic, jaccarddist_array, \
 	jaccarddist_matrix, SCORE_DTYPE, BOUNDS_DTYPE
 from gambit.sigs.convert import sparse_to_dense
-from gambit.sigs import SignatureArray
+from gambit.sigs import SignatureArray, SignatureList
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures, check_progress
 
@@ -43,8 +43,46 @@ def sigs(request, test_data):
 	return sigs
 
 
+@pytest.fixture()
+def queries(sigs):
+	"""Query signatures."""
+	# Make it a little different than the reference signatures
+	return sigs[::2]
+
+
+@pytest.fixture()
+def refs_array(sigs):
+	"""Reference signatures as SignatureArray."""
+	# Make it a little different than the query signatures
+	return sigs[5:]
+
+
+@pytest.fixture()
+def refs(request, refs_array):
+	"""Reference signatures in multiple different types. Use indirect parameterization."""
+
+	if request.param == 'SignatureArray':
+		return refs_array
+
+	if request.param == 'alt_bounds':
+		# The inner Cython function takes a specific type for the bounds array.
+		# Try with this type and a different type, should be converted automatically by the outer Python func
+		assert refs_array.bounds.dtype == BOUNDS_DTYPE
+		refs_array = SignatureArray.from_arrays(refs_array.values, refs_array.bounds.astype('i4'), refs_array.kmerspec)
+		assert refs_array.bounds.dtype != BOUNDS_DTYPE
+		return refs_array
+
+	if request.param == 'SignatureList':
+		return SignatureList(refs_array)
+
+	if request.param == 'list':
+		return list(refs_array)
+
+	assert 0
+
+
 def test_jaccard_single(sigs):
-	"""Test calculating single scores at a time."""
+	"""Test calculating single distances at a time."""
 
 	# Because jaccard() is calculated as 1 - jaccarddist(), it is off from the other two Python
 	# versions which divide the intersection by the union directly
@@ -75,10 +113,8 @@ def test_jaccard_single(sigs):
 				assert score == 1
 
 
-@pytest.mark.parametrize('alt_bounds_dtype', [False, True])
-def test_jaccarddist_array(sigs, alt_bounds_dtype):
+class TestJaccardDistArray:
 	"""Test jaccarddist_array() function."""
-
 
 	def test_signaturearray(self, sigs):
 		"""Full test using SignatureArray as refs argument."""
@@ -90,6 +126,12 @@ def test_jaccarddist_array(sigs, alt_bounds_dtype):
 			# Check against single signatures
 			for j, sig2 in enumerate(sigs):
 				assert dists[j] == jaccarddist(sig1, sig2)
+
+	@pytest.mark.parametrize('refs', ['alt_bounds', 'SignatureList', 'list'], indirect=True)
+	def test_alt_types(self, refs_array, refs):
+		"""Test alternate types for refs argument."""
+		q = refs_array[0]
+		assert np.array_equal(jaccarddist_array(q, refs), jaccarddist_array(q, refs_array))
 
 	def test_preallocated(self, sigs):
 		"""Test using pre-allocated output array"""
@@ -111,39 +153,18 @@ def test_jaccarddist_array(sigs, alt_bounds_dtype):
 class TestJaccardDistMatrix:
 	"""Test the jaccarddist_matrix() function."""
 
-	def make_output_array(self, refs, queries, dtype=SCORE_DTYPE):
-		return np.empty((len(refs), len(queries)), dtype=dtype)
-
 	@pytest.fixture()
-	def queries(self, sigs):
-		"""queries argument."""
-		# Make it a little different than the reference signatures
-		return sigs[::2]
-
-	@pytest.fixture()
-	def refs_array(self, sigs):
-		"""refs argument as SignatureArray."""
-		# Make it a little different than the query signatures
-		return sigs[5:]
-
-	@pytest.fixture()
-	def refs(self, refs_array):
-		"""refs argument.
-		TODO: test other AbstractSignaturesArray types
-		"""
-		return refs_array
-
-	@pytest.fixture()
-	def expected(self, queries, refs):
-		"""Expected array of scores, calculated one at a time."""
-		scores = np.empty((len(queries), len(refs)), dtype=SCORE_DTYPE)
+	def expected(self, queries, refs_array):
+		"""Expected array of distances, calculated row by row."""
+		dmat = np.empty((len(queries), len(refs_array)), dtype=SCORE_DTYPE)
 
 		for i, q in enumerate(queries):
-			for j, r in enumerate(refs):
-				scores[i, j] = jaccarddist(queries[i], refs[j])
+			for j, r in enumerate(refs_array):
+				dmat[i, j] = jaccarddist(queries[i], refs_array[j])
 
-		return scores
+		return dmat
 
+	@pytest.mark.parametrize('refs', ['SignatureArray', 'SignatureList', 'list'], indirect=True)
 	@pytest.mark.parametrize('use_ref_indices', [False, True])
 	@pytest.mark.parametrize('chunksize', [None, 10])
 	def test_basic(self, queries, refs, expected, use_ref_indices, chunksize):
@@ -155,25 +176,25 @@ class TestJaccardDistMatrix:
 			ref_indices = None
 
 		with check_progress(total=expected.size) as pconf:
-			scores = jaccarddist_matrix(queries, refs, ref_indices=ref_indices, chunksize=chunksize, progress=pconf)
+			out = jaccarddist_matrix(queries, refs, ref_indices=ref_indices, chunksize=chunksize, progress=pconf)
 
-		assert np.array_equal(scores, expected)
+		assert np.array_equal(out, expected)
 
-	def test_out(self, queries, refs, expected):
+	def test_out(self, queries, refs_array, expected):
 		"""Test using pre-allocated output array."""
-		out = np.empty((len(queries), len(refs)), dtype=SCORE_DTYPE)
-		jaccarddist_matrix(queries, refs, out=out)
+		out = np.empty((len(queries), len(refs_array)), dtype=SCORE_DTYPE)
+		jaccarddist_matrix(queries, refs_array, out=out)
 		assert np.array_equal(out, expected)
 
 		# Wrong size
-		out2 = np.empty((len(refs) + 1, len(queries)), dtype=SCORE_DTYPE)
+		out2 = np.empty((len(refs_array) + 1, len(queries)), dtype=SCORE_DTYPE)
 		with pytest.raises(ValueError):
-			jaccarddist_matrix(queries, refs, out=out2)
+			jaccarddist_matrix(queries, refs_array, out=out2)
 
 		# Wrong dtype
-		out3 = np.empty((len(refs) + 1, len(queries)), dtype=int)
+		out3 = np.empty((len(refs_array) + 1, len(queries)), dtype=int)
 		with pytest.raises(ValueError):
-			jaccarddist_array(queries, refs, out3)
+			jaccarddist_array(queries, refs_array, out3)
 
 
 def test_different_dtypes():

@@ -7,7 +7,7 @@ import numpy as np
 
 from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard, jaccarddist, \
 	_jaccarddist_parallel
-from gambit.sigs.base import KmerSignature, SignatureArray, AbstractSignatureArray
+from gambit.sigs.base import KmerSignature, SignatureArray, AbstractSignatureArray, SignatureList
 from gambit.util.misc import chunk_slices
 from gambit.util.progress import get_progress
 
@@ -49,23 +49,24 @@ def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
 	return 1. if union == 0 else intersection / union
 
 
-def jaccarddist_array(query: KmerSignature, refs: SignatureArray, out: np.ndarray = None) -> np.ndarray:
+def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: np.ndarray = None) -> np.ndarray:
 	"""
-	Calculate Jaccard distances between a query k-mer signature and an array of reference signatures
-	in ``SignatureArray`` format.
+	Calculate Jaccard distances between a query k-mer signature and a list of reference signatures.
 
-	This internally uses Cython code that runs in parallel over all signatures in ``sigarray``.
-	Because of Cython limitations ``sigarray.bounds.dtype`` must be ``np.intp``, which is usually
-	a 64-bit signed integer. If it is not it will be converted automatically.
+	For enhanced performance ``refs`` should be an instance of
+	:class:`gambit.sigs.base.SignatureArray`. This allows use of optimized Cython code that runs
+	in parallel over all signatures in ``refs``. In that case, because of Cython limitations
+	``refs.bounds.dtype`` must be ``np.intp``, which is usually a 64-bit signed integer. If it is
+	not it will be converted automatically.
 
 	Parameters
 	----------
 	query
 		Query k-mer signature in sparse coordinate format (sorted array of k-mer indices).
 	refs
-		Array of reference signatures.
+		List of reference signatures.
 	out
-		Optional pre-allocated array to write results to. Should be the same length as ``sigarray``
+		Optional pre-allocated array to write results to. Should be the same length as ``refs``
 		with dtype ``np.float32``.
 
 	Returns
@@ -75,8 +76,8 @@ def jaccarddist_array(query: KmerSignature, refs: SignatureArray, out: np.ndarra
 
 	See Also
 	--------
-	.jaccard
 	.jaccarddist
+	.jaccarddist_matrix
 	"""
 	if out is None:
 		out = np.empty(len(refs), SCORE_DTYPE)
@@ -85,36 +86,45 @@ def jaccarddist_array(query: KmerSignature, refs: SignatureArray, out: np.ndarra
 	elif out.dtype != SCORE_DTYPE:
 		raise ValueError(f'Output array dtype must be {SCORE_DTYPE}, got {out.dtype}')
 
-	values = refs.values
-	bounds = refs.bounds.astype(BOUNDS_DTYPE, copy=False)
+	if isinstance(refs, SignatureArray):
+		values = refs.values
+		bounds = refs.bounds.astype(BOUNDS_DTYPE, copy=False)
 
-	_jaccarddist_parallel(query, values, bounds, out)
+		_jaccarddist_parallel(query, values, bounds, out)
+
+	else:
+		for i, ref in enumerate(refs):
+			out[i] = jaccarddist(query, ref)
 
 	return out
 
 
 def jaccarddist_matrix(queries: Sequence[KmerSignature],
-                       refs: AbstractSignatureArray,
+                       refs: Sequence[KmerSignature],
                        ref_indices: Optional[Sequence[int]] = None,
                        out: Optional[np.ndarray] = None,
                        chunksize: Optional[int] = None,
                        progress = None,
                        ) -> np.ndarray:
 	"""
-	Calculate a Jaccard distance matrix between an array of query signatures and an array of
+	Calculate a Jaccard distance matrix between a list of query signatures and a list of
 	reference signatures.
 
-	The main purpose of this function is to improve querying performance when the reference
-	signatures are stored in a file (e.g. using :class:`gambit.sigs.hdf5.HDF5Signatures`)
-	by loading them in chunks (via the ``chunksize`` parameter) instead of all in one go.
+	This function improves querying performance when the reference signatures are stored in a file
+	(e.g. using :class:`gambit.sigs.hdf5.HDF5Signatures`) by loading them in chunks (via the
+	``chunksize`` parameter) instead of all in one go.
+
+	Performance is greatly improved if ``refs`` is a type that yields instances of
+	``SignatureArray`` when indexed with a slice object (``SignatureArray`` or
+	``HDF5Signatures``), see :meth:`.jaccarddist_array`. There is no such dependence on the type of
+	``queries``, which can be a simple list.
 
 	Parameters
 	----------
 	queries
-		Query signatures in sparse coordinate format. May be any sequence type, e.g. ``list``.
+		Query signatures in sparse coordinate format.
 	refs
-		Reference signatures in sparse coordinate format. Must be a type which yields
-		``SignatureArray``\\ s when sliced.
+		Reference signatures in sparse coordinate format.
 	ref_indices
 		Optional, indices of ``refs`` to use.
 	out
@@ -128,11 +138,18 @@ def jaccarddist_matrix(queries: Sequence[KmerSignature],
 	Returns
 	-------
 	np.ndarray
-		Matrix of similarities/distances between query signatures in rows and reference signatures
-		in columns.
+		Matrix of distances between query signatures in rows and reference signatures in columns.
+
+	See Also
+	--------
+	.jaccarddist
+	.jaccarddist_array
 	"""
 	nqueries = len(queries)
 	nrefs = len(refs) if ref_indices is None else len(ref_indices)
+
+	if not isinstance(refs, AbstractSignatureArray):
+		refs = SignatureList(refs)  # To support advanced indexing
 
 	if out is None:
 		out = np.empty((nqueries, nrefs), SCORE_DTYPE)
@@ -150,7 +167,6 @@ def jaccarddist_matrix(queries: Sequence[KmerSignature],
 		for ref_slice in ref_slices:
 			idx = ref_slice if ref_indices is None else ref_indices[ref_slice]
 			ref_chunk = refs[idx]
-			assert isinstance(ref_chunk, SignatureArray)
 
 			for (i, query) in enumerate(queries):
 				jaccarddist_array(query, ref_chunk, out=out[i, ref_slice])
