@@ -46,13 +46,12 @@ def sigs(request, test_data):
 def test_jaccard_single(sigs):
 	"""Test calculating single scores at a time."""
 
-	# Keyword args to np.isclose
 	# Because jaccard() is calculated as 1 - jaccarddist(), it is off from the other two Python
 	# versions which divide the intersection by the union directly
-	kw = dict(atol=1e-7)
+	def isclose(a, b): return np.isclose(a, b, atol=1e-7)
 
-	# Iterate over all pairs
-	for i, sparse1 in enumerate(sigs):
+	# Iterate over subset of pairs
+	for i, sparse1 in enumerate(sigs[:5]):
 		dense1 = sparse_to_dense(sigs.kmerspec, sparse1)
 		for j, sparse2 in enumerate(sigs):
 			dense2 = sparse_to_dense(sigs.kmerspec, sparse2)
@@ -63,13 +62,13 @@ def test_jaccard_single(sigs):
 			assert 0 <= score <= 1
 
 			# Check vs slow version
-			assert np.isclose(score, jaccard_generic(sparse1, sparse2), **kw)
+			assert isclose(score, jaccard_generic(sparse1, sparse2))
 
 			# Check distance
-			assert np.isclose(jaccarddist(sparse1, sparse2), 1 - score, **kw)
+			assert isclose(jaccarddist(sparse1, sparse2), 1 - score)
 
 			# Check dense bit vector version
-			assert np.isclose(jaccard_bits(dense1, dense2), score, **kw)
+			assert isclose(jaccard_bits(dense1, dense2), score)
 
 			# Check score vs. self is one
 			if i == j:
@@ -80,36 +79,33 @@ def test_jaccard_single(sigs):
 def test_jaccarddist_array(sigs, alt_bounds_dtype):
 	"""Test jaccarddist_array() function."""
 
-	# The inner Cython function takes a specific type for the bounds array.
-	# Try with this type and a different type, should be converted automatically by the outer Python func
-	if alt_bounds_dtype:
-		sigs = SignatureArray.from_arrays(sigs.values, sigs.bounds.astype('i4'), sigs.kmerspec)
-		assert sigs.bounds.dtype != BOUNDS_DTYPE
-	else:
-		assert sigs.bounds.dtype == BOUNDS_DTYPE
 
-	for i, sig1 in enumerate(sigs):
-		scores = jaccarddist_array(sig1, sigs)
-		assert scores.shape == (len(sigs),)
+	def test_signaturearray(self, sigs):
+		"""Full test using SignatureArray as refs argument."""
 
-		# Check against single signatures
-		for j, sig2 in enumerate(sigs):
-			assert scores[j] == jaccarddist(sig1, sig2)
+		for i, sig1 in enumerate(sigs):
+			dists = jaccarddist_array(sig1, sigs)
+			assert dists.shape == (len(sigs),)
 
-	# Check pre-allocated output
-	out = np.empty(len(sigs), dtype=SCORE_DTYPE)
-	jaccarddist_array(sigs[0], sigs, out=out)
-	assert np.array_equal(out, jaccarddist_array(sigs[0], sigs))
+			# Check against single signatures
+			for j, sig2 in enumerate(sigs):
+				assert dists[j] == jaccarddist(sig1, sig2)
 
-	# Wrong size
-	out2 = np.empty(len(sigs) + 1, dtype=SCORE_DTYPE)
-	with pytest.raises(ValueError):
-		jaccarddist_array(sigs[0], sigs, out=out2)
+	def test_preallocated(self, sigs):
+		"""Test using pre-allocated output array"""
+		out = np.empty(len(sigs), dtype=SCORE_DTYPE)
+		jaccarddist_array(sigs[0], sigs, out=out)
+		assert np.array_equal(out, jaccarddist_array(sigs[0], sigs))
 
-	# Wrong dtype
-	out3 = np.empty(len(sigs), dtype=int)
-	with pytest.raises(ValueError):
-		jaccarddist_array(sigs[0], sigs, out3)
+		# Wrong size
+		out2 = np.empty(len(sigs) + 1, dtype=SCORE_DTYPE)
+		with pytest.raises(ValueError):
+			jaccarddist_array(sigs[0], sigs, out=out2)
+
+		# Wrong dtype
+		out3 = np.empty(len(sigs), dtype=int)
+		with pytest.raises(ValueError):
+			jaccarddist_array(sigs[0], sigs, out3)
 
 
 class TestJaccardDistMatrix:
