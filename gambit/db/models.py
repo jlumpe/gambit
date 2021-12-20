@@ -1,6 +1,6 @@
 """SQLAlchemy models for storing reference genomes and taxonomy information."""
 
-from typing import Sequence, Union, Dict, List, Any, Optional, Tuple, Iterable, Collection
+from typing import Sequence, Union, Dict, List, Any, Optional, Tuple, Iterable, Collection, Callable
 
 import sqlalchemy as sa
 from sqlalchemy import Column, Integer, String, Boolean, Float
@@ -346,18 +346,39 @@ class Taxon(Base):
 		"""Check if the taxon is a leaf (has no children)."""
 		return not self.children
 
-	def descendants(self, incself=False) -> Iterable['Taxon']:
-		"""Iterate through taxa all of the taxon's descendants (pre-order depth-first).
+	def depth(self) -> int:
+		"""The number of ancestors the taxon has."""
+		return sum(1 for a in self.ancestors())
+
+	def traverse(self, postorder: bool = False) -> Iterable['Taxon']:
+		"""Iterate through all nodes in this taxon's subtree.
 
 		Parameters
 		----------
-		incself : bool
-			Yield self first.
+		postorder
+			Iterate in postorder (parents after children) instead of the default preorder (parents
+			before children).
 		"""
-		if incself:
+		if not postorder:
 			yield self
 		for child in self.children:
-			yield from child.descendants(incself=True)
+			yield from child.traverse(postorder)
+		if postorder:
+			yield self
+
+	def descendants(self, postorder: bool = False) -> Iterable['Taxon']:
+		"""Iterate through taxa all of the taxon's descendants.
+
+		This is the same as :meth:`traverse` except the taxon itself is not included.
+
+		Parameters
+		----------
+		postorder
+			Iterate in postorder (parents after children) instead of the default preorder (parents
+			before children).
+		"""
+		for child in self.children:
+			yield from child.traverse(postorder)
 
 	def leaves(self) -> Iterable['Taxon']:
 		"""Iterate through all leaves in the taxon's subtree.
@@ -370,17 +391,37 @@ class Taxon(Base):
 			for child in self.children:
 				yield from child.leaves()
 
-	def print_tree(self, indent='  ', *, _depth=0):
+	def print_tree(self,
+	               f: Callable[['Taxon'], str] = None,
+	               *,
+	               indent: str = '  ',
+	               sort_key: Callable[['Taxon'], Any] = None,
+	               ):
 		"""Print the taxon's subtree for debugging.
 
 		Parameters
 		---------
-		indent : str
+		f
+			A function which takes a taxon and returns the string representation to print for it.
+			Defaults to :meth:`short_repr`.
+		indent
 			String used to indent each level of descendants.
+		sort_key
+			A function which takes a taxon and returns a sort key, to determine what order a taxon's
+			children are printed in. Defaults to the taxon's name.
 		"""
-		print(indent * _depth + self.name)
-		for child in sorted(self.children, key=lambda c: c.name):
-			child.print_tree(indent=indent, _depth=_depth + 1)
+		if f is None:
+			f = Taxon.short_repr
+		if sort_key is None:
+			sort_key = lambda taxon: taxon.name
+		Taxon._print_tree(self, f, indent, sort_key, 0)
+
+	@staticmethod
+	def _print_tree(taxon, f, indent, sort_key, depth):
+		print(indent * depth, end='')
+		print(f(taxon))
+		for child in sorted(taxon.children, key=sort_key):
+			Taxon._print_tree(child, f, indent, sort_key, depth + 1)
 
 	def __repr__(self):
 		return f'<{type(self).__name__}:{self.id} {self.name!r}>'

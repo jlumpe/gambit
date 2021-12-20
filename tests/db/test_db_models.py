@@ -169,15 +169,35 @@ class TestTaxon:
 			assert ancestors[-1] is root
 			assert list(taxon.ancestors()) == ancestors[1:]
 			assert list(reversed(taxon.lineage())) == ancestors
+			assert taxon.depth() == len(ancestors) - 1
 
 			for i in range(len(ancestors) - 1):
 				assert ancestors[i].parent is ancestors[i + 1]
 
-			# Test descendants() and leaves() methods
-			descendants = {t for t in gset.taxa if taxon in t.ancestors(incself=True)}
-			assert set(taxon.descendants()) == descendants - {taxon}
-			assert set(taxon.descendants(incself=True)) == descendants
-			assert set(taxon.leaves()) == {d for d in descendants if d.isleaf()}
+			# Check traversal methods
+			descendants_set = {t for t in gset.taxa if taxon in t.ancestors()}
+			self.check_traversal(taxon.descendants(False), False, descendants_set)
+			self.check_traversal(taxon.descendants(True), True, descendants_set)
+
+			subtree_set = descendants_set | {taxon}
+			self.check_traversal(taxon.traverse(False), False, subtree_set)
+			self.check_traversal(taxon.traverse(True), True, subtree_set)
+
+			# Check leaves
+			assert set(taxon.leaves()) == {d for d in subtree_set if d.isleaf()}
+
+	def check_traversal(self, iterator, postorder, expected):
+		seen = set()
+
+		for taxon in iterator:
+			if postorder:
+				assert all(child in seen for child in taxon.children)
+			elif taxon.parent is not None and taxon.parent in expected:
+				assert taxon.parent in seen
+
+			seen.add(taxon)
+
+		assert seen == expected
 
 	def test_extra_json(self, empty_db_session):
 		"""Test storing JSON data in the 'extra' column."""

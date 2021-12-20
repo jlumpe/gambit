@@ -22,6 +22,7 @@
 		* Improvements to `.create()` method.
 		* Support compression.
 	* Format-independent functions for reading/writing signature data.
+	* Add more tree-based methods to `Taxon`.
 
 
 ## 0.3.0
