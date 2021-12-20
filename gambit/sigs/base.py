@@ -43,7 +43,7 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 	dtype
 		Numpy data type of signatures.
 	"""
-	kmerspec: KmerSpec
+	kmerspec: Optional[KmerSpec]
 	dtype: np.dtype
 
 	def sizeof(self, index: int) -> int:
@@ -160,7 +160,11 @@ class SignatureArray(ConcatenatedSignatureArray):
 		self.bounds = bounds
 		self.kmerspec = kmerspec
 
-	def __init__(self, signatures: Sequence[KmerSignature], kmerspec: Optional[KmerSpec] = None, dtype: Optional[np.dtype] = None):
+	def __init__(self,
+	             signatures: Sequence[KmerSignature],
+	             kmerspec: Optional[KmerSpec] = None,
+	             dtype: Optional[np.dtype] = None,
+	             ):
 		"""
 		Parameters
 		----------
@@ -173,11 +177,8 @@ class SignatureArray(ConcatenatedSignatureArray):
 			Numpy dtype of :attr:`values` array. If None will use dtype of first element of
 			``signatures``.
 		"""
-		if kmerspec is None:
-			if isinstance(signatures, AbstractSignatureArray):
-				kmerspec = signatures.kmerspec
-			else:
-				raise TypeError('kmerspec cannot be None if signatures is not an instance of AbstractSignatureArray')
+		if kmerspec is None and isinstance(signatures, AbstractSignatureArray):
+			kmerspec = signatures.kmerspec
 
 		if isinstance(signatures, SignatureArray):
 			# Can just copy arrays directly
@@ -204,14 +205,22 @@ class SignatureArray(ConcatenatedSignatureArray):
 				np.copyto(self[i], sig, casting='unsafe')
 
 	@classmethod
-	def from_arrays(cls, values: np.ndarray, bounds: np.ndarray, kmerspec: KmerSpec) -> 'SignatureArray':
+	def from_arrays(cls,
+	                values: np.ndarray,
+	                bounds: np.ndarray,
+	                kmerspec: Optional[KmerSpec],
+	                ) -> 'SignatureArray':
 		"""Create directly from values and bounds arrays."""
 		sa = cls.__new__(cls)
 		sa._init_from_arrays(values, bounds, kmerspec)
 		return sa
 
 	@classmethod
-	def uninitialized(cls, lengths: Sequence[int], kmerspec: KmerSpec, dtype: np.dtype = None) -> 'SignatureArray':
+	def uninitialized(cls,
+	                  lengths: Sequence[int],
+	                  kmerspec: Optional[KmerSpec],
+	                  dtype: np.dtype = None,
+	                  ) -> 'SignatureArray':
 		"""Create with an uninitialized values array.
 
 		Parameters
@@ -236,7 +245,11 @@ class SignatureList(AdvancedIndexingMixin, AbstractSignatureArray, MutableSequen
 	but supports mutation and won't have to copy signatures to a new array on creation.
 	"""
 
-	def __init__(self, signatures: Iterable[KmerSignature], kmerspec: Optional[KmerSpec] = None, dtype: Optional[np.dtype] = None):
+	def __init__(self,
+	             signatures: Iterable[KmerSignature],
+	             kmerspec: Optional[KmerSpec] = None,
+	             dtype: Optional[np.dtype] = None,
+	             ):
 		"""
 		Parameters
 		----------
@@ -251,12 +264,10 @@ class SignatureList(AdvancedIndexingMixin, AbstractSignatureArray, MutableSequen
 		"""
 		self._list = list(signatures)
 
-		if kmerspec is not None:
-			self.kmerspec = kmerspec
-		elif isinstance(signatures, AbstractSignatureArray):
+		if kmerspec is None and isinstance(signatures, AbstractSignatureArray):
 			self.kmerspec = signatures.kmerspec
 		else:
-			raise TypeError('kmerspec cannot be None if signatures is not an instance of AbstractSignatureArray')
+			self.kmerspec = kmerspec
 
 		if dtype is not None:
 			self.dtype = dtype
