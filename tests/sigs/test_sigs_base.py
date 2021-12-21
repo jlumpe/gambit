@@ -3,13 +3,14 @@
 import pytest
 import numpy as np
 
-from gambit.sigs import SignatureArray, SignatureList, AnnotatedSignatures, sigarray_eq, SignaturesMeta
+from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_signatures, \
+	AnnotatedSignatures, sigarray_eq, SignaturesMeta
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
 from gambit.sigs.test import AbstractSignatureArrayTests
 
 
-@pytest.fixture(params=[None, 'i8', 'u4'])
+@pytest.fixture(params=['u8', 'i8', 'u4'])
 def sigarray(request):
 	np.random.seed(0)
 	return make_signatures(8, 100, request.param)
@@ -183,3 +184,17 @@ class TestAnnotatedSignatures:
 		def ref_instance(self, sigarray):
 			"""Numpy array equivalent to `sigarray`."""
 			return np.asarray(sigarray, dtype=object)
+
+
+@pytest.mark.parametrize('format', ['hdf5'])
+class TestSerialization:
+	"""Test dumping to and reading from file."""
+
+	def test_basic(self, sigarray, format, tmp_path):
+		"""Test without metadata."""
+		file = tmp_path / 'test'
+		dump_signatures(file, sigarray, format)
+		loaded = load_signatures(file)
+		assert loaded == sigarray
+
+	# TODO - test with metadata
