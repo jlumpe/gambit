@@ -174,8 +174,6 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	def create(cls,
 	           group: h5.Group,
 	           signatures: AbstractSignatureArray,
-	           ids: Union[Sequence[int], Sequence[str], None] = None,
-	           meta: Optional[SignaturesMeta] = None,
 	           *,
 	           compression: Optional[str] = None,
 	           compression_opts = None,
@@ -187,12 +185,9 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		group
 			HDF5 group to store data in.
 		signatures
-			Array of signatures to store.
-		ids
-			Array of unique string or integer IDs for signatures in ``signatures``.  Defaults to
-			consecutive integers starting from zero.
-		meta
-			Additional optional metadata to attach.
+			Array of signatures to store. If an instance of
+			:class:`gambit.sigs.base.ReferenceSignatures` its metadata will be stored as well,
+			otherwise default/empty values will be used.
 		compression
 			Compression type for values array. One of ``['gzip', 'lzf', 'szip']``. See the
 			section on
@@ -202,14 +197,15 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 			Sets compression level (0-9) for gzip compression, no effect for other types.
 		"""
 
-		if ids is None:
-			ids = np.arange(len(signatures))
-		else:
-			ids = np.asarray(ids)
+		if isinstance(signatures, ReferenceSignatures):
+			ids = np.asarray(signatures.ids)
 			if ids.shape != (len(signatures),):
 				raise ValueError('Length of ids must match length of data')
 
-		if meta is None:
+			meta = signatures.meta
+
+		else:
+			ids = np.arange(len(signatures))
 			meta = SignaturesMeta()
 
 		kw = dict(compression=compression, compression_opts=compression_opts)
@@ -235,8 +231,6 @@ def load_signatures_hdf5(path: FilePath, **kw) -> HDF5Signatures:
 
 def dump_signatures_hdf5(path: FilePath,
                          signatures: AbstractSignatureArray,
-                         ids: Union[Sequence[int], Sequence[str], None] = None,
-                         meta: Optional[SignaturesMeta] = None,
                          **kw,
                          ):
 	"""Write k-mer signatures and associated metadata to an HDF5 file.
@@ -247,13 +241,8 @@ def dump_signatures_hdf5(path: FilePath,
 		File to write to.
 	signatures
 		Array of signatures to store.
-	ids
-		Array of unique string or integer IDs for signatures in ``signatures``.  Defaults to
-		consecutive integers starting from zero.
-	meta
-		Additional optional metadata to attach.
 	\\**kw
 		Additional keyword arguments to :meth:`HDF5Signatures.create`.
 	"""
 	with h5.File(path, 'w') as f:
-		HDF5Signatures.create(f, signatures, ids, meta, **kw)
+		HDF5Signatures.create(f, signatures, **kw)

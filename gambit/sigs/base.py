@@ -416,8 +416,6 @@ def load_signatures(path: FilePath, **kw) -> AbstractSignatureArray:
 
 def dump_signatures(path: FilePath,
                     signatures: AbstractSignatureArray,
-                    ids: Union[Sequence[int], Sequence[str], None] = None,
-                    meta: Optional[SignaturesMeta] = None,
                     format: str = 'hdf5',
                     **kw,
                     ):
@@ -429,11 +427,6 @@ def dump_signatures(path: FilePath,
 		File to write to.
 	signatures
 		Array of signatures to store.
-	ids
-		Array of unique string or integer IDs for signatures in ``signatures``.  Defaults to
-		consecutive integers starting from zero.
-	meta
-		Additional optional metadata to attach.
 	format
 		Format to use. Currently the only valid value is `'hdf5'`.
 	\\**kw
@@ -441,7 +434,7 @@ def dump_signatures(path: FilePath,
 	"""
 	if format == 'hdf5':
 		from .hdf5 import dump_signatures_hdf5
-		dump_signatures_hdf5(path, signatures, ids, meta, **kw)
+		dump_signatures_hdf5(path, signatures, **kw)
 
 	else:
 		raise ValueError(f'Invalid format {format!r}')

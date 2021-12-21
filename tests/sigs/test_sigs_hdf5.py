@@ -5,7 +5,7 @@ import h5py as h5
 import numpy as np
 
 from gambit.sigs.hdf5 import read_metadata, write_metadata, load_signatures_hdf5, dump_signatures_hdf5
-from gambit.sigs import SignaturesMeta, SignatureList
+from gambit.sigs import SignaturesMeta, SignatureList, AnnotatedSignatures
 from gambit.sigs.test import AbstractSignatureArrayTests
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
@@ -21,7 +21,6 @@ EXTRA = dict(
 
 
 @pytest.mark.parametrize('optional_attrs', [False, True])
-# def test_metadata(h5file, optional_attrs):
 def test_metadata(tmp_path, optional_attrs):
 	"""Test reading/writing metadata"""
 
@@ -64,26 +63,10 @@ class TestHDF5Signatures:
 		return make_signatures(kspec, n, dtype)
 
 	@pytest.fixture(scope='class')
-	def meta(self):
-		return SignaturesMeta(
-			id='test',
-			extra=EXTRA,
-		)
-
-	@pytest.fixture(scope='class', params=[int, str])
-	def sig_ids(self, request, sigs):
-		if request.param is int:
-			return np.arange(len(sigs))
-		elif request.param is str:
-			return [f'test-{i}' for i in range(len(sigs))]
-		else:
-			assert 0
-
-	@pytest.fixture(scope='class')
-	def h5file(self, tmp_path_factory, sigs, sig_ids, meta):
+	def h5file(self, tmp_path_factory, sigs):
 		"""Write signatures to file and return file name."""
 		fname = tmp_path_factory.mktemp('HDF5FileSignatures') / 'test.h5'
-		dump_signatures_hdf5(fname, sigs, sig_ids, meta)
+		dump_signatures_hdf5(fname, sigs)
 		return fname
 
 	@pytest.fixture()
@@ -92,12 +75,36 @@ class TestHDF5Signatures:
 		with load_signatures_hdf5(h5file) as sigs:
 			yield sigs
 
-	def test_attrs(self, h5sigs, sigs, sig_ids, meta):
-		"""Test basic attributes."""
+	def test_attrs(self, h5sigs, sigs):
+		"""Test basic attributes for signatures saved without metadata."""
 		assert h5sigs.kmerspec == sigs.kmerspec
 		assert h5sigs.dtype == sigs.values.dtype
-		assert np.array_equal(h5sigs.ids, sig_ids)
-		assert h5sigs.meta == meta
+		assert np.array_equal(h5sigs.ids, np.arange(len(h5sigs)))
+		assert h5sigs.meta == SignaturesMeta()
+
+	@pytest.mark.parametrize('id_type', [int, str])
+	def test_attrs_meta(self, sigs, id_type, tmp_path):
+		"""Test basic attributes for signatures saved with metadata."""
+
+		if id_type is int:
+			ids = np.arange(len(sigs)) + 1
+		elif id_type is str:
+			ids = [f'test-{i+1}' for i in range(len(sigs))]
+		else:
+			assert 0
+
+		meta = SignaturesMeta(
+			id='test',
+			extra=EXTRA,
+		)
+
+		annotated = AnnotatedSignatures(sigs, ids, meta)
+
+		with dump_load(annotated, tmp_path) as h5sigs:
+			assert h5sigs.kmerspec == sigs.kmerspec
+			assert h5sigs.dtype == sigs.dtype
+			assert np.array_equal(h5sigs.ids, ids)
+			assert h5sigs.meta == meta
 
 	def test_close(self, h5sigs):
 		assert h5sigs.group
