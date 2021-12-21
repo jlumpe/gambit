@@ -45,6 +45,13 @@ def test_metadata(tmp_path, optional_attrs):
 	assert meta2 == meta
 
 
+def dump_load(sigs, path, **kw):
+	"""Dump signatures to HDF5 file and load them again."""
+	f = path / 'test.h5'
+	dump_signatures_hdf5(f, sigs, **kw)
+	return load_signatures_hdf5(f)
+
+
 class TestHDF5Signatures:
 
 	@pytest.fixture(scope='class')
@@ -115,10 +122,7 @@ class TestHDF5Signatures:
 		"""Test creating from other AbstractSignatureArray type."""
 		siglist = SignatureList(sigs)
 
-		file = tmp_path / 'test2.h5'
-		dump_signatures_hdf5(file, siglist)
-
-		with load_signatures_hdf5(file) as h5sigs:
+		with dump_load(siglist, tmp_path) as h5sigs:
 			assert h5sigs == siglist
 
 	@pytest.mark.parametrize('from_list', [False, True])
@@ -127,10 +131,7 @@ class TestHDF5Signatures:
 		"""Test creating with gzip compression."""
 		create_from = SignatureList(sigs) if from_list else sigs
 
-		file = tmp_path / 'test-compressed.h5'
-		dump_signatures_hdf5(file, create_from, compression='gzip', compression_opts=compression_level)
-
-		with load_signatures_hdf5(file) as h5sigs:
+		with dump_load(create_from, tmp_path) as h5sigs:
 			assert h5sigs == sigs
 
 	class TestAbstractSignatureArrayImplementation(AbstractSignatureArrayTests):
