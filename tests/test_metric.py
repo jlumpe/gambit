@@ -6,7 +6,7 @@ import pytest
 import numpy as np
 
 from gambit.metric import jaccard, jaccarddist, jaccard_bits, jaccard_generic, jaccarddist_array, \
-	jaccarddist_matrix, SCORE_DTYPE, BOUNDS_DTYPE
+	jaccarddist_matrix, jaccarddist_pairwise, num_pairs, SCORE_DTYPE, BOUNDS_DTYPE
 from gambit.sigs.convert import sparse_to_dense
 from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_signatures
 from gambit.kmers import KmerSpec
@@ -209,6 +209,76 @@ class TestJaccardDistMatrix:
 		out = np.empty((nq, nr), dtype=int)
 		with pytest.raises(ValueError):
 			jaccarddist_matrix(queries, refs_array, out=out)
+
+
+class TestJaccardDistPairwise:
+	"""Test the jaccarddist_pairwise() function."""
+
+	def condense(self, dmat):
+		return dmat[np.triu_indices_from(dmat, 1)]
+
+	@pytest.fixture()
+	def expected(self, refs_array):
+		"""Expected distance matrix."""
+		return jaccarddist_matrix(refs_array, refs_array)
+
+	@pytest.mark.parametrize('refs', ['SignatureArray', 'SignatureList', 'list', 'HDF5Signatures'], indirect=True)
+	@pytest.mark.parametrize('use_indices', [False, True])
+	def test_basic(self, refs, expected, use_indices):
+
+		if use_indices:
+			indices = [i for i in range(len(refs)) if i % 3 != 0]
+			expected = expected[np.ix_(indices, indices)]
+			n = len(indices)
+		else:
+			indices = None
+			n = len(refs)
+
+		npairs = num_pairs(n)
+
+		# Full matrix
+		with check_progress(total=npairs) as pconf:
+			dmat = jaccarddist_pairwise(refs, indices=indices, progress=pconf, flat=False)
+
+		assert np.array_equal(dmat, expected)
+
+		# Condensed
+		with check_progress(total=npairs) as pconf:
+			condensed = jaccarddist_pairwise(refs, indices=indices, progress=pconf, flat=True)
+
+		assert np.array_equal(condensed, self.condense(expected))
+
+	def test_out(self, refs_array, expected):
+		"""Test using pre-allocated output array."""
+
+		n = len(refs_array)
+		npairs = num_pairs(n)
+
+		out = np.empty((n, n), dtype=SCORE_DTYPE)
+		jaccarddist_pairwise(refs_array, out=out, flat=False)
+		assert np.array_equal(out, expected)
+
+		out = np.empty(npairs, dtype=SCORE_DTYPE)
+		jaccarddist_pairwise(refs_array, out=out, flat=True)
+		assert np.array_equal(out, self.condense(expected))
+
+		# Wrong size
+		out = np.empty((n + 1, n + 1), dtype=SCORE_DTYPE)
+		with pytest.raises(ValueError):
+			jaccarddist_pairwise(refs_array, out=out, flat=False)
+
+		out = np.empty(npairs + 1, dtype=SCORE_DTYPE)
+		with pytest.raises(ValueError):
+			jaccarddist_pairwise(refs_array, out=out, flat=True)
+
+		# Wrong dtype
+		out = np.empty((n, n), dtype=int)
+		with pytest.raises(ValueError):
+			jaccarddist_pairwise(refs_array, out=out, flat=False)
+
+		out = np.empty(npairs, dtype=int)
+		with pytest.raises(ValueError):
+			jaccarddist_pairwise(refs_array, out=out, flat=True)
 
 
 def test_different_dtypes():

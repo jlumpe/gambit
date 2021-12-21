@@ -144,6 +144,7 @@ def jaccarddist_matrix(queries: Sequence[KmerSignature],
 	--------
 	.jaccarddist
 	.jaccarddist_array
+	.jaccarddist_pairwise
 	"""
 	nqueries = len(queries)
 	nrefs = len(refs) if ref_indices is None else len(ref_indices)
@@ -171,5 +172,98 @@ def jaccarddist_matrix(queries: Sequence[KmerSignature],
 			for (i, query) in enumerate(queries):
 				jaccarddist_array(query, ref_chunk, out=out[i, ref_slice])
 				meter.increment(len(ref_chunk))
+
+	return out
+
+
+def num_pairs(n: int) -> int:
+	"""Get the number of distinct (unordered) pairs of ``n`` objects."""
+	return n * (n - 1) // 2
+
+
+def jaccarddist_pairwise(sigs: Sequence[KmerSignature],
+                         indices: Optional[Sequence[int]] = None,
+                         flat: bool = False,
+                         out: Optional[np.ndarray] = None,
+                         progress = None,
+                         ) -> np.ndarray:
+	"""
+	Calculate all pairwise Jaccard distances for a list of signatures.
+
+	This should be roughly twice as fast as calling :func:`.jaccarddist_flat` with the same array
+	for the first and second arguments, because each pairwise distance is computed once instead of
+	twice.
+
+	For optimal performance the type of ``sigs`` is subject to the same requirements as
+	:func:`.jaccarddist_array` and :func:`.jaccarddist_matrix`.
+
+	Parameters
+	----------
+	sigs
+		List of signatures in sparse coordinate format.
+	indices
+		Optional, indices of ``sigs`` to use.
+	flat
+		If True the output is a non-redundant flat (1D) array with exactly one element per pair of
+		signatures. This format can be converted to/from the equivalent full distance matrix with
+		:func:`scipy.spatial.distance.squareform`.
+	out
+		(Optional) pre-allocated array to write output to.
+	progress
+		Display a progress meter of the number of elements of the output array calculated so far.
+		See :func:`gambit.util.progress.get_progress` for a description of allowed values.
+
+	Returns
+	-------
+	np.ndarray
+		Pairwise distances in matrix (if ``flat=False``) or condensed (``flat=True``) format.
+
+	See Also
+	--------
+	.jaccarddist_matrix
+	"""
+	if not isinstance(sigs, AbstractSignatureArray):
+		sigs = SignatureList(sigs)  # To support advanced indexing
+
+	if indices is not None:
+		indices = np.asarray(indices)
+
+	n = len(sigs) if indices is None else len(indices)
+	npairs = num_pairs(n)
+
+	out_shape = (npairs,) if flat else (n, n)
+	if out is None:
+		out = np.empty(out_shape, SCORE_DTYPE)
+
+	else:
+		if out.shape != out_shape:
+			raise ValueError(f'Expected output array to have size {out_shape} for {n} signatures and flat={flat}')
+
+		if out.dtype != SCORE_DTYPE:
+			raise ValueError(f'Output array dtype must be {SCORE_DTYPE}, got {out.dtype}')
+
+	if flat:
+		next_out = 0
+	else:
+		np.fill_diagonal(out, 0)
+
+	with get_progress(progress, npairs) as meter:
+		for i in range(n - 1):
+			row_sig = sigs[i] if indices is None else sigs[indices[i]]
+
+			cols = slice(i + 1, n)
+			ncol = n - i - 1
+			col_sigs = sigs[cols] if indices is None else sigs[indices[cols]]
+
+			row_out = out[next_out:next_out+ncol] if flat else out[i, cols]
+
+			jaccarddist_array(row_sig, col_sigs, out=row_out)
+			meter.increment(ncol)
+
+			if flat:
+				next_out += ncol
+			else:
+				# Copy to other side of diagonal
+				out[cols, i] = out[i, cols]
 
 	return out

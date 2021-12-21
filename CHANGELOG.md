@@ -22,6 +22,7 @@
 		* Improvements to `.create()` method.
 		* Support compression.
 	* Format-independent functions for reading/writing signature data.
+	* `jaccarddist_pairwise()` function.
 	* Add more tree-based methods to `Taxon`.
 	* `gambit.metric` changes
 	    * `jaccarddist_array` and `jaccarddist_matrix` functions now accept any sequence type (e.g.
