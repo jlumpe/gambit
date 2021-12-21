@@ -8,7 +8,7 @@ import numpy as np
 from gambit.metric import jaccard, jaccarddist, jaccard_bits, jaccard_generic, jaccarddist_array, \
 	jaccarddist_matrix, SCORE_DTYPE, BOUNDS_DTYPE
 from gambit.sigs.convert import sparse_to_dense
-from gambit.sigs import SignatureArray, SignatureList
+from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_signatures
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures, check_progress
 
@@ -58,11 +58,12 @@ def refs_array(sigs):
 
 
 @pytest.fixture()
-def refs(request, refs_array):
+def refs(request, refs_array, tmp_path):
 	"""Reference signatures in multiple different types. Use indirect parameterization."""
 
 	if request.param == 'SignatureArray':
-		return refs_array
+		yield refs_array
+		return
 
 	if request.param == 'alt_bounds':
 		# The inner Cython function takes a specific type for the bounds array.
@@ -70,13 +71,23 @@ def refs(request, refs_array):
 		assert refs_array.bounds.dtype == BOUNDS_DTYPE
 		refs_array = SignatureArray.from_arrays(refs_array.values, refs_array.bounds.astype('i4'), refs_array.kmerspec)
 		assert refs_array.bounds.dtype != BOUNDS_DTYPE
-		return refs_array
+		yield refs_array
+		return
 
 	if request.param == 'SignatureList':
-		return SignatureList(refs_array)
+		yield SignatureList(refs_array)
+		return
 
 	if request.param == 'list':
-		return list(refs_array)
+		yield list(refs_array)
+		return
+
+	if request.param == 'HDF5Signatures':
+		file = tmp_path / 'signatures.h5'
+		dump_signatures(file, refs_array, 'hdf5')
+		with load_signatures(file) as h5sigs:
+			yield h5sigs
+		return
 
 	assert 0
 
@@ -127,7 +138,7 @@ class TestJaccardDistArray:
 			for j, sig2 in enumerate(sigs):
 				assert dists[j] == jaccarddist(sig1, sig2)
 
-	@pytest.mark.parametrize('refs', ['alt_bounds', 'SignatureList', 'list'], indirect=True)
+	@pytest.mark.parametrize('refs', ['alt_bounds', 'SignatureList', 'list', 'HDF5Signatures'], indirect=True)
 	def test_alt_types(self, refs_array, refs):
 		"""Test alternate types for refs argument."""
 		q = refs_array[0]
@@ -164,7 +175,7 @@ class TestJaccardDistMatrix:
 
 		return dmat
 
-	@pytest.mark.parametrize('refs', ['SignatureArray', 'SignatureList', 'list'], indirect=True)
+	@pytest.mark.parametrize('refs', ['SignatureArray', 'SignatureList', 'list', 'HDF5Signatures'], indirect=True)
 	@pytest.mark.parametrize('use_ref_indices', [False, True])
 	@pytest.mark.parametrize('chunksize', [None, 10])
 	def test_basic(self, queries, refs, expected, use_ref_indices, chunksize):
