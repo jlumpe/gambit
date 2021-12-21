@@ -38,7 +38,7 @@ def sigs(request, test_data):
 		k, dtype = request.param
 
 		np.random.seed(0)
-		sigs = make_signatures(k, 40, dtype)
+		sigs = make_signatures(k, 20, dtype)
 
 	return sigs
 
@@ -193,19 +193,22 @@ class TestJaccardDistMatrix:
 
 	def test_out(self, queries, refs_array, expected):
 		"""Test using pre-allocated output array."""
-		out = np.empty((len(queries), len(refs_array)), dtype=SCORE_DTYPE)
+		nq = len(queries)
+		nr = len(refs_array)
+
+		out = np.empty((nq, nr), dtype=SCORE_DTYPE)
 		jaccarddist_matrix(queries, refs_array, out=out)
 		assert np.array_equal(out, expected)
 
 		# Wrong size
-		out2 = np.empty((len(refs_array) + 1, len(queries)), dtype=SCORE_DTYPE)
+		out = np.empty((nq + 1, nr), dtype=SCORE_DTYPE)
 		with pytest.raises(ValueError):
-			jaccarddist_matrix(queries, refs_array, out=out2)
+			jaccarddist_matrix(queries, refs_array, out=out)
 
 		# Wrong dtype
-		out3 = np.empty((len(refs_array) + 1, len(queries)), dtype=int)
+		out = np.empty((nq, nr), dtype=int)
 		with pytest.raises(ValueError):
-			jaccarddist_array(queries, refs_array, out3)
+			jaccarddist_matrix(queries, refs_array, out=out)
 
 
 def test_different_dtypes():
