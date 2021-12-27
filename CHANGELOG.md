@@ -25,8 +25,8 @@
 	* `jaccarddist_pairwise()` function.
 	* Add more tree-based methods to `Taxon`.
 	* `gambit.metric` changes
-	    * `jaccarddist_array` and `jaccarddist_matrix` functions now accept any sequence type (e.g.
-	      `list`) for the `refs` argument, but with diminished performance.
+		* `jaccarddist_array` and `jaccarddist_matrix` functions now accept any sequence type (e.g.
+		  `list`) for the `refs` argument, but with diminished performance.
 
 
 ## 0.3.0
