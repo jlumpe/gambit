@@ -2,10 +2,12 @@
 
 import pytest
 import click
+import numpy as np
 
 from gambit.cli import cli
 from gambit.cli.common import CLIContext
 from gambit.cli.test import default_runner, allow_no_args
+from gambit.db import load_db_from_dir
 
 
 class TestCLIContext:
@@ -65,5 +67,10 @@ class TestCLIContext:
 		ctx.require_genomes()
 		ctx.require_signatures()
 
-		db = ctx.get_database()
-		# TODO - check
+		db = load_db_from_dir(dbpath)
+		ctx_db = ctx.get_database()
+		assert db.genomeset.key == ctx_db.genomeset.key
+		assert all(g1.key == g2.key for g1, g2 in zip(db.genomes, ctx_db.genomes))
+		assert np.array_equal(db.sig_indices, ctx_db.sig_indices)
+		assert db.signatures.meta.id == ctx_db.signatures.meta.id
+		assert np.array_equal(db.signatures.ids, ctx_db.signatures.ids)
