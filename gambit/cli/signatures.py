@@ -6,7 +6,7 @@ import click
 from .common import CLIContext, seq_file_params, get_seq_files, print_table
 from gambit.kmers import KmerSpec
 import gambit.io.json as gjson
-from gambit.sigs import SignaturesMeta, SignatureArray, load_signatures, dump_signatures
+from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
 from gambit.util.progress import ClickProgressMeter
 
@@ -162,6 +162,6 @@ def create(ctxobj: CLIContext,
 		ids = [f.path.name for f in seqfiles]
 
 	sigs = calc_file_signatures(kspec, seqfiles, progress=ClickProgressMeter)
-	sigs = SignatureArray(sigs, kspec, dtype=kspec.index_dtype)
+	sigs = AnnotatedSignatures(sigs, ids, meta)
 
-	dump_signatures(output, sigs, ids, meta)
+	dump_signatures(output, sigs)
