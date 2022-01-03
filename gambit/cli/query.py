@@ -5,7 +5,7 @@ import click
 
 from .common import CLIContext, seq_file_params, get_seq_files
 from gambit.query import QueryParams, QueryInput, query, query_parse
-from gambit.util.progress import ClickProgressMeter
+from gambit.util.progress import progress_config
 from gambit.sigs import load_signatures
 
 
@@ -63,6 +63,7 @@ def query_cmd(ctxobj: CLIContext,
 	seqfiles = get_seq_files(kw)
 	params = QueryParams(classify_strict=strict)
 	exporter = get_exporter(outfmt)
+	pconf = progress_config('click', file=sys.stderr)
 
 	if sigfile and seqfiles:
 		raise click.ClickException('The --sigfile option is mutually exclusive with GENOMES')
@@ -71,10 +72,10 @@ def query_cmd(ctxobj: CLIContext,
 		with load_signatures(sigfile) as sigfile:
 			sigs = sigfile[:]
 		inputs = [QueryInput(id) for id in sigfile.ids]
-		results = query(db, sigs, params, inputs=inputs, progress=ClickProgressMeter)
+		results = query(db, sigs, params, inputs=inputs, progress=pconf)
 
 	elif seqfiles:
-		results = query_parse(db, seqfiles, params, progress=ClickProgressMeter)
+		results = query_parse(db, seqfiles, params, progress=pconf)
 
 	else:
 		raise click.ClickException('Must supply at least one genome file or a value for --sigfile.')
