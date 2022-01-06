@@ -4,15 +4,11 @@ import pytest
 
 from gambit.classify import matching_taxon, find_matches, consensus_taxon, GenomeMatch
 from gambit.db import Taxon, AnnotatedGenome
+from gambit.test import make_lineage
 
 
 def test_matching_taxon():
-	taxa = []
-	for d in [.3, None, .2, .1]:
-		taxa.insert(0, Taxon(
-			distance_threshold=d,
-			parent=taxa[0] if taxa else None,
-		))
+	taxa = make_lineage([.1, .2, None, .3])
 
 	assert matching_taxon(taxa[0], .05) == taxa[0]
 	assert matching_taxon(taxa[0], .1) == taxa[0]
@@ -65,10 +61,9 @@ class TestGenomeMatch:
 	def test_matched_taxon_default(self):
 		"""Test default for the matched_taxon attribute."""
 
-		t1 = Taxon(distance_threshold=.5)
-		t2 = Taxon(distance_threshold=.2, parent=t1)
-		g = AnnotatedGenome(taxon=t2)
+		t1, t2 = make_lineage([.2, .5])
+		g = AnnotatedGenome(taxon=t1)
 
-		assert GenomeMatch(g, .1) == GenomeMatch(g, .1, t2)
-		assert GenomeMatch(g, .3) == GenomeMatch(g, .3, t1)
+		assert GenomeMatch(g, .1) == GenomeMatch(g, .1, t1)
+		assert GenomeMatch(g, .3) == GenomeMatch(g, .3, t2)
 		assert GenomeMatch(g, .6) == GenomeMatch(g, .6, None)

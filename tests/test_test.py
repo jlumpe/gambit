@@ -77,3 +77,13 @@ def test_make_kmer_seq(kspec, seqlen, kmer_interval, n_interval):
 	assert np.array_equal(sig, dense_to_sparse(vec))
 
 
+def test_make_lineage():
+	thresholds = [.1, .2, None, .3]
+	n = len(thresholds)
+	taxa = test.make_lineage(thresholds)
+	assert len(taxa) == n
+
+	for i in range(n):
+		assert taxa[i].distance_threshold == thresholds[i]
+		if i > 0:
+			assert taxa[i - 1].parent == taxa[i]

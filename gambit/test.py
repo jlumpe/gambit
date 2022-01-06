@@ -10,6 +10,7 @@ from gambit.sigs import KmerSignature, SignatureArray
 from gambit.sigs.convert import dense_to_sparse, sparse_to_dense
 from gambit.query import QueryResultItem
 from gambit.classify import ClassifierResult, GenomeMatch
+from gambit.db import Taxon
 
 
 def convert_seq(seq, type):
@@ -243,3 +244,30 @@ def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool
 	"""
 	return item1.report_taxon == item2.report_taxon and \
 		compare_classifier_results(item1.classifier_result, item2.classifier_result)
+
+
+def make_lineage(thresholds: Sequence[float]) -> List[Taxon]:
+	"""Create a linage of taxa that have the given distance thresholds.
+
+	Parameters
+	----------
+	thresholds
+		Distance thresholds for taxa, in ascending order.
+
+	Returns
+	-------
+	List[Taxon]
+		Created taxa in ascending order.
+	"""
+	taxa = []
+
+	for i, t in enumerate(thresholds):
+		taxon = Taxon(
+			name=f't{i + 1}',
+			distance_threshold=t,
+		)
+		if taxa:
+			taxa[-1].parent = taxon
+		taxa.append(taxon)
+
+	return taxa
