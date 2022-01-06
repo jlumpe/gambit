@@ -67,3 +67,19 @@ class TestGenomeMatch:
 		assert GenomeMatch(g, .1) == GenomeMatch(g, .1, t1)
 		assert GenomeMatch(g, .3) == GenomeMatch(g, .3, t2)
 		assert GenomeMatch(g, .6) == GenomeMatch(g, .6, None)
+
+	def test_next_taxon(self):
+		"""Test the next_taxon() method."""
+
+		taxa = make_lineage([.2, .4, None, .6, None])
+		g = AnnotatedGenome(taxon=taxa[0])
+		matches = [GenomeMatch(g, d) for d in [.1, .4, .5, .7]]
+
+		assert matches[0].matched_taxon == taxa[0]
+		assert matches[0].next_taxon() is None
+		assert matches[1].matched_taxon == taxa[1]
+		assert matches[1].next_taxon() == taxa[0]
+		assert matches[2].matched_taxon == taxa[3]
+		assert matches[2].next_taxon() == taxa[1]
+		assert matches[3].matched_taxon is None
+		assert matches[3].next_taxon() == taxa[3]

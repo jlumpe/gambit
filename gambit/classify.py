@@ -144,6 +144,24 @@ class GenomeMatch:
 	def _matched_taxon_default(self):
 		return matching_taxon(self.genome.taxon, self.distance)
 
+	def next_taxon(self) -> Optional[Taxon]:
+		"""Get next most specific taxon in lineage of ``genome`` for which the threshold was not met."""
+		lo = None
+		hi = self.genome.taxon  # Leaf should always have threshold
+
+		while hi is not None:
+			if hi.distance_threshold is not None and self.distance <= hi.distance_threshold:
+				return lo
+
+			lo = hi
+
+			# Advance to next in ancestry with distance threshold
+			hi = hi.parent
+			while hi is not None and hi.distance_threshold is None:
+				hi = hi.parent
+
+		return lo
+
 
 def compare_genome_matches(match1: Optional[GenomeMatch], match2: Optional[GenomeMatch]) -> bool:
 	"""Compare two ``GenomeMatch`` instances for equality.
@@ -179,6 +197,9 @@ class ClassifierResult:
 	closest_match
 		Match to closest reference genome overall. This should almost always be identical to
 		``primary_match``.
+	next_taxon
+		Next most specific taxon for which the threshold was not met. Currently this just taken
+		from the ancestry of ``closest_match.genome.taxon``.
 	warnings
 		List of non-fatal warning messages to report.
 	error
@@ -188,8 +209,13 @@ class ClassifierResult:
 	predicted_taxon: Optional[Taxon] = attrib()
 	primary_match: Optional[GenomeMatch] = attrib()
 	closest_match: GenomeMatch = attrib()
+	next_taxon: Optional[Taxon] = attrib()
 	warnings: List[str] = attrib(factory=list, repr=False)
 	error: Optional[str] = attrib(default=None, repr=False)
+
+	@next_taxon.default
+	def _next_taxon_default(self):
+		return self.closest_match.next_taxon()
 
 
 def compare_classifier_results(result1: ClassifierResult, result2: ClassifierResult) -> bool:
@@ -198,6 +224,7 @@ def compare_classifier_results(result1: ClassifierResult, result2: ClassifierRes
 	       result1.predicted_taxon == result2.predicted_taxon and \
 	       compare_genome_matches(result1.primary_match, result2.primary_match) and \
 	       compare_genome_matches(result1.closest_match, result2.closest_match) and \
+	       result1.next_taxon == result2.next_taxon and \
 	       set(result1.warnings) == set(result2.warnings) and \
 	       result1.error == result2.error
 
