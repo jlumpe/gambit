@@ -10,7 +10,8 @@ from gambit.metric import jaccard, jaccarddist, jaccard_bits, jaccard_generic, j
 from gambit.sigs.convert import sparse_to_dense
 from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_signatures
 from gambit.kmers import KmerSpec
-from gambit.test import make_signatures, check_progress
+from gambit.test import make_signatures
+from gambit.util.progress import check_progress
 
 
 @pytest.fixture(

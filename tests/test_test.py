@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 
-from gambit.test import make_signatures, random_seq, fill_bytearray, make_kmer_seq, check_progress
+from gambit.test import make_signatures, random_seq, fill_bytearray, make_kmer_seq
 from gambit.kmers import KmerSpec, kmer_to_index, nkmers
 from gambit.seq import revcomp
 from gambit.sigs.convert import dense_to_sparse
@@ -77,48 +77,3 @@ def test_make_kmer_seq(kspec, seqlen, kmer_interval, n_interval):
 	assert np.array_equal(sig, dense_to_sparse(vec))
 
 
-def test_check_progress():
-	"""Test the check_progress function."""
-
-	with check_progress() as pconf:
-		with get_progress(pconf, 100) as meter:
-			meter.moveto(100)
-
-	with check_progress(total=100) as pconf:
-		with get_progress(pconf, 100) as meter:
-			meter.moveto(100)
-
-	with check_progress(check_closed=False) as pconf:
-		meter = get_progress(pconf, 100)
-		meter.moveto(100)
-
-	# Not completed
-	with pytest.raises(AssertionError):
-		with check_progress() as pconf:
-			with get_progress(pconf, 100) as meter:
-				meter.moveto(99)
-
-	# Wrong total
-	with pytest.raises(AssertionError):
-		with check_progress(total=100) as pconf:
-			with get_progress(pconf, 10) as meter:
-				meter.moveto(10)
-
-	# Not closed
-	with pytest.raises(AssertionError):
-		with check_progress() as pconf:
-			meter = get_progress(pconf, 100)
-			meter.moveto(100)
-
-	# Not instantiated
-	with pytest.raises(AssertionError):
-		with check_progress():
-			pass
-
-	# Instantiated multiple times
-	with pytest.raises(AssertionError):
-		with check_progress() as pconf:
-			with get_progress(pconf, 100) as meter1:
-				meter1.moveto(100)
-			with get_progress(pconf, 100) as meter2:
-				meter2.moveto(100)

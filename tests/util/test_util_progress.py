@@ -4,7 +4,8 @@ from string import ascii_letters
 
 import pytest
 
-from gambit.util.progress import default_progress_cls, progress_config, get_progress, iter_progress, capture_progress
+from gambit.util.progress import default_progress_cls, progress_config, get_progress, iter_progress, \
+	capture_progress, check_progress
 from gambit.util.progress import NullProgressMeter, TestProgressMeter, TqdmProgressMeter, ClickProgressMeter
 
 
@@ -227,6 +228,53 @@ def test_iter_progress(pass_total, abort_early):
 			assert itr.meter.closed
 
 	assert itr.meter.closed  # Always closed after exiting context
+
+
+def test_check_progress():
+	"""Test the check_progress function."""
+
+	with check_progress() as pconf:
+		with get_progress(pconf, 100) as meter:
+			meter.moveto(100)
+
+	with check_progress(total=100) as pconf:
+		with get_progress(pconf, 100) as meter:
+			meter.moveto(100)
+
+	with check_progress(check_closed=False) as pconf:
+		meter = get_progress(pconf, 100)
+		meter.moveto(100)
+
+	# Not completed
+	with pytest.raises(AssertionError):
+		with check_progress() as pconf:
+			with get_progress(pconf, 100) as meter:
+				meter.moveto(99)
+
+	# Wrong total
+	with pytest.raises(AssertionError):
+		with check_progress(total=100) as pconf:
+			with get_progress(pconf, 10) as meter:
+				meter.moveto(10)
+
+	# Not closed
+	with pytest.raises(AssertionError):
+		with check_progress() as pconf:
+			meter = get_progress(pconf, 100)
+			meter.moveto(100)
+
+	# Not instantiated
+	with pytest.raises(AssertionError):
+		with check_progress():
+			pass
+
+	# Instantiated multiple times
+	with pytest.raises(AssertionError):
+		with check_progress() as pconf:
+			with get_progress(pconf, 100) as meter1:
+				meter1.moveto(100)
+			with get_progress(pconf, 100) as meter2:
+				meter2.moveto(100)
 
 
 def test_NullProgressMeter():

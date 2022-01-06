@@ -1,8 +1,10 @@
 """Abstract interface for progress meters."""
 
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Callable, Iterable, TextIO, Dict, Mapping, Any, cast, List, Tuple, Iterator
+from typing import Optional, Union, Callable, Iterable, TextIO, Dict, Mapping, Any, cast, List, \
+	Tuple, Iterator, ContextManager
 from warnings import warn
+from contextlib import contextmanager
 
 
 #: Type alias for a callable which takes ``total`` and keyword arguments and returns an AbstractProgressMeter
@@ -298,6 +300,52 @@ def capture_progress(config: ProgressConfig) -> Tuple[ProgressConfig, List[Abstr
 		return meter
 
 	return progress_config(factory), instances
+
+
+@contextmanager
+def check_progress(*,
+                   total: Optional[int] = None,
+                   allow_decrement: bool = False,
+                   check_closed: bool = True,
+                   ) -> ContextManager[ProgressConfig]:
+	"""Context manager which checks a progress meter is advanced to completion.
+
+	Returned context manager yields a ``ProgressConfig`` instance on enter, tests are run when
+	context is exited. Expects that the config will be used to instantiate exactly one progress
+	meter. Tests are performed with assert statements.
+
+	Parameters
+	----------
+	total
+		Check that the progress meter is created with this total length.
+	allow_decrement
+		If false, raise an error if the created progress meter is moved backwards.
+	check_closed
+		Check that the progress meter was closed.
+
+	Raises
+	------
+	AssertionError
+		If any checks fail.
+	"""
+
+	conf = progress_config(TestProgressMeter, allow_decrement=allow_decrement)
+	conf2, l = capture_progress(conf)
+
+	yield conf2
+
+	assert len(l) != 0, 'Progress meter not instantiated'
+	assert len(l) == 1, 'Progress meter instantiated multiple times'
+
+	pbar = l[0]
+
+	assert pbar.n == pbar.total, 'Progress meter not completed'
+
+	if total is not None:
+		assert pbar.total == total
+
+	if check_closed:
+		assert pbar.closed
 
 
 ##########################
