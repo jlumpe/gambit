@@ -237,8 +237,9 @@ class AnnotatedGenome(Base):
 			type(self).__name__,
 			self.genome_set_id,
 			self.genome_id,
-			self.genome_set.key,
-			self.genome.key,
+			# Don't break display if not fully instantiated
+			None if self.genome_set is None else self.genome_set.key,
+			None if self.genome is None else self.genome.key,
 		)
 
 
