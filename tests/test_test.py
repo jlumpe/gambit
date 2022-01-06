@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 
-from gambit.test import make_signatures, random_seq, fill_bytearray, make_kmer_seq
+from gambit import test
 from gambit.kmers import KmerSpec, kmer_to_index, nkmers
 from gambit.seq import revcomp
 from gambit.sigs.convert import dense_to_sparse
@@ -15,7 +15,7 @@ from gambit.util.progress import get_progress
 @pytest.mark.parametrize('dtype', [np.dtype('u8'), np.dtype('u4')])
 def test_make_signatures(k, n, dtype):
 	np.random.seed(0)
-	sigs = make_signatures(k, n, dtype)
+	sigs = test.make_signatures(k, n, dtype)
 	assert len(sigs) == n
 
 	for i, sig in enumerate(sigs):
@@ -32,7 +32,7 @@ def test_make_signatures(k, n, dtype):
 @pytest.mark.parametrize('chars', ['ACGT', 'XYZ'])
 def test_random_seq(n, chars):
 	np.random.seed(0)
-	seq = random_seq(n, chars)
+	seq = test.random_seq(n, chars)
 	assert isinstance(seq, bytes)
 	assert len(seq) == n
 	assert all(chr(c) in chars for c in seq)
@@ -41,7 +41,7 @@ def test_random_seq(n, chars):
 @pytest.mark.parametrize('pattern', [b'N', b'ABC'])
 @pytest.mark.parametrize('n', [100, 1000])
 def test_fill_bytearray(pattern, n):
-	arr = fill_bytearray(pattern, n)
+	arr = test.fill_bytearray(pattern, n)
 	assert isinstance(arr, bytearray)
 	assert len(arr) == n
 
@@ -55,7 +55,7 @@ def test_fill_bytearray(pattern, n):
 @pytest.mark.parametrize('n_interval', [None, 5])
 def test_make_kmer_seq(kspec, seqlen, kmer_interval, n_interval):
 	np.random.seed(0)
-	seq, sig = make_kmer_seq(kspec, seqlen, kmer_interval, n_interval)
+	seq, sig = test.make_kmer_seq(kspec, seqlen, kmer_interval, n_interval)
 	assert len(seq) == seqlen
 
 	vec = np.zeros(kspec.nkmers, dtype=bool)
