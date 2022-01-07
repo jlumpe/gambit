@@ -12,6 +12,7 @@ from gambit.sigs import SignaturesMeta
 from gambit.seq import SequenceFile
 from gambit.io.json import to_json
 from gambit.util.misc import zip_strict
+from gambit.io.results.base import export_to_buffer
 from gambit.io.results.json import JSONResultsExporter
 from gambit.io.results.csv import CSVResultsExporter
 from gambit.io.results.archive import ResultsArchiveReader, ResultsArchiveWriter
@@ -101,11 +102,8 @@ def cmp_json_attrs(data, obj, attrnames):
 def test_json(results):
 	"""Test JSONResultsExporter."""
 
-	buf = StringIO()
 	exporter = JSONResultsExporter()
-	exporter.export(buf, results)
-
-	buf.seek(0)
+	buf = export_to_buffer(results, exporter)
 	data = json.load(buf)
 
 	assert len(data['items']) == len(results.items)
@@ -146,11 +144,8 @@ def test_json(results):
 def test_csv(results):
 	"""Test CSVResultsExporter."""
 
-	buf = StringIO()
 	exporter = CSVResultsExporter()
-	exporter.export(buf, results)
-
-	buf.seek(0)
+	buf = export_to_buffer(results, exporter)
 	rows = list(DictReader(buf, **exporter.format_opts))
 	assert len(rows) == len(results.items)
 
@@ -176,12 +171,9 @@ def test_csv(results):
 def test_results_archive(session, results):
 	"""Test ResultArchiveWriter/Reader."""
 
-	buf = StringIO()
 	writer = ResultsArchiveWriter()
-	writer.export(buf, results)
-
+	buf = export_to_buffer(results, writer)
 	reader = ResultsArchiveReader(session)
-	buf.seek(0)
 	results2 = reader.read(buf)
 
 	assert results2 == results

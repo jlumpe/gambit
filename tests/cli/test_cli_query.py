@@ -4,13 +4,13 @@ Test the 'gambit query' CLI command using the testdb_210818 database.
 
 import json
 from csv import DictReader
-from io import StringIO
 from copy import copy
 
 import pytest
 import numpy as np
 
 from gambit.cli.test import invoke_cli
+from gambit.io.results.base import export_to_buffer
 from gambit.io.results.json import JSONResultsExporter
 from gambit.io.results.csv import CSVResultsExporter
 
@@ -66,13 +66,6 @@ def make_args(query_files=None, sigfile=None, db=None, output=None, outfmt=None,
 		args.extend([str(f.path) for f in query_files])
 
 	return args
-
-
-def export_to_buffer(results, exporter):
-	buf = StringIO()
-	exporter.export(buf, results)
-	buf.seek(0)
-	return buf
 
 
 def check_results(results_file,
