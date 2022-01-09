@@ -75,6 +75,9 @@ def results(session):
 			report_taxon=None if predicted is None else predicted.parent if i % 4 == 0 else predicted,
 		))
 
+	# Set one input file to None
+	items[-1].input.file = None
+
 	return QueryResults(
 		items=items,
 		params=QueryParams(chunksize=1234, classify_strict=True),

@@ -1,7 +1,9 @@
 """Funcs for testing exported data."""
+
 import csv
 import json
 from typing import TextIO
+from pathlib import Path
 
 import numpy as np
 
@@ -17,7 +19,7 @@ def cmp_json_attrs(data, obj, attrnames):
 
 def check_json_results(file: TextIO,
                        results: QueryResults,
-                       strict: bool = False,  # TODO
+                       strict: bool = False,
                        ):
 	"""Check exported JSON data matches the given results object.
 
@@ -50,8 +52,18 @@ def check_json_results(file: TextIO,
 	for item, item_data in zip(results.items, data['items']):
 		query = item_data['query']
 		assert query['name'] == item.input.label
-		assert query['path'] == str(item.input.file.path)
-		assert query['format'] == item.input.file.format
+
+		if item.input.file is None:
+			assert query['path'] is None
+			assert query['format'] is None
+
+		else:
+			assert query['format'] == item.input.file.format
+
+			if strict:
+				assert query['path'] == str(item.input.file.path)
+			else:
+				assert Path(query['path']).name == item.input.file.path.name
 
 		predicted_data = item_data['predicted_taxon']
 		if item.report_taxon is None:
@@ -76,7 +88,7 @@ def check_json_results(file: TextIO,
 
 def check_csv_results(file: TextIO,
                       results: QueryResults,
-                      strict: bool = False,  # TODO
+                      strict: bool = False,
                       ):
 	"""Check exported CSV data matches the given results object.
 
@@ -101,7 +113,13 @@ def check_csv_results(file: TextIO,
 
 	for item, row in zip(results.items, rows):
 		assert row['query.name'] == item.input.label
-		assert row['query.path'] == str(item.input.file.path)
+
+		if item.input.file is None:
+			assert row['query.path'] == ''
+		elif strict:
+			assert row['query.path'] == str(item.input.file.path)
+		else:
+			assert Path(row['query.path']).name == item.input.file.path.name
 
 		if item.report_taxon is None:
 			assert row['predicted.name'] == ''

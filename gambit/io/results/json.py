@@ -35,7 +35,11 @@ class JSONResultsExporter(BaseJSONResultsExporter):
 
 	@to_json.register(QueryInput)
 	def _input_to_json(self, input: QueryInput):
-		return dict(name=input.label, path=input.file.path, format=input.file.format)
+		return dict(
+			name=input.label,
+			path=None if input.file is None else input.file.path,
+			format=None if input.file is None else input.file.format,
+		)
 
 	@to_json.register(ReferenceGenomeSet)
 	def _genomeset_to_json(self, gset: ReferenceGenomeSet):
