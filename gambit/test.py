@@ -8,8 +8,6 @@ from gambit.kmers import KmerSpec, kmer_to_index
 from gambit.seq import seq_to_bytes, revcomp
 from gambit.sigs import KmerSignature, SignatureArray
 from gambit.sigs.convert import dense_to_sparse, sparse_to_dense
-from gambit.query import QueryResultItem
-from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import Taxon
 
 
@@ -208,42 +206,6 @@ def make_kmer_seqs(kspec: KmerSpec,
 		seqs.append(seq)
 
 	return seqs, dense_to_sparse(vec)
-
-
-def compare_genome_matches(match1: Optional[GenomeMatch], match2: Optional[GenomeMatch]) -> bool:
-	"""Compare two ``GenomeMatch`` instances for equality.
-
-	The values for the ``distance`` attribute are only checked for approximate equality, to support
-	instances where one was loaded from a results archive (saving and loading a float in JSON is
-	lossy).
-
-	Also allows one or both values to be None.
-	"""
-	if match1 is None or match2 is None:
-		return match1 is None and match2 is None
-
-	return match1.genome == match2.genome and \
-	       match1.matched_taxon == match2.matched_taxon and \
-	       np.isclose(match1.distance, match2.distance)
-
-
-def compare_classifier_results(result1: ClassifierResult, result2: ClassifierResult) -> bool:
-	"""Compare two ``ClassifierResult`` instances for equality."""
-	return result1.success == result2.success and \
-	       result1.predicted_taxon == result2.predicted_taxon and \
-	       compare_genome_matches(result1.primary_match, result2.primary_match) and \
-	       compare_genome_matches(result1.closest_match, result2.closest_match) and \
-	       set(result1.warnings) == set(result2.warnings) and \
-	       result1.error == result2.error
-
-
-def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool:
-	"""Compare two ``QueryResultItem`` instances for equality.
-
-	Does not compare the value of the ``input`` attributes.
-	"""
-	return item1.report_taxon == item2.report_taxon and \
-		compare_classifier_results(item1.classifier_result, item2.classifier_result)
 
 
 def make_lineage(thresholds: Sequence[float]) -> List[Taxon]:

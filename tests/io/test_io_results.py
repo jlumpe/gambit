@@ -1,21 +1,15 @@
-from io import StringIO
-import json
-from csv import DictReader
-
 import pytest
-import numpy as np
 
 from gambit.query import QueryResults, QueryResultItem, QueryInput, QueryParams
 from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import ReferenceGenomeSet, Genome
 from gambit.sigs import SignaturesMeta
 from gambit.seq import SequenceFile
-from gambit.io.json import to_json
-from gambit.util.misc import zip_strict
 from gambit.io.results.base import export_to_buffer
 from gambit.io.results.json import JSONResultsExporter
 from gambit.io.results.csv import CSVResultsExporter
 from gambit.io.results.archive import ResultsArchiveReader, ResultsArchiveWriter
+from gambit.io.results.test import check_json_results, check_csv_results
 
 
 @pytest.fixture()
@@ -95,82 +89,22 @@ def results(session):
 	)
 
 
-def cmp_json_attrs(data, obj, attrnames):
-	for attr in attrnames:
-		assert data[attr] == getattr(obj, attr)
-
 def test_json(results):
 	"""Test JSONResultsExporter."""
-
 	exporter = JSONResultsExporter()
 	buf = export_to_buffer(results, exporter)
-	data = json.load(buf)
-
-	assert len(data['items']) == len(results.items)
-	# assert data['params'] == to_json(results.params)
-	cmp_json_attrs(data['genomeset'], results.genomeset, ['id', 'key', 'version', 'name', 'description'])
-	assert data['signaturesmeta'] == to_json(results.signaturesmeta)
-	assert data['gambit_version'] == results.gambit_version
-	assert data['timestamp'] == to_json(results.timestamp)
-	assert data['extra'] == results.extra
-
-	for item, item_data in zip(results.items, data['items']):
-		query = item_data['query']
-		assert query['name'] == item.input.label
-		assert query['path'] == str(item.input.file.path)
-		assert query['format'] == item.input.file.format
-
-		predicted_data = item_data['predicted_taxon']
-		if item.report_taxon is None:
-			assert predicted_data is None
-		else:
-			cmp_json_attrs(predicted_data, item.report_taxon, ['id', 'key', 'name', 'ncbi_id', 'rank'])
-			assert np.isclose(predicted_data['distance_threshold'], item.report_taxon.distance_threshold)
-
-		closest = item.classifier_result.closest_match
-		assert np.isclose(item_data['closest_genome_distance'], item.classifier_result.closest_match.distance)
-
-		cmp_json_attrs(
-			item_data['closest_genome'],
-			closest.genome,
-			['key', 'description', 'organism', 'ncbi_db', 'ncbi_id', 'genbank_acc', 'refseq_acc'],
-		)
-		assert item_data['closest_genome']['id'] == closest.genome.genome_id
-
-		for taxon, taxon_data in zip_strict(closest.genome.taxon.ancestors(True), item_data['closest_genome']['taxonomy']):
-			cmp_json_attrs(taxon_data, taxon, ['id', 'key', 'name', 'ncbi_id', 'rank', 'distance_threshold'])
+	check_json_results(buf, results, strict=True)
 
 
 def test_csv(results):
 	"""Test CSVResultsExporter."""
-
 	exporter = CSVResultsExporter()
 	buf = export_to_buffer(results, exporter)
-	rows = list(DictReader(buf, **exporter.format_opts))
-	assert len(rows) == len(results.items)
-
-	for item, row in zip(results.items, rows):
-		assert row['query.name'] == item.input.label
-		assert row['query.path'] == str(item.input.file.path)
-
-		if item.report_taxon is None:
-			assert row['predicted.name'] == ''
-			assert row['predicted.rank'] == ''
-			assert row['predicted.ncbi_id'] == ''
-			assert row['predicted.threshold'] == ''
-		else:
-			assert row['predicted.name'] == item.report_taxon.name
-			assert row['predicted.rank'] == item.report_taxon.rank
-			assert row['predicted.ncbi_id'] == str(item.report_taxon.ncbi_id or '')
-			assert np.isclose(float(row['predicted.threshold']), item.report_taxon.distance_threshold)
-
-		assert np.isclose(float(row['closest.distance']), item.classifier_result.closest_match.distance)
-		assert row['closest.description'] == item.classifier_result.closest_match.genome.description
+	check_csv_results(buf, results, strict=True)
 
 
 def test_results_archive(session, results):
 	"""Test ResultArchiveWriter/Reader."""
-
 	writer = ResultsArchiveWriter()
 	buf = export_to_buffer(results, writer)
 	reader = ResultsArchiveReader(session)

@@ -2,10 +2,9 @@
 
 import pytest
 
-from gambit.query import QueryInput, query_parse
+from gambit.query import QueryInput, query_parse, compare_result_items
 from gambit.seq import SequenceFile
 from gambit.util.misc import zip_strict
-from gambit.test import compare_result_items
 from gambit import __version__ as GAMBIT_VERSION
 
 

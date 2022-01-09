@@ -7,7 +7,7 @@ from attr import attrs, attrib
 import numpy as np
 
 from gambit import __version__ as GAMBIT_VERSION
-from gambit.classify import classify, ClassifierResult
+from gambit.classify import classify, ClassifierResult, compare_classifier_results
 from gambit.db.models import reportable_taxon
 from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet
 from gambit.seq import SequenceFile
@@ -79,6 +79,15 @@ class QueryResultItem:
 	input: QueryInput = attrib()
 	classifier_result: ClassifierResult = attrib()
 	report_taxon: Optional[Taxon] = attrib(default=None)
+
+
+def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool:
+	"""Compare two ``QueryResultItem`` instances for equality.
+
+	Does not compare the value of the ``input`` attributes.
+	"""
+	return item1.report_taxon == item2.report_taxon and \
+	       compare_classifier_results(item1.classifier_result, item2.classifier_result)
 
 
 @attrs(repr=False)
