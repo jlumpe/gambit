@@ -16,6 +16,9 @@
                     "matched_taxon": null
                 },
                 "error": null,
+                "next_taxon": {
+                    "key": "gambit/testdb_210818/A1"
+                },
                 "predicted_taxon": null,
                 "primary_match": null,
                 "success": true,
@@ -115,6 +118,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1"
                 },
@@ -246,6 +250,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B1_C1"
                 },
@@ -377,6 +382,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B1_C2"
                 },
@@ -508,6 +514,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B1_C3"
                 },
@@ -639,6 +646,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B1_C4"
                 },
@@ -770,6 +778,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B2"
                 },
@@ -901,6 +910,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B2_C1"
                 },
@@ -1032,6 +1042,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B2_C2"
                 },
@@ -1163,6 +1174,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B2_C3"
                 },
@@ -1294,6 +1306,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B2_C4"
                 },
@@ -1425,6 +1438,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B3"
                 },
@@ -1556,6 +1570,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B3_C1"
                 },
@@ -1687,6 +1702,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B3_C2"
                 },
@@ -1818,6 +1834,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B3_C3"
                 },
@@ -1949,6 +1966,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A1_B3_C4"
                 },
@@ -2080,6 +2098,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2"
                 },
@@ -2211,6 +2230,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B1"
                 },
@@ -2342,6 +2362,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B1_C1"
                 },
@@ -2473,6 +2494,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B1_C2"
                 },
@@ -2604,6 +2626,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B1_C3"
                 },
@@ -2735,6 +2758,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B1_C4"
                 },
@@ -2866,6 +2890,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B2"
                 },
@@ -2997,6 +3022,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B2_C1"
                 },
@@ -3128,6 +3154,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B2_C2"
                 },
@@ -3259,6 +3286,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B2_C3"
                 },
@@ -3390,6 +3418,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B2_C4"
                 },
@@ -3521,6 +3550,9 @@
                     }
                 },
                 "error": null,
+                "next_taxon": {
+                    "key": "gambit/testdb_210818/A2_B3_C1"
+                },
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B3"
                 },
@@ -3652,6 +3684,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B3_C1"
                 },
@@ -3783,6 +3816,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B3_C2"
                 },
@@ -3914,6 +3948,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B3_C3"
                 },
@@ -4045,6 +4080,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B3_C4"
                 },
@@ -4176,6 +4212,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3"
                 },
@@ -4307,6 +4344,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B1"
                 },
@@ -4438,6 +4476,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B1_C1"
                 },
@@ -4569,6 +4608,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B1_C2"
                 },
@@ -4700,6 +4740,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B1_C3"
                 },
@@ -4831,6 +4872,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B1_C4"
                 },
@@ -4962,6 +5004,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B2"
                 },
@@ -5093,6 +5136,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B2_C1"
                 },
@@ -5224,6 +5268,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B2_C2"
                 },
@@ -5355,6 +5400,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B2_C3"
                 },
@@ -5486,6 +5532,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B2_C4"
                 },
@@ -5617,6 +5664,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B3"
                 },
@@ -5748,6 +5796,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B3_C1"
                 },
@@ -5879,6 +5928,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B3_C2"
                 },
@@ -6010,6 +6060,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B3_C3"
                 },
@@ -6141,6 +6192,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A3_B3_C4"
                 },
@@ -6272,6 +6324,7 @@
                     }
                 },
                 "error": null,
+                "next_taxon": null,
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2_B2"
                 },
@@ -6403,6 +6456,9 @@
                     }
                 },
                 "error": null,
+                "next_taxon": {
+                    "key": "gambit/testdb_210818/A2_B2"
+                },
                 "predicted_taxon": {
                     "key": "gambit/testdb_210818/A2"
                 },
@@ -6539,5 +6595,5 @@
         "name": "testdb_210818",
         "version": "1.0"
     },
-    "timestamp": "2021-12-11T19:45:29.130942"
+    "timestamp": "2022-01-09T17:29:21.540969"
 }

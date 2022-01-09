@@ -17,7 +17,11 @@ def cmp_json_attrs(data, obj, attrnames):
 		assert data[attr] == getattr(obj, attr)
 
 def cmp_taxon_json(taxon_data, taxon):
-	cmp_json_attrs(taxon_data, taxon, ['id', 'key', 'name', 'ncbi_id', 'rank', 'distance_threshold'])
+	if taxon is None:
+		assert taxon_data is None
+	else:
+		assert taxon_data is not None
+		cmp_json_attrs(taxon_data, taxon, ['id', 'key', 'name', 'ncbi_id', 'rank', 'distance_threshold'])
 
 def cmp_annnotatedgenome_json(genome_data, genome):
 	assert genome_data['id'] == genome.genome_id
@@ -87,22 +91,35 @@ def check_json_results(file: TextIO,
 			else:
 				assert Path(query['path']).name == item.input.file.path.name
 
+		# Predicted taxon
 		predicted_data = item_data['predicted_taxon']
-		if item.report_taxon is None:
-			assert predicted_data is None
-		else:
-			cmp_taxon_json(predicted_data, item.report_taxon)
+		cmp_taxon_json(predicted_data, item.report_taxon)
+		if item.report_taxon is not None:
 			assert np.isclose(predicted_data['distance_threshold'], item.report_taxon.distance_threshold)
+
+		# Next taxon
+		cmp_taxon_json(item_data['next_taxon'], item.classifier_result.next_taxon)
 
 		# Closest genomes
 		for match, match_data in zip_strict(item.closest_genomes, item_data['closest_genomes']):
 			cmp_genomematch_json(match_data, match)
 
 
-def check_csv_results(file: TextIO,
-                      results: QueryResults,
-                      strict: bool = False,
-                      ):
+def cmp_csv_taxon(row, taxon, prefix):
+
+	if taxon is None:
+		assert row[prefix + '.name'] == ''
+		assert row[prefix + '.rank'] == ''
+		assert row[prefix + '.ncbi_id'] == ''
+		assert row[prefix + '.threshold'] == ''
+	else:
+		assert row[prefix + '.name'] == taxon.name
+		assert row[prefix + '.rank'] == taxon.rank
+		assert row[prefix + '.ncbi_id'] == str(taxon.ncbi_id or '')
+		assert np.isclose(float(row[prefix + '.threshold']), taxon.distance_threshold)
+
+
+def check_csv_results(file: TextIO, results: QueryResults, strict: bool = False):
 	"""Check exported CSV data matches the given results object.
 
 	Parameters
@@ -134,16 +151,8 @@ def check_csv_results(file: TextIO,
 		else:
 			assert Path(row['query.path']).name == item.input.file.path.name
 
-		if item.report_taxon is None:
-			assert row['predicted.name'] == ''
-			assert row['predicted.rank'] == ''
-			assert row['predicted.ncbi_id'] == ''
-			assert row['predicted.threshold'] == ''
-		else:
-			assert row['predicted.name'] == item.report_taxon.name
-			assert row['predicted.rank'] == item.report_taxon.rank
-			assert row['predicted.ncbi_id'] == str(item.report_taxon.ncbi_id or '')
-			assert np.isclose(float(row['predicted.threshold']), item.report_taxon.distance_threshold)
+		cmp_csv_taxon(row, item.report_taxon, 'predicted')
+		cmp_csv_taxon(row, item.classifier_result.next_taxon, 'next')
 
 		closest = item.closest_genomes[0]
 		assert np.isclose(float(row['closest.distance']), closest.distance)

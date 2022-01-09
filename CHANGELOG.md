@@ -3,9 +3,11 @@
 ## 0.4.0
 
 * New features
-    * Query results
-        * Results include list of closest reference genomes. This is only reported in JSON-based output
-          formats.
+    * Result reporting
+        * Results include list of closest reference genomes. This is only reported in JSON-based
+          output formats.
+        * New "next_taxon" attribute, indicating the next most specific taxon for which the
+          threshold was not met.
 * CLI
 	* `signatures info` subcommand uses current reference DB by default.
 * Documentation

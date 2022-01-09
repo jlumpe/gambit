@@ -40,6 +40,10 @@ class CSVResultsExporter(AbstractResultsExporter):
 		('predicted.threshold', 'report_taxon.distance_threshold'),
 		('closest.distance', 'classifier_result.closest_match.distance'),
 		('closest.description', 'classifier_result.closest_match.genome.description'),
+		('next.name', 'classifier_result.next_taxon.name'),
+		('next.rank', 'classifier_result.next_taxon.rank'),
+		('next.ncbi_id', 'classifier_result.next_taxon.ncbi_id'),
+		('next.threshold', 'classifier_result.next_taxon.distance_threshold'),
 	]
 
 	def __init__(self, **format_opts):

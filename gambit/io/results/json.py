@@ -29,6 +29,7 @@ class JSONResultsExporter(BaseJSONResultsExporter):
 		return dict(
 			query=item.input,
 			predicted_taxon=item.report_taxon,
+			next_taxon=item.classifier_result.next_taxon,
 			closest_genomes=item.closest_genomes,
 		)
 
