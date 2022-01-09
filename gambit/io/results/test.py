@@ -46,8 +46,10 @@ def check_json_results(file: TextIO,
 	cmp_json_attrs(data['genomeset'], results.genomeset, ['id', 'key', 'version', 'name', 'description'])
 	assert data['signaturesmeta'] == to_json(results.signaturesmeta)
 	assert data['gambit_version'] == results.gambit_version
-	assert data['timestamp'] == to_json(results.timestamp)
 	assert data['extra'] == results.extra
+
+	if strict:
+		assert data['timestamp'] == to_json(results.timestamp)
 
 	for item, item_data in zip(results.items, data['items']):
 		query = item_data['query']

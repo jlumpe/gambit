@@ -11,8 +11,9 @@ import numpy as np
 
 from gambit.cli.test import invoke_cli
 from gambit.io.results.base import export_to_buffer
-from gambit.io.results.json import JSONResultsExporter
-from gambit.io.results.csv import CSVResultsExporter
+from gambit.io.results.test import check_json_results, check_csv_results
+from gambit.query import QueryInput
+from gambit.util.misc import zip_strict
 
 
 @pytest.fixture()
@@ -68,98 +69,20 @@ def make_args(query_files=None, sigfile=None, db=None, output=None, outfmt=None,
 	return args
 
 
-def check_results(results_file,
-                  query_files,
-                  out_fmt,
-                  ref_results,
-                  check_input_path=False,
-                  input_labels=None,
-                  ):
-	"""Check results output matches reference QueryResults object.
-
-	Detailed checks of output format are already present in tests for exporter classes, just check
-	that the exported data matches an export of the reference results.
-	"""
+def check_results(results_file, out_fmt,ref_results):
+	"""Check results output matches reference QueryResults object."""
 	if out_fmt == 'json':
-		_check_results_json(results_file, query_files, ref_results, check_input_path=check_input_path, input_labels=input_labels)
+		with open(results_file) as fh:
+			check_json_results(fh, ref_results, strict=False)
 	elif out_fmt == 'csv':
-		_check_results_csv(results_file, query_files, ref_results, check_input_path=check_input_path, input_labels=input_labels)
+		with open(results_file) as fh:
+			check_csv_results(fh, ref_results, strict=False)
 	else:
 		raise ValueError(f'Invalid out_fmt {out_fmt!r}')
 
-def _check_results_json(results_file,
-                        query_files,
-                        ref_results,
-                        check_input_path=False,
-                        input_labels=None,
-                        ):
-	with results_file.open() as f:
-		data = json.load(f)
-
-	# Equivalent data for reference results
-	buf = export_to_buffer(ref_results, JSONResultsExporter())
-	ref_data = json.load(buf)
-
-	assert len(data['items']) == len(query_files)
-
-	for key in ['genomeset', 'signaturesmeta', 'extra']:
-		assert data[key] == ref_data[key]
-
-	# for item, ref_item, query_file in zip_strict(data['items'], ref_data['items'], query_files):
-	for i, item in enumerate(data['items']):
-		if check_input_path:
-			assert item['query']['path'] == str(query_files[i].path)
-		if input_labels is not None:
-			assert item['query']['name'] == input_labels[i]
-		assert item['query']['format'] == query_files[i].format
-
-		ref_item = ref_data['items'][i]
-		assert item['predicted_taxon'] == ref_item['predicted_taxon']
-		assert item['closest_genome'] == ref_item['closest_genome']
-		assert np.isclose(item['closest_genome_distance'], ref_item['closest_genome_distance'])
-
-def _check_results_csv(results_file,
-                       query_files,
-                       ref_results,
-                       check_input_path=False,
-                       input_labels=None,
-                       ):
-	with results_file.open() as f:
-		rows = list(DictReader(f))
-
-	buf = export_to_buffer(ref_results, CSVResultsExporter())
-	ref_rows = list(DictReader(buf))
-
-	assert len(rows) == len(ref_rows)
-
-	cmp_cols = [
-		'predicted.name',
-		'predicted.rank',
-		'predicted.ncbi_id',
-		'predicted.threshold',
-		'closest.description',
-	]
-
-	# for row, ref_row, file in zip_strict(rows, ref_rows, query_files):
-	for i, row in enumerate(rows):
-		if check_input_path:
-			assert row['query.path'] == str(query_files[i].path)
-		if input_labels is not None:
-			assert row['query.name'] == input_labels[i]
-
-		assert np.isclose(float(row['closest.distance']), float(ref_rows[i]['closest.distance']))
-
-		for key in cmp_cols:
-			assert row[key] == ref_rows[i][key]
-
 
 @pytest.mark.parametrize('out_fmt', ['csv', 'json'])
-def test_full_query(testdb_files,
-                    query_files,
-                    results,
-                    out_fmt,
-                    tmp_path,
-                    ):
+def test_full_query(testdb_files, results, query_files, out_fmt, tmp_path):
 	"""Run a full query using the command line interface."""
 
 	results_file = tmp_path / ('results.' + out_fmt)
@@ -175,19 +98,18 @@ def test_full_query(testdb_files,
 	result = invoke_cli(args)
 	assert result.exit_code == 0
 
-	check_results(results_file, query_files, out_fmt, results)
+	check_results(results_file, out_fmt, results)
 
 
-def test_sigfile(testdb_files,
-                 query_files,
-                 testdb_query_signatures,
-                 results,
-                 tmp_path,
-                 ):
+@pytest.mark.parametrize('out_fmt', ['csv', 'json'])
+def test_sigfile(testdb_files, testdb_query_signatures, results, out_fmt, tmp_path):
 	"""Test using signature file instead of parsing genome files."""
 
-	out_fmt = 'csv'
 	results_file = tmp_path / ('results.' + out_fmt)
+
+	# Modify results object inputs to match signature file
+	for item, id_ in zip_strict(results.items, testdb_query_signatures.ids):
+		item.input = QueryInput(id_)
 
 	args = make_args(
 		sigfile=testdb_files['query_signatures'],
@@ -200,11 +122,4 @@ def test_sigfile(testdb_files,
 	result = invoke_cli(args)
 	assert result.exit_code == 0
 
-	check_results(
-		results_file,
-		query_files,
-		out_fmt,
-		results,
-		check_input_path=False,
-		input_labels=testdb_query_signatures.ids,
-	)
+	check_results(results_file, out_fmt, results)
