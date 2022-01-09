@@ -12,6 +12,7 @@ from csv import DictReader
 
 from gambit.seq import SequenceFile
 from gambit.db import load_db_from_dir
+from gambit.db.models import reportable_taxon
 from gambit.query import QueryParams, query_parse
 from gambit.io.results.archive import ResultsArchiveWriter
 from gambit.util.misc import zip_strict
@@ -66,7 +67,7 @@ def check_results(queries, results):
 				assert clsresult.primary_match == clsresult.closest_match
 				assert predicted is clsresult.primary_match.matched_taxon
 
-			assert item.report_taxon is (predicted if predicted.report else predicted.parent)
+			assert item.report_taxon is reportable_taxon(predicted)
 
 		else:
 			assert predicted is None

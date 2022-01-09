@@ -3,7 +3,7 @@
 import json
 from typing import Union, IO, Any
 
-from attr import attrs, attrib, asdict
+from attr import attrs, attrib, asdict, has as has_attrs
 from sqlalchemy.orm import Session
 
 from gambit.query import QueryResultItem, QueryResults
@@ -86,7 +86,7 @@ class ResultsArchiveReader:
 			else:
 				return self._from_json(unwrap_optional(cls), data, ctx)
 
-		if hasattr(cls, '__attrs_attrs__'):
+		if has_attrs(cls):
 			return self._attrs_from_json(cls, data, ctx)
 		else:
 			return gjson.from_json(data, cls)
