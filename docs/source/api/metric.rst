@@ -1,5 +1,5 @@
-Metric
-======
+Distance Metric
+===============
 
 gambit.metric
 -------------
