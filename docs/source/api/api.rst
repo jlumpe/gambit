@@ -9,5 +9,6 @@ Python API
    database
    query
    io
+   results
    cli
    misc

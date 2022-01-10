@@ -127,7 +127,7 @@ def testdb_results(request, testdb_files, testdb_session):
 	to the session object until teardown or else it may be garbage collected,
 	which would render any ORM instances in the results object invalid.
 	"""
-	from gambit.io.results.archive import ResultsArchiveReader
+	from gambit.results.archive import ResultsArchiveReader
 
 	session = testdb_session()
 	reader = ResultsArchiveReader(session)

@@ -15,7 +15,7 @@ from gambit.seq import SequenceFile
 from gambit.db import load_db_from_dir
 from gambit.db.models import reportable_taxon
 from gambit.query import QueryParams, query_parse
-from gambit.io.results.archive import ResultsArchiveWriter
+from gambit.results.archive import ResultsArchiveWriter
 from gambit.util.misc import zip_strict
 
 

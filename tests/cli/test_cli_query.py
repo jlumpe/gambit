@@ -2,16 +2,12 @@
 Test the 'gambit query' CLI command using the testdb_210818 database.
 """
 
-import json
-from csv import DictReader
 from copy import copy
 
 import pytest
-import numpy as np
 
 from gambit.cli.test import invoke_cli
-from gambit.io.results.base import export_to_buffer
-from gambit.io.results.test import check_json_results, check_csv_results
+from gambit.results.test import check_json_results, check_csv_results
 from gambit.query import QueryInput
 from gambit.util.misc import zip_strict
 

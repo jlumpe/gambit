@@ -11,15 +11,15 @@ from gambit.sigs import load_signatures
 
 def get_exporter(outfmt: str):
 	if outfmt == 'csv':
-		from gambit.io.results.csv import CSVResultsExporter
+		from gambit.results.csv import CSVResultsExporter
 		return CSVResultsExporter()
 
 	if outfmt == 'json':
-		from gambit.io.results.json import JSONResultsExporter
+		from gambit.results.json import JSONResultsExporter
 		return JSONResultsExporter()
 
 	if outfmt == 'archive':
-		from gambit.io.results.archive import ResultsArchiveWriter
+		from gambit.results.archive import ResultsArchiveWriter
 		return ResultsArchiveWriter(install_info=True)
 
 	assert 0
