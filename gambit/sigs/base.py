@@ -7,7 +7,7 @@ from attr import attrs, attrib
 from gambit.kmers import KmerSpec
 from gambit._cython.metric import BOUNDS_DTYPE
 from gambit.util.indexing import AdvancedIndexingMixin
-from gambit.io import FilePath
+from gambit.util.io import FilePath
 
 
 #: Type for k-mer signatures (k-mer sets in sparse coordinate format)

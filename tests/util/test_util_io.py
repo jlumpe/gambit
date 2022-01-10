@@ -1,15 +1,15 @@
-"""Test gambit.io.util"""
+"""Test gambit.util.io."""
 
 from pathlib import Path
 
 import pytest
 import numpy as np
 
-from gambit.io import util
+import gambit.util.io as ioutil
 
 
 class TestOpenCompressed:
-	"""Test gambit.io.util.open_compressed."""
+	"""Test open_compressed()"""
 
 	@pytest.fixture(scope='class')
 	def text_data(self):
@@ -17,7 +17,7 @@ class TestOpenCompressed:
 		random = np.random.RandomState()
 		return random.randint(32, 128, size=1000, dtype='b').tobytes()
 
-	@pytest.fixture(scope='class', params=list(util.COMPRESSED_OPENERS))
+	@pytest.fixture(scope='class', params=list(ioutil.COMPRESSED_OPENERS))
 	def compression(self, request):
 		"""Compression method string."""
 		return request.param
@@ -35,7 +35,7 @@ class TestOpenCompressed:
 		else:
 			to_write = text_data
 
-		with util.open_compressed(compression, file.strpath, mode) as fobj:
+		with ioutil.open_compressed(compression, file.strpath, mode) as fobj:
 			fobj.write(to_write)
 
 		return file
@@ -48,7 +48,7 @@ class TestOpenCompressed:
 	def test_read(self, mode, binary, text_data, compression, text_file):
 		"""Check that the file is readable and its contents match what was written."""
 
-		with util.open_compressed(compression, text_file.strpath, mode) as fobj:
+		with ioutil.open_compressed(compression, text_file.strpath, mode) as fobj:
 			contents = fobj.read()
 
 		if binary:
@@ -90,7 +90,7 @@ class TestClosingIterator:
 		iterable = (int(line.strip()) for line in fobj)
 
 		# Create ClosingIterator object
-		return util.ClosingIterator(iterable, fobj)
+		return ioutil.ClosingIterator(iterable, fobj)
 
 	def test_close_on_finish(self, iterator, fobj):
 		"""Check that the stream gets closed when the iterator runs out."""
@@ -131,14 +131,14 @@ class TestMaybeOpen:
 	def test_with_path(self, tmpdir, pathtype):
 		path = pathtype(tmpdir / 'test.txt')
 
-		with util.maybe_open(path, 'w') as f:
+		with ioutil.maybe_open(path, 'w') as f:
 			assert not f.closed
 			assert f.mode == 'w'
 			f.write('test')
 
 		assert f.closed
 
-		with util.maybe_open(path, 'r') as f:
+		with ioutil.maybe_open(path, 'r') as f:
 			assert not f.closed
 			assert f.mode == 'r'
 			assert f.read() == 'test'
@@ -147,7 +147,7 @@ class TestMaybeOpen:
 
 	def test_with_fileobj(self, tmpdir):
 		with open(tmpdir / 'test.txt', 'w') as f:
-			with util.maybe_open(f) as f2:
+			with ioutil.maybe_open(f) as f2:
 				assert f2 is f
 
 			assert not f.closed

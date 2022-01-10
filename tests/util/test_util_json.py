@@ -1,4 +1,4 @@
-"""Test gambit.io.json."""
+"""Test gambit.util.json."""
 
 from pathlib import Path
 from datetime import date, datetime
@@ -7,7 +7,7 @@ import pytest
 import numpy as np
 from attr import attrs, attrib
 
-import gambit.io.json as gjson
+import gambit.util.json as gjson
 
 
 def roundtrip(obj, cls=None, checktype=True):

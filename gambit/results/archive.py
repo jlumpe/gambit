@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from gambit.query import QueryResultItem, QueryResults
 from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome, Genome
-import gambit.io.json as gjson
-from gambit.io.util import FilePath, maybe_open
+import gambit.util.json as gjson
+from gambit.util.io import FilePath, maybe_open
 from gambit.util.misc import singledispatchmethod, type_singledispatchmethod
 from gambit.util.typing import is_optional, unwrap_optional
 from .base import asdict_default, BaseJSONResultsExporter

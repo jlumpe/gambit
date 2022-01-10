@@ -10,7 +10,7 @@ from .base import SignatureArray, ConcatenatedSignatureArray, AbstractSignatureA
 	ReferenceSignatures
 from gambit.kmers import KmerSpec
 from gambit._cython.metric import BOUNDS_DTYPE
-from gambit.io.util import FilePath
+from gambit.util.io import FilePath
 
 
 #: Name of HDF5 group attribute which both stores the format version and also identifies the group

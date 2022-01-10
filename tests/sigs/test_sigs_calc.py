@@ -11,7 +11,7 @@ from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_sign
 from gambit.kmers import KmerSpec, index_to_kmer
 from gambit.seq import SEQ_TYPES, revcomp, SequenceFile
 from gambit.test import fill_bytearray, make_kmer_seq, make_kmer_seqs, convert_seq
-import gambit.io.util as ioutil
+import gambit.util.io as ioutil
 from gambit.sigs import sigarray_eq
 from gambit.util.progress import check_progress
 

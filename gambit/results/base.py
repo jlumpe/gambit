@@ -5,8 +5,8 @@ from io import StringIO
 
 from attr import asdict, attrs, attrib
 
-from gambit.io.util import FilePath, maybe_open
-import gambit.io.json as gjson
+from gambit.util.io import FilePath, maybe_open
+import gambit.util.json as gjson
 from gambit.query import QueryResults
 
 

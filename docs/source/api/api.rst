@@ -8,7 +8,6 @@ Python API
    metric
    database
    query
-   io
    results
    cli
    misc

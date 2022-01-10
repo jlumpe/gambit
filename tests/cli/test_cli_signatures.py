@@ -6,7 +6,7 @@ import pytest
 import numpy as np
 
 from gambit.cli.test import invoke_cli
-import gambit.io.json as gjson
+import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, load_signatures
 
 

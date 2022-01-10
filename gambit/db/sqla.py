@@ -5,8 +5,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.types import TypeDecorator, String
 
-import gambit.io.json as gjson
-from gambit.io import FilePath
+import gambit.util.json as gjson
+from gambit.util.io import FilePath
 
 
 class ReadOnlySession(Session):

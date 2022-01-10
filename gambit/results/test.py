@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
-from gambit.io.json import to_json
+from gambit.util.json import to_json
 from gambit.query import QueryResults
 from gambit.util.misc import zip_strict
 

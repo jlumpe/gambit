@@ -5,7 +5,7 @@ from typing import Dict, Any, List, Union, Iterable, TextIO
 
 from .base import AbstractResultsExporter
 from gambit.query import QueryResultItem, QueryResults
-from gambit.io.util import FilePath, maybe_open
+from gambit.util.io import FilePath, maybe_open
 
 
 def getattr_nested(obj, attrs: Union[str, Iterable[str]], pass_none=False):

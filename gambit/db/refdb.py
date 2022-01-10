@@ -6,7 +6,7 @@ from sqlalchemy.orm import object_session
 from .models import ReferenceGenomeSet, AnnotatedGenome, genomes_by_id_subset, only_genomeset
 from .sqla import file_sessionmaker
 from gambit.sigs.base import ReferenceSignatures, load_signatures
-from gambit.io.util import FilePath
+from gambit.util.io import FilePath
 
 
 class ReferenceDatabase:

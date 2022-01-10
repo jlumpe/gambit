@@ -6,7 +6,7 @@ import shutil
 from typing import Dict, Any
 
 import gambit
-from gambit.io.util import FilePath
+from gambit.util.io import FilePath
 from gambit.util.misc import zip_strict
 
 

@@ -5,7 +5,7 @@ import click
 
 from .common import CLIContext, seq_file_params, get_seq_files, print_table
 from gambit.kmers import KmerSpec
-import gambit.io.json as gjson
+import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
 from gambit.util.progress import ClickProgressMeter

@@ -18,8 +18,8 @@ from Bio.Seq import Seq
 from attr import attrs, attrib
 
 from gambit._cython.kmers import revcomp
-from gambit.io import FilePath
-from gambit.io.util import open_compressed, ClosingIterator
+from gambit.util.io import FilePath
+from gambit.util.io import open_compressed, ClosingIterator
 
 
 # Byte representations of the four nucleotide codes in the order used for
@@ -93,7 +93,7 @@ class SequenceFile:
 		:func:`Bio.SeqIO.parse`, e.g. ``'fasta'``.
 	compression
 		String describing compression method of the file, e.g. ``'gzip'``. None
-		means no compression. See :func:`gambit.io.util.open_compressed`.
+		means no compression. See :func:`gambit.util.io.open_compressed`.
 	"""
 	path: Path = attrib(converter=Path)
 	format: str = attrib()
@@ -127,7 +127,7 @@ class SequenceFile:
 
 		Returns iterator over sequence data in file. File is parsed lazily,
 		and so must be kept open. The returned iterator is of type
-		:class:`gambit.io.util.ClosingIterator` so it will close the file stream
+		:class:`gambit.util.io.ClosingIterator` so it will close the file stream
 		automatically when it finishes. It may also be used as a context manager
 		that closes the stream on exit. You may also close the stream explicitly
 		using the iterator's ``close`` method.
@@ -139,7 +139,7 @@ class SequenceFile:
 
 		Returns
 		-------
-		gambit.io.util.ClosingIterator
+		gambit.util.io.ClosingIterator
 			Iterator yielding :class:`Bio.SeqIO.SeqRecord` instances for each sequence in the file.
 		"""
 

@@ -20,6 +20,18 @@ gambit.util.typing
 .. automodule:: gambit.util.typing
 
 
+gambit.util.io
+--------------
+
+.. automodule:: gambit.util.io
+
+
+gambit.util.json
+----------------
+
+.. automodule:: gambit.util.json
+
+
 gambit.util.indexing
 --------------------
 
