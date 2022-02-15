@@ -24,20 +24,12 @@ def _compressed_opener(compression):
 def _open_gzip(path, mode, **kwargs):
 	"""Opener for gzip-compressed files."""
 	import gzip
-
-	if mode is None:
-		mode = 'rt'
-
-	# gzip defaults to binary mode, change to text instead of not specified
-	if mode[-1] not in 'tb':
-		mode += 't'
-
 	return gzip.open(path, mode=mode, **kwargs)
 
 
 def open_compressed(compression: Optional[str],
                     path: FilePath,
-                    mode: Optional[str] = None,
+                    mode: str = 'rt',
                     **kwargs,
                     ) -> IO:
 	"""Open a file with compression method specified by a string.
@@ -50,7 +42,8 @@ def open_compressed(compression: Optional[str],
 	path
 		Path of file to open. May be string or path-like object.
 	mode : str
-		Mode to open file in - same as in :func:`open`.
+		Mode to open file in - similar to :func:`open`. Must be exactly two characters, the first
+		in ``rwax`` and the second in``tb``.
 	\\**kwargs
 		Additional text-specific keyword arguments identical to the following :func:`open`
 		arguments: ``encoding``, ``errors``, and ``newlines``.
@@ -60,6 +53,11 @@ def open_compressed(compression: Optional[str],
 	IO
 		Open file object.
 	"""
+	if not(len(mode) == 2 and mode[0] in 'rwax' and mode[1] in 'tb'):
+		msg = f'Invalid mode {mode!r}'
+		if mode in 'rwax':
+			msg += ' (must specify either binary or text mode)'
+		raise ValueError(msg)
 
 	try:
 		opener = COMPRESSED_OPENERS[compression]

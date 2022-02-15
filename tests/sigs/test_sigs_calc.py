@@ -148,7 +148,7 @@ class TestCalcFileSignatures:
 		for i, (records, sig) in enumerate(record_sets):
 			file = SequenceFile(tmp_path / f'{i + 1}.fasta', format, compression)
 
-			with file.open('w') as f:
+			with file.open('wt') as f:
 				SeqIO.write(records, f, format)
 
 			files.append(file)

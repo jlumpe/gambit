@@ -172,7 +172,7 @@ class TestSequenceFile:
 		"""Test the parse() method, ensure we get the right records back."""
 
 		# Write pre-formatted contents to file
-		with info.open('w') as fobj:
+		with info.open('wt') as fobj:
 			fobj.write(file_contents)
 
 		# Parse the sequences from it
