@@ -69,7 +69,7 @@ def check_json_results(file: TextIO,
 	# assert data['params'] == to_json(results.params)
 	cmp_json_attrs(data['genomeset'], results.genomeset, ['id', 'key', 'version', 'name', 'description'])
 	assert data['signaturesmeta'] == to_json(results.signaturesmeta)
-	assert data['gambit_version'] == results.gambit_version
+	# assert data['gambit_version'] == results.gambit_version
 	assert data['extra'] == results.extra
 
 	if strict:
