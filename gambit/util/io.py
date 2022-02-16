@@ -1,6 +1,7 @@
 """Utility code for reading/writing data files."""
 
 import os
+import io
 from typing import Union, Optional, IO, ContextManager, Iterable, TypeVar
 from contextlib import nullcontext
 
@@ -25,6 +26,46 @@ def _open_gzip(path, mode, **kwargs):
 	"""Opener for gzip-compressed files."""
 	import gzip
 	return gzip.open(path, mode=mode, **kwargs)
+
+
+@_compressed_opener('auto')
+def _open_auto(path, mode, **kwargs):
+	"""Open file for reading with compression determined automatically."""
+
+	if mode[0] != 'r':
+		raise ValueError('Automatic compression detection only supported for reading.')
+
+	file = open(path, 'rb')
+
+	try:
+		compression = guess_compression(file)
+		file.seek(0)
+
+		if compression is None:
+			binary = file
+		elif compression == 'gzip':
+			import gzip
+			binary = gzip.GzipFile(fileobj=file, mode='rb')
+		else:
+			assert 0
+
+		return io.TextIOWrapper(binary, **kwargs) if mode[1] == 't' else binary
+
+	except Exception:
+		file.close()
+
+
+def guess_compression(fobj: io.IOBase) -> Optional[str]:
+	"""Guess the compression mode of an readable file-like object.
+
+	Assumes the current position is at the beginning of the file.
+	"""
+	magic = fobj.read(2)
+
+	if magic == b'\x1f\x8b':
+		return 'gzip'
+	else:
+		return None
 
 
 def open_compressed(compression: Optional[str],

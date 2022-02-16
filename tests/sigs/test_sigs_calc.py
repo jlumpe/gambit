@@ -136,7 +136,7 @@ class TestCalcFileSignatures:
 	def format(self, request):
 		return request.param
 
-	@pytest.fixture(scope='class', params=list(ioutil.COMPRESSED_OPENERS))
+	@pytest.fixture(scope='class', params=[None, 'gzip'])
 	def compression(self, request):
 		return request.param
 

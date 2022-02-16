@@ -17,7 +17,7 @@ class TestOpenCompressed:
 		random = np.random.RandomState()
 		return random.randint(32, 128, size=1000, dtype='b').tobytes()
 
-	@pytest.fixture(scope='class', params=list(ioutil.COMPRESSED_OPENERS))
+	@pytest.fixture(scope='class', params=[None, 'gzip'])
 	def compression(self, request):
 		"""Compression method string."""
 		return request.param
@@ -75,6 +75,23 @@ class TestOpenCompressed:
 		for mode in ['r', 'w', 'a', 't', 'b', 'abc', '']:
 			with pytest.raises(ValueError):
 				ioutil.open_compressed(compression, 'foo.txt', mode=mode)
+
+	@pytest.mark.parametrize('binary', [True, False])
+	def test_read_auto(self, binary, text_data, text_file):
+		"""Test automatic determination of compression method."""
+
+		mode = 'rb' if binary else 'rt'
+
+		with ioutil.open_compressed('auto', text_file, mode) as fobj:
+			contents = fobj.read()
+
+		if binary:
+			assert isinstance(contents, bytes)
+			assert contents == text_data
+
+		else:
+			assert isinstance(contents, str)
+			assert contents == text_data.decode('ascii')
 
 
 class TestClosingIterator:

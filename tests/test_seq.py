@@ -86,7 +86,7 @@ class TestSequenceFile:
 		"""SequenceFile.format attribute."""
 		return request.param
 
-	@pytest.fixture(params=list(ioutil.COMPRESSED_OPENERS), scope='class')
+	@pytest.fixture(params=[None, 'gzip'], scope='class')
 	def compression(self, request):
 		"""SequenceFile.compression attribute."""
 		return request.param
