@@ -1,14 +1,15 @@
-from typing import Optional, TextIO
+from typing import Optional, TextIO, List
 import sys
 
 import click
 
-from .common import CLIContext, seq_file_params, get_seq_files, print_table
+from .common import CLIContext, genome_files_arg, print_table
 from gambit.kmers import KmerSpec
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
 from gambit.util.progress import ClickProgressMeter
+from gambit.seq import SequenceFile
 
 
 def format_none(value):
@@ -95,7 +96,7 @@ def info(ctx: CLIContext, file: str, json: bool, pretty: bool, ids: bool):
 
 
 @signatures_group.command()
-@seq_file_params()
+@genome_files_arg()
 @click.option(
 	'-o', '--output',
 	required=True,
@@ -123,6 +124,7 @@ def info(ctx: CLIContext, file: str, json: bool, pretty: bool, ids: bool):
 )
 @click.pass_obj
 def create(ctxobj: CLIContext,
+           files: List[str],
            output: str,
            prefix: Optional[str],
            k: Optional[int],
@@ -132,7 +134,7 @@ def create(ctxobj: CLIContext,
            ):
 	"""Create k-mer signatures from genome sequences."""
 
-	seqfiles = get_seq_files(kw)
+	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 
 	if prefix is not None or k is not None:
 		# KmerSpec from options

@@ -72,12 +72,11 @@ class TestCreateCommand:
 
 		def make_args(opts, root_args=None):
 			args = [] if root_args is None else root_args
-			args += ['signatures', 'create']
 			args += [
+				'signatures', 'create',
 				f'--output={outfile}',
-				'--seqfmt=fasta',
+				*opts,
 			]
-			args += opts
 			args += [str(f.path) for f in seq_files]
 			return args
 

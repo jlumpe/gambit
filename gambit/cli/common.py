@@ -10,7 +10,6 @@ from gambit.db import locate_db_files, ReferenceDatabase
 from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
 from gambit.sigs.base import ReferenceSignatures, load_signatures
-from gambit.seq import SequenceFile
 
 
 class CLIContext:
@@ -146,14 +145,6 @@ class CLIContext:
 		return ReferenceDatabase(gset, self.signatures)
 
 
-def seqfmt_option():
-	return click.option(
-		'-s', '--seqfmt',
-		type=click.Choice(['fasta']),
-		default='fasta',
-		help='Format of sequence files. Currently only FASTA is supported.',
-	)
-
 def genome_files_arg():
 	return click.argument(
 		'files',
@@ -161,20 +152,6 @@ def genome_files_arg():
 		type=click.Path(exists=True, dir_okay=False),
 		metavar='GENOMES...',
 	)
-
-def seq_file_params():
-	"""Decorator which adds sequence file parameters to command."""
-
-	def decorator(f):
-		seqfmt_dec = seqfmt_option()
-		genomes_dec = genome_files_arg()
-		return seqfmt_dec(genomes_dec(f))
-
-	return decorator
-
-def get_seq_files(params: Dict[str, Any]) -> List[SequenceFile]:
-	"""Get list of sequence files from command parameters."""
-	return SequenceFile.from_paths(params['files'], params['seqfmt'])
 
 
 def print_table(rows: Sequence[Sequence], colsep: str = ' ', left: str = '', right: str = ''):

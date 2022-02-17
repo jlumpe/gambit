@@ -1,12 +1,13 @@
 import sys
-from typing import TextIO, Optional
+from typing import TextIO, Optional, List
 
 import click
 
-from .common import CLIContext, seq_file_params, get_seq_files
+from .common import CLIContext, genome_files_arg
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import progress_config
 from gambit.sigs import load_signatures
+from gambit.seq import SequenceFile
 
 
 def get_exporter(outfmt: str):
@@ -26,7 +27,7 @@ def get_exporter(outfmt: str):
 
 
 @click.command(name='query')
-@seq_file_params()
+@genome_files_arg()
 @click.option(
 	'-o', '--output',
 	type=click.File(mode='w'),
@@ -51,16 +52,16 @@ def get_exporter(outfmt: str):
 )
 @click.pass_obj
 def query_cmd(ctxobj: CLIContext,
+              files: List[str],
               sigfile: Optional[str],
               output: TextIO,
               outfmt: str,
               strict: bool,
-              **kw,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 
 	db = ctxobj.get_database()
-	seqfiles = get_seq_files(kw)
+	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 	params = QueryParams(classify_strict=strict)
 	exporter = get_exporter(outfmt)
 	pconf = progress_config('click', file=sys.stderr)
