@@ -1,5 +1,11 @@
 # Changelog
 
+
+## 0.5.0
+
+* CLI
+  * Minor changes to options of subcommands in `signatures` group.
+
 ## 0.4.0
 
 * New features

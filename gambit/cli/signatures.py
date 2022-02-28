@@ -38,24 +38,27 @@ def signatures_group():
 	is_flag=True,
 	help='Write IDs of signatures in file, one per line.',
 )
+@click.option(
+	'-d', 'use_db',
+	is_flag=True,
+	help='Use signatures from reference database.',
+)
 @click.argument(
 	'file',
 	type=click.Path(exists=True, dir_okay=False),
 	required=False,
 )
 @click.pass_obj
-def info(ctx: CLIContext, file: str, json: bool, pretty: bool, ids: bool):
-	"""Inspect GAMBIT signature files.
+def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use_db: bool):
+	"""Inspect GAMBIT signature files."""
 
-	If FILE is not given will use signatures from reference database defined at the root level.
-	"""
-
-	if file is not None:
+	if use_db == (file is not None):
+		raise click.ClickException('Must specify exactly one of FILE or -d')
+	elif file is not None:
 		sigs = load_signatures(file)
-	elif ctx.has_signatures:
-		sigs = ctx.signatures
 	else:
-		raise click.ClickException('Must give a value for FILE or specify a reference database.')
+		ctxobj.require_signatures()
+		sigs = ctxobj.signatures
 
 	if ids:
 		if json:
@@ -113,55 +116,79 @@ def info(ctx: CLIContext, file: str, json: bool, pretty: bool, ids: bool):
 	help='Number of nucleotides to recognize AFTER prefix',
 )
 @click.option(
-	'-m', '--meta-json', 'meta_json',
+	'-m', '--meta-json', 'meta_file',
 	type=click.File('r'),
 	help='JSON file containing metadata to attach to file.',
 )
 @click.option(
-	'-i', '--ids',
+	'-i', '--ids', 'ids_file',
 	type=click.File('r'),
 	help='File containing genome IDs (one per line).',
 )
+@click.option(
+	'-d', '--db-params',
+	is_flag=True,
+	help='Use k/prefix from reference database.'
+)
+# Dump parsed CLI parameters and exit. For testing.
+@click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_obj
 def create(ctxobj: CLIContext,
            files: List[str],
            output: str,
            prefix: Optional[str],
            k: Optional[int],
-           meta_json: Optional[TextIO],
-           ids: Optional[TextIO],
-           **kw,
+           meta_file: Optional[TextIO],
+           ids_file: Optional[TextIO],
+           db_params: bool,
+           dump_params: bool,
            ):
 	"""Create k-mer signatures from genome sequences."""
 
 	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 
+	# Get kmerspec
 	if prefix is not None or k is not None:
 		# KmerSpec from options
-		if not (prefix is not None and k is not None):
+		if prefix is None or k is None:
 			raise click.ClickException('Must specify values for both -k and --prefix arguments.')
+		if db_params:
+			raise click.ClickException('The -k/--prefix and -d/--db-params options are mutually exclusive.')
 
 		kspec = KmerSpec(k, prefix)
 
-	elif ctxobj.has_signatures:
+	elif db_params:
 		# KmerSpec from current reference database
+		ctxobj.require_signatures()
 		kspec = ctxobj.signatures.kmerspec
 
 	else:
 		raise click.ClickException('Must give values for the -k and --prefix options or specify a reference database.')
 
-	if meta_json is not None:
-		meta = gjson.load(meta_json, SignaturesMeta)
+	# Get metadata
+	if meta_file is not None:
+		meta = gjson.load(meta_file, SignaturesMeta)
 	else:
 		meta = None
 
-	if ids is not None:
-		ids = [line.strip() for line in ids.readlines()]
+	if ids_file is not None:
+		ids = [line.strip() for line in ids_file.readlines()]
 		if len(ids) != len(seqfiles):
 			raise click.ClickException(f'Number of IDs ({len(ids)}) does not match number of genomes ({len(seqfiles)}).')
 
 	else:
 		ids = [f.path.name for f in seqfiles]
+
+	# Dump parameters
+	if dump_params:
+		params = dict(
+			kmerspec=kspec,
+			files=files,
+			meta=meta,
+			ids=ids,
+		)
+		gjson.dump(params, sys.stdout)
+		return
 
 	sigs = calc_file_signatures(kspec, seqfiles, progress=ClickProgressMeter)
 	sigs = AnnotatedSignatures(sigs, ids, meta)

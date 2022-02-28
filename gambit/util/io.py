@@ -208,3 +208,16 @@ def maybe_open(file_or_path: Union[FilePath, IO], mode: str = 'r', **open_kw) ->
 		# Is a path, just open
 		return open(path, mode, **open_kw)
 
+
+def write_lines(lines: Iterable, file_or_path: Union[FilePath, IO]):
+	"""Write strings to text file, one per line.
+
+	Parameters
+	----------
+	lines
+		Iterable of lines to write.
+	file_or_path
+		A path-like object or open file object.
+	"""
+	with maybe_open(file_or_path, 'w') as file:
+		file.writelines(str(line) + '\n' for line in lines)

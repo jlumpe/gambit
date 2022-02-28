@@ -8,13 +8,21 @@ import numpy as np
 from gambit.cli.test import invoke_cli
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, load_signatures
+from gambit.util.io import write_lines
 
 
 class TestInfoCommand:
 
+	@pytest.fixture(params=[False, True])
+	def use_db(self, request):
+		return request.param
+
 	@pytest.fixture()
-	def base_args(self, testdb_files):
-		return ['signatures', 'info', str(testdb_files['ref_signatures'])]
+	def base_args(self, testdb_files, use_db):
+		if use_db:
+			return [f'--db={testdb_files["root"]}', 'signatures', 'info', '-d']
+		else:
+			return ['signatures', 'info', str(testdb_files['ref_signatures'])]
 
 	def test_standard(self, base_args, testdb_signatures):
 		result = invoke_cli(base_args)
@@ -22,13 +30,8 @@ class TestInfoCommand:
 
 		# TODO: check
 
-	@pytest.mark.parametrize('use_ref_sigs', [False, True])
-	def test_json(self, use_ref_sigs, testdb_files, testdb_signatures):
-		if use_ref_sigs:
-			args = [f'--db={testdb_files["root"]}', 'signatures', 'info', '--json']
-		else:
-			args = ['signatures', 'info', str(testdb_files['ref_signatures']), '--json']
-
+	def test_json(self, base_args, testdb_signatures):
+		args = [*base_args, '--json']
 		result = invoke_cli(args)
 		assert result.exit_code == 0
 
@@ -37,11 +40,24 @@ class TestInfoCommand:
 		assert data['kmerspec'] == gjson.to_json(testdb_signatures.kmerspec)
 		assert data['metadata'] == gjson.to_json(testdb_signatures.meta)
 
-	def test_ids(self, base_args, testdb_signatures):
-		result = invoke_cli([*base_args, '-i'])
+	def test_ids(self, base_args, testdb_files, testdb_signatures):
+		args = [*base_args, '-i']
+		result = invoke_cli(args)
 		assert result.exit_code == 0
 
 		assert np.array_equal(result.stdout.splitlines(), testdb_signatures.ids)
+
+	def test_invalid(self, testdb_files):
+		assert invoke_cli(['signatures', 'info']).exit_code != 0
+
+		args = [
+			f'--db={testdb_files["root"]}',
+			'signatures',
+			'info',
+			'-d',
+			str(testdb_files['ref_signatures']),
+		]
+		assert invoke_cli(args).exit_code != 0
 
 
 class TestCreateCommand:
@@ -63,8 +79,7 @@ class TestCreateCommand:
 	@pytest.fixture()
 	def id_file(self, tmp_path):
 		p = tmp_path / 'ids.txt'
-		with open(p, 'w') as f:
-			f.writelines(id + '\n' for id in self.IDS)
+		write_lines(self.IDS, p)
 		return p
 
 	@pytest.fixture(name='make_args')
@@ -85,15 +100,15 @@ class TestCreateCommand:
 	@pytest.fixture(name='check_output')
 	def check_output_factory(self, outfile, seq_files, testdb_query_signatures):
 
-		def check_output(default_ids=True):
+		def check_output(ids=None):
 			out = load_signatures(outfile)
 
 			assert out.kmerspec == testdb_query_signatures.kmerspec
 			assert out[:] == testdb_query_signatures[:self.NGENOMES]
 
-			if default_ids:
-				expected = [f.path.name for f in seq_files]
-				assert np.array_equal(out.ids, expected)
+			if ids is None:
+				ids = [f.path.name for f in seq_files]
+			assert np.array_equal(out.ids, ids)
 
 			return out
 
@@ -134,43 +149,48 @@ class TestCreateCommand:
 		result = invoke_cli(args)
 		assert result.exit_code == 0
 
-		out = check_output(default_ids=False)
-		assert np.array_equal(out.ids, self.IDS)
+		out = check_output(self.IDS)
 		assert out.meta == metadata
 
-	def test_kspec_from_refdb(self, make_args, check_output, testdb_files):
+	def test_kspec_from_refdb(self, make_args, testdb_files, testdb_signatures):
 		"""Test with KmerSpec taken from reference database."""
-		args = make_args([], root_args=[f'--db={testdb_files["root"]}'])
-
+		args = make_args(['-d', '--dump-params'], [f'--db={testdb_files["root"]}'])
 		result = invoke_cli(args)
 		assert result.exit_code == 0
+		params = json.loads(result.stdout)
+		assert params['kmerspec'] == gjson.to_json(testdb_signatures.kmerspec)
 
-		check_output()
+		# Without specifying db in root command group
+		args = make_args(['-d', '--dump-params'])
+		result = invoke_cli(args)
+		assert result.exit_code != 0
 
 	def test_bad_kspec(self, kspec, make_args):
 		"""Test with KmerSpec incorrectly specified."""
 
 		# No -k, --prefix, or --db
 		args = make_args([])
-		result = invoke_cli(args)
-		assert result.exit_code != 0
+		assert invoke_cli(args).exit_code != 0
 
-		# Only -k
+		# Only -k/--prefix
 		args = make_args(['-k', str(kspec.k)])
-		result = invoke_cli(args)
-		assert result.exit_code != 0
-
-		# Only --prefix
+		assert invoke_cli(args).exit_code != 0
 		args = make_args(['--prefix', kspec.prefix_str])
-		result = invoke_cli(args)
-		assert result.exit_code != 0
+		assert invoke_cli(args).exit_code != 0
+
+		# Both both plus --db-params
+		args = make_args([
+			'-k', str(kspec.k),
+			f'--prefix={kspec.prefix_str}',
+			'-d',
+		])
+		assert invoke_cli(args).exit_code != 0
 
 	def test_ids_wrong_len(self, kspec, make_args, tmp_path):
 		"""Test number of IDs do not match query files."""
 
 		id_file = tmp_path / 'ids2.txt'
-		with open(id_file, 'w') as f:
-			f.writelines(id + '\n' for id in self.IDS[:-1])
+		write_lines(self.IDS[:-1], id_file)
 
 		args = make_args([
 			'-k', str(kspec.k),
