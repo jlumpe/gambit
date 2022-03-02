@@ -4,6 +4,7 @@
 ## 0.5.0
 
 * CLI
+  * Sequence files used as input to commands may be gzipped.
   * Minor changes to options of subcommands in `signatures` group.
 
 ## 0.4.0

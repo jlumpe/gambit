@@ -68,12 +68,12 @@ class TestCreateCommand:
 		return testdb_query_signatures.kmerspec
 
 	@pytest.fixture()
-	def seq_files(self, testdb_queries):
-		return [q['file'] for q in testdb_queries[:self.NGENOMES]]
-
-	@pytest.fixture()
 	def outfile(self, tmp_path):
 		return tmp_path / 'signatures.h5'
+
+	@pytest.fixture()
+	def seq_files(self, testdb_query_files):
+		return testdb_query_files[:self.NGENOMES]
 
 	@pytest.fixture(name='make_args')
 	def make_args_factory(self, outfile, seq_files, kspec):
@@ -112,6 +112,7 @@ class TestCreateCommand:
 
 		return check_output
 
+	@pytest.mark.parametrize('testdb_queries_gzipped', [False, True], indirect=True)
 	def test_basic(self, kspec, make_args, check_output):
 		"""Test with basic arguments."""
 		args = make_args()

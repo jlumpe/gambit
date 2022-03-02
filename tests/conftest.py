@@ -116,8 +116,51 @@ def testdb_queries(testdb, testdb_files):
 			path=genomes_dir / (row['name'] + '.fasta'),
 			format='fasta',
 		)
+		row['file_gz'] = SequenceFile(
+			path=genomes_dir / (row['name'] + '.fasta.gz'),
+			format='fasta',
+			compression='gzip',
+		)
 
 	return rows
+
+def ensure_testdb_queries_gz(testdb_queries):
+	"""Ensure gzipped versions of the testdb query files are available.
+
+	These aren't added to version control, so they are created the first time they are needed.
+	"""
+	import gzip
+
+	for item in testdb_queries:
+		dst = item['file_gz'].path
+		if dst.is_file():
+			continue
+
+		with open(item['file'].path) as f:
+			content = f.read()
+
+		with gzip.open(dst, 'wt') as f:
+			f.write(content)
+
+@pytest.fixture(params=[False])
+def testdb_queries_gzipped(request):
+	"""Whether to use the gzipped versions of the testdb query files.
+
+	By default only False is used, this can be overridden for specific test functions with
+	```
+	@pytest.mark.parametrize('testdb_query_files_gzipped, [False, True], indirect=True)
+	```
+	"""
+	return request.param
+
+@pytest.fixture()
+def testdb_query_files(testdb_queries, testdb_queries_gzipped):
+	if testdb_queries_gzipped:
+		col = 'file_gz'
+		ensure_testdb_queries_gz(testdb_queries)
+	else:
+		col = 'file'
+	return [q[col] for q in testdb_queries]
 
 @pytest.fixture(scope='session', params=['non_strict', 'strict'])
 def testdb_results(request, testdb_files, testdb_session):
