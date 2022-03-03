@@ -62,7 +62,6 @@ class TestInfoCommand:
 
 class TestCreateCommand:
 	NGENOMES = 10
-	IDS = [f'seq-{i}' for i in range(NGENOMES)]
 
 	@pytest.fixture()
 	def kspec(self, testdb_query_signatures):
@@ -76,22 +75,21 @@ class TestCreateCommand:
 	def outfile(self, tmp_path):
 		return tmp_path / 'signatures.h5'
 
-	@pytest.fixture()
-	def id_file(self, tmp_path):
-		p = tmp_path / 'ids.txt'
-		write_lines(self.IDS, p)
-		return p
-
 	@pytest.fixture(name='make_args')
-	def make_args_factory(self, outfile, seq_files):
+	def make_args_factory(self, outfile, seq_files, kspec):
 
-		def make_args(opts, root_args=None):
-			args = [] if root_args is None else root_args
+		def make_args(opts=(), root_args=(), with_kspec=True):
+			args = list(root_args)
 			args += [
 				'signatures', 'create',
 				f'--output={outfile}',
-				*opts,
 			]
+			if with_kspec:
+				args += [
+					'-k', str(kspec.k),
+					f'--prefix={kspec.prefix_str}',
+				]
+			args.extend(opts)
 			args += [str(f.path) for f in seq_files]
 			return args
 
@@ -104,7 +102,7 @@ class TestCreateCommand:
 			out = load_signatures(outfile)
 
 			assert out.kmerspec == testdb_query_signatures.kmerspec
-			assert out[:] == testdb_query_signatures[:self.NGENOMES]
+			assert out == testdb_query_signatures[:self.NGENOMES]
 
 			if ids is None:
 				ids = [f.path.name for f in seq_files]
@@ -116,18 +114,15 @@ class TestCreateCommand:
 
 	def test_basic(self, kspec, make_args, check_output):
 		"""Test with basic arguments."""
-		args = make_args([
-			'-k', str(kspec.k),
-			f'--prefix={kspec.prefix_str}',
-		])
-
+		args = make_args()
 		result = invoke_cli(args)
 		assert result.exit_code == 0
 
 		check_output()
 
-	def test_with_metadata(self, kspec, make_args, check_output, id_file, tmp_path):
+	def test_with_metadata(self, kspec, make_args, check_output, tmp_path):
 		"""Test with ids and metadata JSON added."""
+		# Metadata file
 		metadata = SignaturesMeta(
 			name='Test signatures',
 			version='0.0',
@@ -139,9 +134,13 @@ class TestCreateCommand:
 		with open(meta_file, 'w') as f:
 			gjson.dump(metadata, f)
 
+		# IDs file
+		ids = [f'seq-{i}' for i in range(self.NGENOMES)]
+		id_file = tmp_path / 'ids.txt'
+		write_lines(ids, id_file)
+
+		# Run
 		args = make_args([
-			'-k', str(kspec.k),
-			f'--prefix={kspec.prefix_str}',
 			f'--ids={id_file}',
 			f'--meta-json={meta_file}',
 		])
@@ -149,19 +148,23 @@ class TestCreateCommand:
 		result = invoke_cli(args)
 		assert result.exit_code == 0
 
-		out = check_output(self.IDS)
+		out = check_output(ids)
 		assert out.meta == metadata
 
 	def test_kspec_from_refdb(self, make_args, testdb_files, testdb_signatures):
 		"""Test with KmerSpec taken from reference database."""
-		args = make_args(['-d', '--dump-params'], [f'--db={testdb_files["root"]}'])
+		args = make_args(
+			['-d', '--dump-params'],
+			[f'--db={testdb_files["root"]}'],
+			with_kspec=False,
+		)
 		result = invoke_cli(args)
 		assert result.exit_code == 0
 		params = json.loads(result.stdout)
 		assert params['kmerspec'] == gjson.to_json(testdb_signatures.kmerspec)
 
 		# Without specifying db in root command group
-		args = make_args(['-d', '--dump-params'])
+		args = make_args(['-d', '--dump-params'], with_kspec=False)
 		result = invoke_cli(args)
 		assert result.exit_code != 0
 
@@ -169,34 +172,26 @@ class TestCreateCommand:
 		"""Test with KmerSpec incorrectly specified."""
 
 		# No -k, --prefix, or --db
-		args = make_args([])
+		args = make_args([], with_kspec=False)
 		assert invoke_cli(args).exit_code != 0
 
 		# Only -k/--prefix
-		args = make_args(['-k', str(kspec.k)])
+		args = make_args(['-k', str(kspec.k)], with_kspec=False)
 		assert invoke_cli(args).exit_code != 0
-		args = make_args(['--prefix', kspec.prefix_str])
+		args = make_args(['--prefix', kspec.prefix_str], with_kspec=False)
 		assert invoke_cli(args).exit_code != 0
 
 		# Both both plus --db-params
-		args = make_args([
-			'-k', str(kspec.k),
-			f'--prefix={kspec.prefix_str}',
-			'-d',
-		])
+		args = make_args(['-d'])
 		assert invoke_cli(args).exit_code != 0
 
 	def test_ids_wrong_len(self, kspec, make_args, tmp_path):
 		"""Test number of IDs do not match query files."""
 
+		ids = [f'seq-{i}' for i in range(self.NGENOMES - 1)]
 		id_file = tmp_path / 'ids2.txt'
-		write_lines(self.IDS[:-1], id_file)
+		write_lines(ids, id_file)
 
-		args = make_args([
-			'-k', str(kspec.k),
-			'--prefix', kspec.prefix_str,
-			'--ids', str(id_file)
-		])
-
+		args = make_args(['--ids', str(id_file)])
 		result = invoke_cli(args)
 		assert result.exit_code != 0
