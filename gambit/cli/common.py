@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Any, Sequence
+from typing import Optional, Sequence
 from pathlib import Path
 
 import click

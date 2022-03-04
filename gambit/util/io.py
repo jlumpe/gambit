@@ -1,8 +1,8 @@
 """Utility code for reading/writing data files."""
 
 import os
-import io
-from typing import Union, Optional, IO, ContextManager, Iterable, TypeVar
+from io import TextIOWrapper
+from typing import Union, Optional, IO, BinaryIO, ContextManager, Iterable, TypeVar
 from contextlib import nullcontext
 
 #: Alias for types which can represent a file system path
@@ -49,14 +49,14 @@ def _open_auto(path, mode, **kwargs):
 		else:
 			assert 0
 
-		return io.TextIOWrapper(binary, **kwargs) if mode[1] == 't' else binary
+		return TextIOWrapper(binary, **kwargs) if mode[1] == 't' else binary
 
 	except Exception:
 		file.close()
 
 
-def guess_compression(fobj: io.IOBase) -> Optional[str]:
-	"""Guess the compression mode of an readable file-like object.
+def guess_compression(fobj: BinaryIO) -> Optional[str]:
+	"""Guess the compression mode of an readable file-like object in binary mode.
 
 	Assumes the current position is at the beginning of the file.
 	"""

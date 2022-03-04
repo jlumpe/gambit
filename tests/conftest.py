@@ -101,7 +101,7 @@ def testdb(testdb_session, testdb_signatures):
 	return ReferenceDatabase(gset, testdb_signatures)
 
 @pytest.fixture(scope='session')
-def testdb_queries(testdb, testdb_files):
+def testdb_queries(testdb_files):
 	"""Query files and their expected results."""
 	from gambit.seq import SequenceFile
 
