@@ -69,15 +69,13 @@ def check_results(results_file, out_fmt, ref_results):
 		raise ValueError(f'Invalid out_fmt {out_fmt!r}')
 
 
-# @pytest.mark.parametrize('out_fmt', ['csv', 'json'])
-# @pytest.mark.parametrize('testdb_queries_gzipped', [False, True], indirect=True)
 @pytest.mark.parametrize(
 	['out_fmt', 'testdb_results', 'testdb_queries_gzipped'],
 	[
 		('json', 'non_strict', False),
-		('csv', 'non_strict', False),
-		('json', 'strict', False),
-		('csv', 'strict', False),
+		('csv',  'non_strict', False),
+		('json', 'strict',     False),
+		('csv',  'strict',     False),
 		('json', 'non_strict', True),
 	],
 	indirect=['testdb_results', 'testdb_queries_gzipped'],

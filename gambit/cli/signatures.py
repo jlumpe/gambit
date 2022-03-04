@@ -3,8 +3,7 @@ import sys
 
 import click
 
-from .common import CLIContext, genome_files_arg, print_table
-from gambit.kmers import KmerSpec
+from .common import CLIContext, genome_files_arg, print_table, filepath, kspec_params, kspec_from_params
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
@@ -45,7 +44,7 @@ def signatures_group():
 )
 @click.argument(
 	'file',
-	type=click.Path(exists=True, dir_okay=False),
+	type=filepath(exists=True),
 	required=False,
 )
 @click.pass_obj
@@ -95,30 +94,22 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 			('Genome ID attribute:', format_none(sigs.meta.id_attr)),
 			('Has extra:', 'no' if sigs.meta.extra is None else 'yes'),
 		]
-		print_table(rows2, colsep='  ', left = '  ')
+		print_table(rows2, colsep='  ', left='  ')
 
 
 @signatures_group.command()
 @genome_files_arg()
+@kspec_params
 @click.option(
 	'-o', '--output',
 	required=True,
-	type=click.Path(writable=True),
+	type=filepath(writable=True),
 	help='File path to write to.',
-)
-@click.option(
-	'-p', '--prefix',
-	help='K-mer prefix.',
-)
-@click.option(
-	'-k',
-	type=int,
-	help='Number of nucleotides to recognize AFTER prefix',
 )
 @click.option(
 	'-m', '--meta-json', 'meta_file',
 	type=click.File('r'),
-	help='JSON file containing metadata to attach to file.',
+	help='JSON file containing metadata to attach.',
 )
 @click.option(
 	'-i', '--ids', 'ids_file',
@@ -148,24 +139,19 @@ def create(ctxobj: CLIContext,
 	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 
 	# Get kmerspec
-	if prefix is not None or k is not None:
-		# KmerSpec from options
-		if prefix is None or k is None:
-			raise click.ClickException('Must specify values for both -k and --prefix arguments.')
-		if db_params:
-			raise click.ClickException('The -k/--prefix and -d/--db-params options are mutually exclusive.')
+	kspec = kspec_from_params(k, prefix)
 
-		kspec = KmerSpec(k, prefix)
+	if db_params:
+		if kspec is None:
+			ctxobj.require_signatures()
+			kspec = ctxobj.signatures.kmerspec
+		else:
+			raise click.ClickException('The -k/--prefix and --db-params options are mutually exclusive.')
 
-	elif db_params:
-		# KmerSpec from current reference database
-		ctxobj.require_signatures()
-		kspec = ctxobj.signatures.kmerspec
+	elif kspec is None:
+		raise click.ClickException('Must give values for -k/--prefix or specify --db-params.')
 
-	else:
-		raise click.ClickException('Must give values for the -k and --prefix options or specify a reference database.')
-
-	# Get metadata
+	# Metadata / IDs
 	if meta_file is not None:
 		meta = gjson.load(meta_file, SignaturesMeta)
 	else:
@@ -190,7 +176,7 @@ def create(ctxobj: CLIContext,
 		gjson.dump(params, sys.stdout)
 		return
 
+	# Calculate and save
 	sigs = calc_file_signatures(kspec, seqfiles, progress=ClickProgressMeter)
 	sigs = AnnotatedSignatures(sigs, ids, meta)
-
 	dump_signatures(output, sigs)

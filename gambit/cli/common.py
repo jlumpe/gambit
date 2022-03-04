@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
+from gambit.kmers import KmerSpec
 from gambit.db import locate_db_files, ReferenceDatabase
 from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
@@ -145,13 +146,43 @@ class CLIContext:
 		return ReferenceDatabase(gset, self.signatures)
 
 
+def filepath(**kw):
+	return click.Path(file_okay=True, dir_okay=False, **kw)
+
+def dirpath(**kw):
+	return click.Path(file_okay=False, dir_okay=True, **kw)
+
+
 def genome_files_arg():
 	return click.argument(
 		'files',
 		nargs=-1,
-		type=click.Path(exists=True, dir_okay=False),
+		type=filepath(exists=True),
 		metavar='GENOMES...',
 	)
+
+def kspec_params(f):
+	"""Decorator to add k and prefix options to command."""
+	popt = click.option(
+		'-p', '--prefix',
+		help='K-mer prefix.',
+	)
+	kopt = click.option(
+		'-k',
+		type=int,
+		help='Number of nucleotides to recognize AFTER prefix',
+	)
+	return popt(kopt(f))
+
+def kspec_from_params(k, prefix):
+
+	if prefix is None and k is None:
+		return None
+
+	if not (prefix is not None and k is not None):
+		raise click.ClickException('Must specify values for both -k and --prefix arguments.')
+
+	return KmerSpec(k, prefix)
 
 
 def print_table(rows: Sequence[Sequence], colsep: str = ' ', left: str = '', right: str = ''):

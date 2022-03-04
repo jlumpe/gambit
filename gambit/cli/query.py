@@ -3,7 +3,7 @@ from typing import TextIO, Optional, List
 
 import click
 
-from .common import CLIContext, genome_files_arg
+from .common import CLIContext, genome_files_arg, filepath
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import progress_config
 from gambit.sigs import load_signatures
@@ -47,7 +47,7 @@ def get_exporter(outfmt: str):
 )
 @click.option(
 	'--sigfile',
-	type=click.Path(exists=True, dir_okay=False, readable=True),
+	type=filepath(exists=True),
 	help='File containing query signatures, to use in place of GENOMES.',
 )
 @click.pass_obj
@@ -60,25 +60,23 @@ def query_cmd(ctxobj: CLIContext,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 
+	if sigfile and files:
+		raise click.ClickException('The --sigfile option is mutually exclusive with GENOMES')
+	if not sigfile and not files:
+		raise click.ClickException('Must supply at least one genome file or a value for --sigfile.')
+
 	db = ctxobj.get_database()
 	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 	params = QueryParams(classify_strict=strict)
 	exporter = get_exporter(outfmt)
 	pconf = progress_config('click', file=sys.stderr)
 
-	if sigfile and seqfiles:
-		raise click.ClickException('The --sigfile option is mutually exclusive with GENOMES')
-
-	elif sigfile:
-		with load_signatures(sigfile) as sigfile:
-			sigs = sigfile[:]
-		inputs = [QueryInput(id) for id in sigfile.ids]
+	if sigfile:
+		sigs = load_signatures(sigfile)
+		inputs = [QueryInput(id) for id in sigs.ids]
 		results = query(db, sigs, params, inputs=inputs, progress=pconf)
 
-	elif seqfiles:
-		results = query_parse(db, seqfiles, params, progress=pconf)
-
 	else:
-		raise click.ClickException('Must supply at least one genome file or a value for --sigfile.')
+		results = query_parse(db, seqfiles, params, progress=pconf)
 
 	exporter.export(output, results)

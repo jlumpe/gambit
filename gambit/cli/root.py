@@ -3,7 +3,7 @@
 import click
 
 from gambit import __version__ as GAMBIT_VERSION
-from .common import CLIContext
+from .common import CLIContext, dirpath
 from .query import query_cmd
 from .signatures import signatures_group
 from .debug import debug_group
@@ -13,7 +13,7 @@ from .debug import debug_group
 @click.group()
 @click.option(
 	'-d', '--db', 'db_path',
-	type=click.Path(exists=True, file_okay=False),
+	type=dirpath(exists=True),
 	envvar='GAMBIT_DB_PATH',
 	help='Directory containing GAMBIT database files.',
 )

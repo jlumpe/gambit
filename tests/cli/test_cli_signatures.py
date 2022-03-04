@@ -113,7 +113,7 @@ class TestCreateCommand:
 		return check_output
 
 	@pytest.mark.parametrize('testdb_queries_gzipped', [False, True], indirect=True)
-	def test_basic(self, kspec, make_args, check_output):
+	def test_basic(self, make_args, check_output):
 		"""Test with basic arguments."""
 		args = make_args()
 		result = invoke_cli(args)
@@ -121,7 +121,7 @@ class TestCreateCommand:
 
 		check_output()
 
-	def test_with_metadata(self, kspec, make_args, check_output, tmp_path):
+	def test_with_metadata(self, make_args, check_output, tmp_path):
 		"""Test with ids and metadata JSON added."""
 		# Metadata file
 		metadata = SignaturesMeta(
@@ -172,7 +172,7 @@ class TestCreateCommand:
 	def test_bad_kspec(self, kspec, make_args):
 		"""Test with KmerSpec incorrectly specified."""
 
-		# No -k, --prefix, or --db
+		# No -k, --prefix, or --db-params
 		args = make_args([], with_kspec=False)
 		assert invoke_cli(args).exit_code != 0
 
