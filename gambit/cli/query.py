@@ -3,7 +3,7 @@ from typing import TextIO, Optional, List
 
 import click
 
-from .common import CLIContext, genome_files_arg, filepath
+from .common import CLIContext, genome_files_arg, filepath, dirpath, read_genomes_list_file
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import progress_config
 from gambit.sigs import load_signatures
@@ -28,6 +28,8 @@ def get_exporter(outfmt: str):
 
 @click.command(name='query')
 @genome_files_arg()
+@click.option('-l', type=click.File('r'), help='File containing paths to genomes.')
+@click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in -l.')
 @click.option(
 	'-o', '--output',
 	type=click.File(mode='w'),
@@ -52,6 +54,8 @@ def get_exporter(outfmt: str):
 )
 @click.pass_obj
 def query_cmd(ctxobj: CLIContext,
+              l: Optional[TextIO],
+              ldir: Optional[str],
               files: List[str],
               sigfile: Optional[str],
               output: TextIO,
@@ -60,13 +64,13 @@ def query_cmd(ctxobj: CLIContext,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 
-	if sigfile and files:
-		raise click.ClickException('The --sigfile option is mutually exclusive with GENOMES')
-	if not sigfile and not files:
-		raise click.ClickException('Must supply at least one genome file or a value for --sigfile.')
+	count = (len(files) > 0) + (l is not None) + (sigfile is not None)
+	if count == 0:
+		raise click.ClickException('Must give value(s) for one of GENOMES, --sigfile, or -l.')
+	if count > 1:
+		raise click.ClickException('The GENOMES, --sigfile, and -l parameters are mutally exclusive.')
 
 	db = ctxobj.get_database()
-	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 	params = QueryParams(classify_strict=strict)
 	exporter = get_exporter(outfmt)
 	pconf = progress_config('click', file=sys.stderr)
@@ -77,6 +81,9 @@ def query_cmd(ctxobj: CLIContext,
 		results = query(db, sigs, params, inputs=inputs, progress=pconf)
 
 	else:
+		if l is not None:
+			files = read_genomes_list_file(l, ldir)
+		seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 		results = query_parse(db, seqfiles, params, progress=pconf)
 
 	exporter.export(output, results)

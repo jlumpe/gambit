@@ -1,13 +1,16 @@
 """Test code in gambit.cli.common."""
 
+from pathlib import Path
+
 import pytest
 import click
 import numpy as np
 
 from gambit.cli import cli
-from gambit.cli.common import CLIContext
+from gambit.cli.common import CLIContext, read_genomes_list_file
 from gambit.cli.test import default_runner, allow_no_args
 from gambit.db import load_db_from_dir
+from gambit.util.misc import zip_strict
 
 
 class TestCLIContext:
@@ -74,3 +77,38 @@ class TestCLIContext:
 		assert np.array_equal(db.sig_indices, ctx_db.sig_indices)
 		assert db.signatures.meta.id == ctx_db.signatures.meta.id
 		assert np.array_equal(db.signatures.ids, ctx_db.signatures.ids)
+
+
+class TestReadGenomesFileList:
+	"""Test read_genomes_list_file()"""
+
+	@pytest.fixture()
+	def genomes_file(self, tmpdir):
+		return tmpdir / 'genomes.txt'
+
+	@pytest.mark.parametrize('wd,absolute', [
+		('.', False),                # Relative to current directory
+		('path/to/genomes', False),  # Relative to other directory
+		('.', True),                 # Absolute paths in file, ignore wd
+	])
+	def test_(self, wd, absolute, genomes_file):
+		names = [f'{i + 1}.fasta' for i in range(10)]
+		if absolute:
+			wd2 = '/home/jlumpe'
+			names = [f'{wd2}/{name}' for name in names]
+
+		with open(genomes_file, 'w') as f:
+			for i, name in enumerate(names):
+				# Extra random whitespace
+				f.write(f'\t{name}\n')
+				if i % 3 == 0:
+					f.write('  \n')
+
+		files = read_genomes_list_file(genomes_file, wd)
+
+		for name, file in zip_strict(names, files):
+			assert isinstance(file, Path)
+			if absolute:
+				assert file == Path(name)
+			else:
+				assert file == Path(wd) / name

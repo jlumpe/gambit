@@ -76,9 +76,9 @@ class TestCreateCommand:
 		return testdb_query_files[:self.NGENOMES]
 
 	@pytest.fixture(name='make_args')
-	def make_args_factory(self, outfile, seq_files, kspec):
+	def make_args_factory(self, outfile, seq_files, kspec, tmp_path):
 
-		def make_args(opts=(), root_args=(), with_kspec=True):
+		def make_args(opts=(), root_args=(), with_kspec=True, positional_files=True, list_file=False):
 			args = list(root_args)
 			args += [
 				'signatures', 'create',
@@ -90,7 +90,14 @@ class TestCreateCommand:
 					f'--prefix={kspec.prefix_str}',
 				]
 			args.extend(opts)
-			args += [str(f.path) for f in seq_files]
+
+			if positional_files:
+				args += [str(f.path) for f in seq_files]
+			if list_file:
+				list_file = tmp_path / 'input-files.txt'
+				write_lines([f.path.name for f in seq_files], list_file)
+				args += ['-l', str(list_file), f'--ldir={seq_files[0].path.parent}',]
+
 			return args
 
 		return make_args
@@ -120,6 +127,15 @@ class TestCreateCommand:
 		assert result.exit_code == 0
 
 		check_output()
+
+	def test_list_file(self, make_args, seq_files):
+		"""Test getting genome list from file."""
+
+		args = make_args(['--dump-params'], positional_files=False, list_file=True)
+		result = invoke_cli(args)
+		assert result.exit_code == 0
+		params = json.loads(result.stdout)
+		assert params['files'] == [str(f.path) for f in seq_files]
 
 	def test_with_metadata(self, make_args, check_output, tmp_path):
 		"""Test with ids and metadata JSON added."""
@@ -169,11 +185,19 @@ class TestCreateCommand:
 		result = invoke_cli(args)
 		assert result.exit_code != 0
 
-	def test_bad_kspec(self, kspec, make_args):
-		"""Test with KmerSpec incorrectly specified."""
+	def test_invalid(self, kspec, make_args):
+		"""Test with invalid parameter combinations."""
+
+		# No genomes
+		args = make_args(positional_files=False, list_file=False)
+		assert invoke_cli(args).exit_code != 0
+
+		# Positional args and list file
+		args = make_args(positional_files=True, list_file=True)
+		assert invoke_cli(args).exit_code != 0
 
 		# No -k, --prefix, or --db-params
-		args = make_args([], with_kspec=False)
+		args = make_args(with_kspec=False)
 		assert invoke_cli(args).exit_code != 0
 
 		# Only -k/--prefix

@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Optional, Sequence, TextIO
 from pathlib import Path
 
 import click
@@ -11,6 +11,7 @@ from gambit.db import locate_db_files, ReferenceDatabase
 from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
 from gambit.sigs.base import ReferenceSignatures, load_signatures
+from gambit.util.io import FilePath
 
 
 class CLIContext:
@@ -183,6 +184,9 @@ def kspec_from_params(k, prefix):
 		raise click.ClickException('Must specify values for both -k and --prefix arguments.')
 
 	return KmerSpec(k, prefix)
+
+def read_genomes_list_file(fobj: TextIO, parent: FilePath = Path('.')):
+	return [Path(parent) / line.strip() for line in fobj.readlines() if line.strip()]
 
 
 def print_table(rows: Sequence[Sequence], colsep: str = ' ', left: str = '', right: str = ''):

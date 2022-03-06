@@ -3,7 +3,8 @@ import sys
 
 import click
 
-from .common import CLIContext, genome_files_arg, print_table, filepath, kspec_params, kspec_from_params
+from .common import CLIContext, genome_files_arg, print_table, filepath, dirpath, kspec_params, \
+	kspec_from_params, read_genomes_list_file
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
@@ -99,6 +100,8 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 
 @signatures_group.command()
 @genome_files_arg()
+@click.option('-l', type=click.File('r'), help='File containing paths to genomes.')
+@click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in -l.')
 @kspec_params
 @click.option(
 	'-o', '--output',
@@ -125,6 +128,8 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_obj
 def create(ctxobj: CLIContext,
+           l: Optional[TextIO],
+           ldir: Optional[str],
            files: List[str],
            output: str,
            prefix: Optional[str],
@@ -135,6 +140,16 @@ def create(ctxobj: CLIContext,
            dump_params: bool,
            ):
 	"""Create k-mer signatures from genome sequences."""
+
+	# Get sequence files
+	if files:
+		if l is not None:
+			raise click.ClickException('-l and GENOMES are mutually exclusive.')
+	elif l is not None:
+		with l:
+			files = read_genomes_list_file(l, ldir)
+	else:
+		raise click.ClickException('Must give value(s) for either -l or GENOMES.')
 
 	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 

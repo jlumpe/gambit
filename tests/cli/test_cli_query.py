@@ -10,23 +10,17 @@ from gambit.cli.test import invoke_cli
 from gambit.results.test import check_json_results, check_csv_results
 from gambit.query import QueryInput
 from gambit.util.misc import zip_strict
+from gambit.util.io import write_lines
 
 
-@pytest.fixture()
+@pytest.fixture(params=[None])
 def nqueries(request):
 	"""Number of testdb query files to use, None means use all of them.
 
-	Value is derived from argument to the "testdb_nqueries" marker, if any. This can be set on
-	specific test functions to improve speed by only using a subset of the query files.
-	(Currently not overridden anywhere).
-
-	Based on this example:
-	https://docs.pytest.org/en/6.2.x/fixture.html#using-markers-to-pass-data-to-fixtures
-
+	Can be changed via indirect parameterization in specific tests.
 	Note than with slice notation, `[:None]` is the same as `[:]`.
 	"""
-	marker = request.node.get_closest_marker("testdb_nqueries")
-	return None if marker is None else marker.args[0]
+	return request.param
 
 @pytest.fixture()
 def query_files(testdb_query_files, nqueries):
@@ -34,9 +28,9 @@ def query_files(testdb_query_files, nqueries):
 	return testdb_query_files[:nqueries]
 
 @pytest.fixture(name='make_args')
-def make_args_factory(testdb_files):
+def make_args_factory(testdb_files, query_files, tmp_path):
 
-	def make_args(query_files=None, sigfile=None, output=None, outfmt=None, strict=False):
+	def make_args(positional=False, list_file=False, sig_file=False, output=None, outfmt=None, strict=False):
 		"""Make command line arguments for query file."""
 
 		args = [f'--db={testdb_files["root"]}', 'query']
@@ -46,11 +40,15 @@ def make_args_factory(testdb_files):
 			args.append(f'--output={output}')
 		if outfmt is not None:
 			args.append(f'--outfmt={outfmt}')
-		if sigfile is not None:
-			args.append(f'--sigfile={sigfile}')
 
-		if query_files is not None:
+		if positional:
 			args.extend([str(f.path) for f in query_files])
+		if list_file:
+			list_file = tmp_path / 'genomes.txt'
+			write_lines([f.path.name for f in query_files], list_file)
+			args += ['-l', str(list_file), f'--ldir={query_files[0].path.parent}']
+		if sig_file:
+			args.append(f'--sigfile={testdb_files["query_signatures"]}')
 
 		return args
 
@@ -70,17 +68,18 @@ def check_results(results_file, out_fmt, ref_results):
 
 
 @pytest.mark.parametrize(
-	['out_fmt', 'testdb_results', 'testdb_queries_gzipped'],
+	['nqueries', 'use_list_file', 'out_fmt', 'testdb_results', 'testdb_queries_gzipped'],
 	[
-		('json', 'non_strict', False),
-		('csv',  'non_strict', False),
-		('json', 'strict',     False),
-		('csv',  'strict',     False),
-		('json', 'non_strict', True),
+		(None, False, 'json', 'non_strict', False),
+		(20,   False, 'csv',  'non_strict', False),
+		(None, False, 'json', 'strict',     False),
+		(20,   False, 'csv',  'strict',     False),
+		(None, False, 'json', 'non_strict', True),
+		(20,   True,  'json', 'non_strict', False),
 	],
-	indirect=['testdb_results', 'testdb_queries_gzipped'],
+	indirect=['nqueries', 'testdb_results', 'testdb_queries_gzipped'],
 )
-def test_full_query(make_args, testdb_results, nqueries, query_files, out_fmt, tmp_path):
+def test_full_query(make_args, testdb_results, nqueries, use_list_file, query_files, out_fmt, tmp_path):
 	"""Run a full query using the command line interface."""
 
 	# Modify results object to match file names and possibly reduced # of queries
@@ -92,7 +91,8 @@ def test_full_query(make_args, testdb_results, nqueries, query_files, out_fmt, t
 	results_file = tmp_path / ('results.' + out_fmt)
 
 	args = make_args(
-		query_files=query_files,
+		positional=not use_list_file,
+		list_file=use_list_file,
 		output=results_file,
 		outfmt=out_fmt,
 		strict=ref_results.params.classify_strict,
@@ -107,7 +107,7 @@ def test_full_query(make_args, testdb_results, nqueries, query_files, out_fmt, t
 # Not really necessary to check all combinations of parameters.
 @pytest.mark.parametrize('out_fmt', ['json'])
 @pytest.mark.parametrize('testdb_results', ['non_strict'], indirect=True)
-def test_sigfile(make_args, testdb_files, testdb_query_signatures, testdb_results, out_fmt, tmp_path):
+def test_sigfile(make_args, testdb_query_signatures, testdb_results, out_fmt, tmp_path):
 	"""Test using signature file instead of parsing genome files."""
 
 	results_file = tmp_path / ('results.' + out_fmt)
@@ -118,7 +118,7 @@ def test_sigfile(make_args, testdb_files, testdb_query_signatures, testdb_result
 		item.input = QueryInput(id_)
 
 	args = make_args(
-		sigfile=testdb_files['query_signatures'],
+		sig_file=True,
 		output=results_file,
 		outfmt=out_fmt,
 		strict=ref_results.params.classify_strict,
@@ -128,3 +128,21 @@ def test_sigfile(make_args, testdb_files, testdb_query_signatures, testdb_result
 	assert result.exit_code == 0
 
 	check_results(results_file, out_fmt, ref_results)
+
+
+def test_invalid(make_args, tmp_path):
+	"""Test invalid parameter values exit with error code."""
+
+	results_file = tmp_path / ('results.json')
+
+	# No genomes or signatures
+	args = make_args(output=results_file)
+	assert invoke_cli(args).exit_code != 0
+
+	# Multiple inputs
+	args = make_args(output=results_file, positional=True, list_file=True)
+	assert invoke_cli(args).exit_code != 0
+	args = make_args(output=results_file, positional=True, sig_file=True)
+	assert invoke_cli(args).exit_code != 0
+	args = make_args(output=results_file, list_file=True, sig_file=True)
+	assert invoke_cli(args).exit_code != 0
