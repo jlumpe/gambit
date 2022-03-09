@@ -47,8 +47,8 @@ def testdb_files(test_data):
 	root = test_data / 'testdb_210818'
 	return dict(
 		root=root,
-		ref_genomes=root / 'testdb_210818-genomes.db',
-		ref_signatures=root / 'testdb_210818-signatures.h5',
+		ref_genomes=root / 'ref-genomes.db',
+		ref_signatures=root / 'ref-signatures.h5',
 		queries_table=root / 'queries/queries.csv',
 		query_genomes=root / 'queries/genomes/',
 		query_signatures=root / 'queries/query-signatures.h5',
