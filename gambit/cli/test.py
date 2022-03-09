@@ -1,6 +1,6 @@
 """Tools for testing CLI."""
 
-from typing import Optional, ContextManager
+from typing import Optional, ContextManager, Sequence
 from contextlib import contextmanager
 
 import click
@@ -33,12 +33,13 @@ def default_runner(**kw) -> CliRunner:
 	kw.setdefault('env', DEFAULT_ENV)
 	return CliRunner(**kw)
 
-def invoke_cli(args, runner: Optional[CliRunner] = None, **kw) -> Result:
+def invoke_cli(args: Sequence, runner: Optional[CliRunner] = None, **kw) -> Result:
 	"""Invoke CLI in test context, using different defaults than base Click method."""
 	if runner is None:
 		runner = default_runner(**pop_kwargs(kw, ['charset', 'echo_stdin', 'mix_stderr']))
 
 	kw.setdefault('catch_exceptions', False)
+	args = list(map(str, args))
 	return runner.invoke(cli, args, **kw)
 
 

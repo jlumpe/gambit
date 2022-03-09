@@ -148,9 +148,11 @@ class CLIContext:
 
 
 def filepath(**kw):
+	kw.setdefault('path_type', Path)
 	return click.Path(file_okay=True, dir_okay=False, **kw)
 
 def dirpath(**kw):
+	kw.setdefault('path_type', Path)
 	return click.Path(file_okay=False, dir_okay=True, **kw)
 
 
