@@ -61,22 +61,17 @@ class TestInfoCommand:
 
 
 class TestCreateCommand:
-	NGENOMES = 10
-
-	@pytest.fixture()
-	def kspec(self, testdb_query_signatures):
-		return testdb_query_signatures.kmerspec
 
 	@pytest.fixture()
 	def outfile(self, tmp_path):
 		return tmp_path / 'signatures.h5'
 
 	@pytest.fixture()
-	def seq_files(self, testdb_query_files):
-		return testdb_query_files[:self.NGENOMES]
+	def nqueries(self, testdb_queries):
+		return len(testdb_queries)
 
 	@pytest.fixture(name='make_args')
-	def make_args_factory(self, outfile, seq_files, kspec, tmp_path):
+	def make_args_factory(self, outfile, testdb_query_files, testdb_kspec, tmp_path):
 
 		def make_args(opts=(), root_args=(), with_kspec=True, positional_files=True, list_file=False):
 			args = list(root_args)
@@ -86,33 +81,32 @@ class TestCreateCommand:
 			]
 			if with_kspec:
 				args += [
-					'-k', str(kspec.k),
-					f'--prefix={kspec.prefix_str}',
+					'-k', str(testdb_kspec.k),
+					f'--prefix={testdb_kspec.prefix_str}',
 				]
 			args.extend(opts)
 
 			if positional_files:
-				args += [str(f.path) for f in seq_files]
+				args += [str(f.path) for f in testdb_query_files]
 			if list_file:
 				list_file = tmp_path / 'input-files.txt'
-				write_lines([f.path.name for f in seq_files], list_file)
-				args += ['-l', str(list_file), f'--ldir={seq_files[0].path.parent}',]
+				write_lines([f.path.name for f in testdb_query_files], list_file)
+				ldir = testdb_query_files[0].path.parent
+				args += ['-l', str(list_file), f'--ldir={ldir}',]
 
 			return args
 
 		return make_args
 
 	@pytest.fixture(name='check_output')
-	def check_output_factory(self, outfile, seq_files, testdb_query_signatures):
+	def check_output_factory(self, outfile, testdb_query_files, testdb_query_signatures):
 
 		def check_output(ids=None):
 			out = load_signatures(outfile)
-
-			assert out.kmerspec == testdb_query_signatures.kmerspec
-			assert out == testdb_query_signatures[:self.NGENOMES]
+			assert out == testdb_query_signatures  # Checks contents and .kmerspec
 
 			if ids is None:
-				ids = [f.path.name for f in seq_files]
+				ids = [f.path.name for f in testdb_query_files]
 			assert np.array_equal(out.ids, ids)
 
 			return out
@@ -128,16 +122,16 @@ class TestCreateCommand:
 
 		check_output()
 
-	def test_list_file(self, make_args, seq_files):
+	def test_list_file(self, make_args, testdb_query_files):
 		"""Test getting genome list from file."""
 
 		args = make_args(['--dump-params'], positional_files=False, list_file=True)
 		result = invoke_cli(args)
 		assert result.exit_code == 0
 		params = json.loads(result.stdout)
-		assert params['files'] == [str(f.path) for f in seq_files]
+		assert params['files'] == [str(f) for f in testdb_query_files]
 
-	def test_with_metadata(self, make_args, check_output, tmp_path):
+	def test_with_metadata(self, nqueries, make_args, check_output, tmp_path):
 		"""Test with ids and metadata JSON added."""
 		# Metadata file
 		metadata = SignaturesMeta(
@@ -152,7 +146,7 @@ class TestCreateCommand:
 			gjson.dump(metadata, f)
 
 		# IDs file
-		ids = [f'seq-{i}' for i in range(self.NGENOMES)]
+		ids = [f'seq-{i}' for i in range(nqueries)]
 		id_file = tmp_path / 'ids.txt'
 		write_lines(ids, id_file)
 
@@ -185,7 +179,7 @@ class TestCreateCommand:
 		result = invoke_cli(args)
 		assert result.exit_code != 0
 
-	def test_invalid(self, kspec, make_args):
+	def test_invalid(self, testdb_kspec, make_args):
 		"""Test with invalid parameter combinations."""
 
 		# No genomes
@@ -201,19 +195,19 @@ class TestCreateCommand:
 		assert invoke_cli(args).exit_code != 0
 
 		# Only -k/--prefix
-		args = make_args(['-k', str(kspec.k)], with_kspec=False)
+		args = make_args(['-k', str(testdb_kspec.k)], with_kspec=False)
 		assert invoke_cli(args).exit_code != 0
-		args = make_args(['--prefix', kspec.prefix_str], with_kspec=False)
+		args = make_args(['--prefix', testdb_kspec.prefix_str], with_kspec=False)
 		assert invoke_cli(args).exit_code != 0
 
 		# Both both plus --db-params
 		args = make_args(['-d'])
 		assert invoke_cli(args).exit_code != 0
 
-	def test_ids_wrong_len(self, kspec, make_args, tmp_path):
+	def test_ids_wrong_len(self, nqueries, make_args, tmp_path):
 		"""Test number of IDs do not match query files."""
 
-		ids = [f'seq-{i}' for i in range(self.NGENOMES - 1)]
+		ids = [f'seq-{i}' for i in range(nqueries - 1)]
 		id_file = tmp_path / 'ids2.txt'
 		write_lines(ids, id_file)
 
