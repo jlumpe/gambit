@@ -2,6 +2,7 @@
 
 from io import StringIO
 from pathlib import Path
+import os
 
 import pytest
 import numpy as np
@@ -143,6 +144,18 @@ class TestSequenceFile:
 					assert seqfile1 == SequenceFile(seqfile1.path, seqfile1.format, seqfile1.compression)
 				else:
 					assert seqfile1 != seqfile2
+
+	def test_special_methods(self, seqfile):
+		assert str(seqfile) == str(seqfile.path)
+		assert os.fspath(seqfile) == str(seqfile)
+
+		# Check os.PathLike interface
+		text = 'foo'
+		with open(seqfile, 'w') as f:
+			f.write(text)
+		with open(seqfile, 'r') as f:
+			read = f.read()
+		assert read == text
 
 	@pytest.mark.parametrize('binary', [False, True])
 	def test_open(self, seqfile, file_contents, binary):

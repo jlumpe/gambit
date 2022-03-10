@@ -12,6 +12,7 @@ bytes containing ascii-encoded nucleotide codes.
 """
 from pathlib import Path
 from typing import Union, Optional, IO, Iterable, List
+from os import PathLike
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -70,10 +71,12 @@ def validate_dna_seq_bytes(seq : bytes):
 
 
 @attrs(frozen=True, slots=True)
-class SequenceFile:
+class SequenceFile(PathLike):
 	"""A reference to a DNA sequence file stored in the file system.
 
-	Contains all the information needed to read and parse the file.
+	Contains all the information needed to read and parse the file. Implements the
+	:class:`os.PathLike` interface, so it can be substituted for a ``str`` or :class:`pathlib.Path`
+	in most function arguments that take a file path to open.
 
 	Parameters
 	----------
@@ -89,15 +92,21 @@ class SequenceFile:
 	path
 		Path to the file.
 	format
-		String describing the file format as interpreted by
-		:func:`Bio.SeqIO.parse`, e.g. ``'fasta'``.
+		String describing the file format as interpreted by :func:`Bio.SeqIO.parse`, e.g.
+		``'fasta'``.
 	compression
-		String describing compression method of the file, e.g. ``'gzip'``. None
-		means no compression. See :func:`gambit.util.io.open_compressed`.
+		String describing compression method of the file, e.g. ``'gzip'``. None means no
+		compression. See :func:`gambit.util.io.open_compressed`.
 	"""
 	path: Path = attrib(converter=Path)
 	format: str = attrib()
 	compression: Optional[str] = attrib(default=None)
+
+	def __fspath__(self):
+		return str(self.path)
+
+	def __str__(self):
+		return str(self.path)
 
 	def open(self, mode: str = 'r', **kwargs) -> IO:
 		"""
