@@ -9,7 +9,6 @@ from Bio import Seq, SeqIO
 
 from gambit.seq import SequenceFile, revcomp
 from gambit.kmers import nkmers, index_to_kmer
-import gambit.util.io as ioutil
 from gambit.util.misc import zip_strict
 from gambit.test import random_seq
 
@@ -92,7 +91,7 @@ class TestSequenceFile:
 		return request.param
 
 	@pytest.fixture()
-	def info(self, tmpdir, format, compression):
+	def seqfile(self, tmpdir, format, compression):
 		"""A SequenceFile instance pointing to a file in a test temporary directory.
 
 		File does not yet exist.
@@ -121,62 +120,55 @@ class TestSequenceFile:
 		SeqIO.write(seqrecords, buf, format)
 		return buf.getvalue()
 
-	@pytest.fixture
-	def info_exists(self, info, seqrecords):
-		"""Copy of "info" fixture, but with "seqrecords" written to the file."""
-
-		with info.open('rt') as fobj:
-			SeqIO.write(seqrecords, fobj, info.format)
-
 	def test_constructor(self):
 		"""Test constructor."""
 
-		info = SequenceFile('foo.fasta', 'fasta')
-		assert info == SequenceFile('foo.fasta', 'fasta', None)
-		assert info.path == Path('foo.fasta')
+		seqfile = SequenceFile('foo.fasta', 'fasta')
+		assert seqfile == SequenceFile('foo.fasta', 'fasta', None)
+		assert seqfile.path == Path('foo.fasta')
 
 	def test_eq(self):
 		"""Test equality checking of instances."""
-		infos = [
+		seqfiles = [
 			SequenceFile(p, format, comp)
 			for p in ['foo', 'bar']
 			for format in ['fasta', 'genbank']
 			for comp in [None, 'gzip']
 		]
 
-		for i, info1 in enumerate(infos):
-			for j, info2 in enumerate(infos):
+		for i, seqfile1 in enumerate(seqfiles):
+			for j, seqfile2 in enumerate(seqfiles):
 				if i == j:
 					# Try with different instance
-					assert info1 == SequenceFile(info1.path, info1.format, info1.compression)
+					assert seqfile1 == SequenceFile(seqfile1.path, seqfile1.format, seqfile1.compression)
 				else:
-					assert info1 != info2
+					assert seqfile1 != seqfile2
 
 	@pytest.mark.parametrize('binary', [False, True])
-	def test_open(self, info, file_contents, binary):
+	def test_open(self, seqfile, file_contents, binary):
 		"""Test sequence file is readable and writable."""
 
 		to_write = file_contents.encode() if binary else file_contents
 
 		# Write data to file
-		with info.open('wb' if binary else 'wt') as fobj:
+		with seqfile.open('wb' if binary else 'wt') as fobj:
 			fobj.write(to_write)
 
 		# Read it back and make sure it's the same
-		with info.open('rb' if binary else 'rt') as fobj:
+		with seqfile.open('rb' if binary else 'rt') as fobj:
 			read = fobj.read()
 
 		assert read == to_write
 
-	def test_parse(self, info, seqrecords, file_contents):
+	def test_parse(self, seqfile, seqrecords, file_contents):
 		"""Test the parse() method, ensure we get the right records back."""
 
 		# Write pre-formatted contents to file
-		with info.open('wt') as fobj:
+		with seqfile.open('wt') as fobj:
 			fobj.write(file_contents)
 
 		# Parse the sequences from it
-		parsed = list(info.parse())
+		parsed = list(seqfile.parse())
 
 		# Check they match
 		assert len(parsed) == len(seqrecords)
@@ -198,24 +190,24 @@ class TestSequenceFile:
 
 		path = Path('foo/bar.fasta')
 
-		info1 = SequenceFile(path, 'fasta')
-		assert isinstance(info1, SequenceFile) and info1.path == path
+		seqfile1 = SequenceFile(path, 'fasta')
+		assert isinstance(seqfile1, SequenceFile) and seqfile1.path == path
 
-		info2 = SequenceFile(str(path), 'fasta')
-		assert isinstance(info2, SequenceFile) and info2.path == path
+		seqfile2 = SequenceFile(str(path), 'fasta')
+		assert isinstance(seqfile2, SequenceFile) and seqfile2.path == path
 
 	def test_absolute(self):
 		"""Test the absolute() method."""
 
-		relinfo = SequenceFile('foo/bar.fasta', 'fasta')
-		assert not relinfo.path.is_absolute()
+		relseqfile = SequenceFile('foo/bar.fasta', 'fasta')
+		assert not relseqfile.path.is_absolute()
 
-		absinfo = relinfo.absolute()
-		assert absinfo.path.is_absolute()
-		assert absinfo.path == relinfo.path.absolute()
+		absseqfile = relseqfile.absolute()
+		assert absseqfile.path.is_absolute()
+		assert absseqfile.path == relseqfile.path.absolute()
 
-		absinfo2 = absinfo.absolute()
-		assert absinfo2 == absinfo
+		absseqfile2 = absseqfile.absolute()
+		assert absseqfile2 == absseqfile
 
 	def test_from_paths(self, format, compression):
 		"""Test the from_paths() class method."""
@@ -223,12 +215,12 @@ class TestSequenceFile:
 		# List of unique path strings
 		paths = ['foo/bar{}.{}'.format(i, format) for i in range(20)]
 
-		infos = SequenceFile.from_paths(paths, format, compression)
+		seqfiles = SequenceFile.from_paths(paths, format, compression)
 
-		assert len(paths) == len(infos)
+		assert len(paths) == len(seqfiles)
 
-		for path, info in zip_strict(paths, infos):
-			assert isinstance(info, SequenceFile)
-			assert str(info.path) == path
-			assert info.format == format
-			assert info.compression == compression
+		for path, seqfile in zip_strict(paths, seqfiles):
+			assert isinstance(seqfile, SequenceFile)
+			assert str(seqfile.path) == path
+			assert seqfile.format == format
+			assert seqfile.compression == compression
