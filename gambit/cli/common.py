@@ -7,7 +7,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from gambit.kmers import KmerSpec
-from gambit.db import locate_db_files, ReferenceDatabase
+from gambit.db import ReferenceDatabase
 from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
 from gambit.sigs.base import ReferenceSignatures, load_signatures
@@ -82,7 +82,7 @@ class CLIContext:
 
 		else:
 			self._has_genomes = self._has_signatures = True
-			self._genomes_path, self._signatures_path = locate_db_files(self.db_path)
+			self._genomes_path, self._signatures_path = ReferenceDatabase.locate_files(self.db_path)
 
 		self._db_found = True
 

@@ -60,64 +60,64 @@ class ReferenceDatabase:
 			missing = n - len(self.genomes)
 			raise ValueError(f'{missing} of {n} genomes not matched to signature IDs. Is the id_attr attribute of the signatures metadata correct?')
 
+	@classmethod
+	def locate_files(cls, path: FilePath) -> Tuple[Path, Path]:
+		"""Locate an SQLite genome database file and HDF5 signatures file in a directory.
 
-def locate_db_files(path: FilePath) -> Tuple[Path, Path]:
-	"""Locate an SQLite genome database file and HDF5 signatures file in a directory.
+		Files are located by extension, ``.db`` for SQLite file and ``.h5`` for signatures file.
+		Does not look in subdirectories.
 
-	Files are located by extension, ``.db`` for SQLite file and ``.h5`` for signatures file.
-	Does not look in subdirectories.
+		Parameters
+		----------
+		path
+			Path to directory to look within.
 
-	Parameters
-	----------
-	path
-		Path to directory to look within.
+		Returns
+		-------
+			Paths to genomes database file and signatures file.
 
-	Returns
-	-------
-		Paths to genomes database file and signatures file.
+		Raises
+		------
+		RuntimeError
+			If files could not be located or if multiple files with the same extension exist in the
+			directory.
+		"""
+		path = Path(path)
 
-	Raises
-	------
-	RuntimeError
-		If files could not be located or if multiple files with the same extension exist in the
-		directory.
-	"""
-	path = Path(path)
+		genomes_matches = list(path.glob('*.db'))
+		if len(genomes_matches) == 0:
+			raise RuntimeError(f'No genome database (.db) files found in directory {path}')
+		if len(genomes_matches) > 1:
+			raise RuntimeError(f'Multiple genome database (.db) files found in directory {path}')
 
-	genomes_matches = list(path.glob('*.db'))
-	if len(genomes_matches) == 0:
-		raise RuntimeError(f'No genome database (.db) files found in directory {path}')
-	if len(genomes_matches) > 1:
-		raise RuntimeError(f'Multiple genome database (.db) files found in directory {path}')
+		signatures_matches = list(path.glob('*.h5'))
+		if len(signatures_matches) == 0:
+			raise RuntimeError(f'No signature (.h5) files found in directory {path}')
+		if len(signatures_matches) > 1:
+			raise RuntimeError(f'Multiple signature (.h5) files found in directory {path}')
 
-	signatures_matches = list(path.glob('*.h5'))
-	if len(signatures_matches) == 0:
-		raise RuntimeError(f'No signature (.h5) files found in directory {path}')
-	if len(signatures_matches) > 1:
-		raise RuntimeError(f'Multiple signature (.h5) files found in directory {path}')
+		return genomes_matches[0], signatures_matches[0]
 
-	return genomes_matches[0], signatures_matches[0]
+	@classmethod
+	def load(cls, genomes_file: FilePath, signatures_file: FilePath) -> 'ReferenceDatabase':
+		"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
+		session = file_sessionmaker(genomes_file)()
+		gset = only_genomeset(session)
+		sigs = load_signatures(signatures_file)
+		return cls(gset, sigs)
 
+	@classmethod
+	def load_from_dir(cls, path: FilePath) -> 'ReferenceDatabase':
+		"""
+		Load complete database given directory containing SQLite genomes database file and HDF5
+		signatures file.
 
-def load_db(genomes_file: FilePath, signatures_file: FilePath) -> ReferenceDatabase:
-	"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
-	session = file_sessionmaker(genomes_file)()
-	gset = only_genomeset(session)
-	sigs = load_signatures(signatures_file)
-	return ReferenceDatabase(gset, sigs)
+		See :func:`.locate_db_files` for how these files are located within the directory.
 
-
-def load_db_from_dir(path: FilePath) -> ReferenceDatabase:
-	"""
-	Load complete database given directory containing SQLite genomes database file and HDF5
-	signatures file.
-
-	See :func:`.locate_db_files` for how these files are located within the directory.
-
-	Raises
-	------
-	RuntimeError
-		If files cannot be located in directory.
-	"""
-	genomes_file, signatures_file = locate_db_files(path)
-	return load_db(genomes_file, signatures_file)
+		Raises
+		------
+		RuntimeError
+			If files cannot be located in directory.
+		"""
+		genomes_file, signatures_file = cls.locate_files(path)
+		return cls.load(genomes_file, signatures_file)

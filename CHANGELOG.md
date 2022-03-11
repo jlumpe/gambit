@@ -6,6 +6,9 @@
 * CLI
   * Sequence files used as input to commands may be gzipped.
   * Minor changes to options of subcommands in `signatures` group.
+* API
+  * Database-loading funcs moved to class methods of `ReferenceDatabase`.
+
 
 ## 0.4.0
 

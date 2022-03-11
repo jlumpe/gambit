@@ -9,7 +9,7 @@ import numpy as np
 from gambit.cli import cli
 from gambit.cli.common import CLIContext, read_genomes_list_file
 from gambit.cli.test import default_runner, allow_no_args
-from gambit.db import load_db_from_dir
+from gambit.db import ReferenceDatabase
 from gambit.util.misc import zip_strict
 
 
@@ -70,7 +70,7 @@ class TestCLIContext:
 		ctx.require_genomes()
 		ctx.require_signatures()
 
-		db = load_db_from_dir(dbpath)
+		db = ReferenceDatabase.load_from_dir(dbpath)
 		ctx_db = ctx.get_database()
 		assert db.genomeset.key == ctx_db.genomeset.key
 		assert all(g1.key == g2.key for g1, g2 in zip(db.genomes, ctx_db.genomes))

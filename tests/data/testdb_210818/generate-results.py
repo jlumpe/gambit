@@ -12,7 +12,7 @@ from pathlib import Path
 from csv import DictReader
 
 from gambit.seq import SequenceFile
-from gambit.db import load_db_from_dir
+from gambit.db import ReferenceDatabase
 from gambit.db.models import reportable_taxon
 from gambit.query import QueryParams, query_parse
 from gambit.results.archive import ResultsArchiveWriter
@@ -114,7 +114,7 @@ def check_results(queries, results):
 def main():
 	queries = load_query_data()
 	query_files = [query['file'] for query in queries]
-	db = load_db_from_dir('.')
+	db = ReferenceDatabase.load_from_dir('.')
 
 	writer = ResultsArchiveWriter(pretty=True)
 
