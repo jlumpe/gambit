@@ -23,17 +23,17 @@ class TestQueryInput:
 			QueryInput.convert(3.4)
 
 
-def test_query_python(testdb, testdb_queries, testdb_results):
+def test_query_python(testdb):
 	"""Run a full query using the Python API."""
-	ref_results = testdb_results
+	ref_results = testdb.get_query_results(False)
 	params = ref_results.params
-	query_files = [item['file'] for item in testdb_queries]
+	query_files = [item['file'] for item in testdb.queries]
 
-	results = query_parse(testdb, query_files, params)
+	results = query_parse(testdb.refdb, query_files, params)
 
 	assert results.params == params
-	assert results.genomeset == testdb.genomeset
-	assert results.signaturesmeta == testdb.signatures.meta
+	assert results.genomeset == ref_results.genomeset
+	assert results.signaturesmeta == testdb.ref_signatures.meta
 	assert results.gambit_version == GAMBIT_VERSION
 
 	for file, item, ref_item in zip_strict(query_files, results.items, ref_results.items):

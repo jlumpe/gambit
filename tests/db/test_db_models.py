@@ -38,7 +38,6 @@ def empty_db_session(make_empty_db):
 	return sessionmaker(engine)
 
 
-
 class TestGenome:
 	"""Test Genome model."""
 
@@ -82,8 +81,8 @@ class TestGenome:
 class TestReferenceGenomeSet:
 	"""Test ReferenceGenomeSet model."""
 
-	def test_root_taxa(self, testdb_session):
-		session = testdb_session()
+	def test_root_taxa(self, testdb):
+		session = testdb.Session()
 		gset = session.query(ReferenceGenomeSet).one()
 		assert {taxon.name for taxon in gset.root_taxa()} == {'A1', 'A2', 'A3'}
 
@@ -128,8 +127,8 @@ class TestReferenceGenomeSet:
 class TestAnnotatedGenome:
 	"""Test AnnotatedGEnome model."""
 
-	def test_hybrid_props(self, testdb_session):
-		session = testdb_session()
+	def test_hybrid_props(self, testdb):
+		session = testdb.Session()
 
 		hybrid_attrs = [
 			'key',
@@ -148,9 +147,9 @@ class TestAnnotatedGenome:
 class TestTaxon:
 	"""Test Taxon model."""
 
-	def test_tree(self, testdb_session):
+	def test_tree(self, testdb):
 		"""Test tree structure."""
-		session = testdb_session()
+		session = testdb.Session()
 		gset = session.query(ReferenceGenomeSet).one()
 		roots = gset.root_taxa()
 

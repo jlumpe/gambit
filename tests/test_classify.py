@@ -21,8 +21,8 @@ def test_find_matches():
 	pass  # TODO
 
 
-def test_consensus_taxon(testdb_session):
-	session = testdb_session()
+def test_consensus_taxon(testdb):
+	session = testdb.Session()
 	get_taxon = lambda name: session.query(Taxon).filter_by(name=name).one()
 
 	A1 = get_taxon('A1')

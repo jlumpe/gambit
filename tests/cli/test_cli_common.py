@@ -43,9 +43,9 @@ class TestCLIContext:
 			ctx.require_signatures()
 
 	@pytest.mark.parametrize('method', ['option', 'envvar'])
-	def test_with_db(self, method, testdb_files):
+	def test_with_db(self, method, testdb):
 		"""Test with database given through the --db argument or environment variable."""
-		dbpath = testdb_files['root']
+		dbpath = testdb.paths.root
 
 		if method == 'option':
 			args = ['--db', str(dbpath)]

@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from gambit.db.sqla import ReadOnlySession, file_sessionmaker
 
 
-def test_file_sessionmaker(testdb_files):
-	db_file = testdb_files['ref_genomes']
+def test_file_sessionmaker(testdb):
+	db_file = testdb.paths.ref_genomes
 
 	maker = file_sessionmaker(db_file, readonly=True)
 	assert isinstance(maker(), ReadOnlySession)

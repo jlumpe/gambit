@@ -13,8 +13,8 @@ from gambit.results.test import check_json_results, check_csv_results
 
 
 @pytest.fixture()
-def session(testdb_session):
-	return testdb_session()
+def session(testdb):
+	return testdb.Session()
 
 
 @pytest.fixture()
