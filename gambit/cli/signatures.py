@@ -93,7 +93,7 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 			('Version:', format_none(sigs.meta.version )),
 			('Description:', format_none(sigs.meta.description)),
 			('Genome ID attribute:', format_none(sigs.meta.id_attr)),
-			('Has extra:', 'no' if sigs.meta.extra is None else 'yes'),
+			('Has extra:', 'yes' if sigs.meta.extra else 'no'),
 		]
 		print_table(rows2, colsep='  ', left='  ')
 
