@@ -48,8 +48,6 @@ class TestInfoCommand:
 		assert np.array_equal(result.stdout.splitlines(), testdb.ref_signatures.ids)
 
 	def test_invalid(self, testdb):
-		assert invoke_cli(['signatures', 'info']).exit_code != 0
-
 		args = [
 			f'--db={testdb.paths.root}',
 			'signatures',

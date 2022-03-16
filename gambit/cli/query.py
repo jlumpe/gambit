@@ -27,7 +27,7 @@ def get_exporter(outfmt: str):
 	assert 0
 
 
-@cli.command(name='query')
+@cli.command(name='query', no_args_is_help=True)
 @genome_files_arg()
 @click.option(
 	'-l', 'listfile',

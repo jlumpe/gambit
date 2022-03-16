@@ -23,7 +23,7 @@ def signatures_group():
 	pass
 
 
-@signatures_group.command()
+@signatures_group.command(no_args_is_help=True)
 @click.option(
 	'-j', '--json',
 	is_flag=True,
@@ -99,7 +99,7 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 		print_table(rows2, colsep='  ', left='  ')
 
 
-@signatures_group.command()
+@signatures_group.command(no_args_is_help=True)
 @genome_files_arg()
 @click.option(
 	'-l', 'list_file',
