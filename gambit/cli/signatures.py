@@ -101,8 +101,13 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 
 @signatures_group.command()
 @genome_files_arg()
-@click.option('-l', type=click.File('r'), help='File containing paths to genomes.')
-@click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in -l.')
+@click.option(
+	'-l', 'list_file',
+	type=click.File('r'),
+	metavar='LISTFILE',
+	help='File containing names/paths of genome files.',
+)
+@click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
 @kspec_params
 @click.option(
 	'-o', '--output',
@@ -125,11 +130,10 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 	is_flag=True,
 	help='Use k/prefix from reference database.'
 )
-# Dump parsed CLI parameters and exit. For testing.
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_obj
 def create(ctxobj: CLIContext,
-           l: Optional[TextIO],
+           list_file: Optional[TextIO],
            ldir: Optional[str],
            files: List[str],
            output: str,
@@ -144,11 +148,10 @@ def create(ctxobj: CLIContext,
 
 	# Get sequence files
 	if files:
-		if l is not None:
+		if list_file is not None:
 			raise click.ClickException('-l and GENOMES are mutually exclusive.')
-	elif l is not None:
-		with l:
-			files = read_genomes_list_file(l, ldir)
+	elif list_file is not None:
+		files = read_genomes_list_file(list_file, ldir)
 	else:
 		raise click.ClickException('Must give value(s) for either -l or GENOMES.')
 

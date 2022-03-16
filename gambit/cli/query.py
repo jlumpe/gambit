@@ -29,8 +29,13 @@ def get_exporter(outfmt: str):
 
 @cli.command(name='query')
 @genome_files_arg()
-@click.option('-l', type=click.File('r'), help='File containing paths to genomes.')
-@click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in -l.')
+@click.option(
+	'-l', 'listfile',
+	type=click.File('r'),
+	metavar='LISTFILE',
+	help='File containing paths to genomes.',
+)
+@click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
 @click.option(
 	'-o', '--output',
 	type=click.File(mode='w'),
@@ -49,13 +54,13 @@ def get_exporter(outfmt: str):
 	hidden=True,
 )
 @click.option(
-	'--sigfile',
+	'-s', '--sigfile',
 	type=filepath(exists=True),
 	help='File containing query signatures, to use in place of GENOMES.',
 )
 @click.pass_obj
 def query_cmd(ctxobj: CLIContext,
-              l: Optional[TextIO],
+              listfile: Optional[TextIO],
               ldir: Optional[str],
               files: List[str],
               sigfile: Optional[str],
@@ -65,11 +70,11 @@ def query_cmd(ctxobj: CLIContext,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 
-	count = (len(files) > 0) + (l is not None) + (sigfile is not None)
+	count = (len(files) > 0) + (listfile is not None) + (sigfile is not None)
 	if count == 0:
-		raise click.ClickException('Must give value(s) for one of GENOMES, --sigfile, or -l.')
+		raise click.ClickException('Must give value(s) for one of GENOMES, -s, or -l.')
 	if count > 1:
-		raise click.ClickException('The GENOMES, --sigfile, and -l parameters are mutally exclusive.')
+		raise click.ClickException('The GENOMES, -s, and -l parameters are mutally exclusive.')
 
 	db = ctxobj.get_database()
 	params = QueryParams(classify_strict=strict)
@@ -82,8 +87,8 @@ def query_cmd(ctxobj: CLIContext,
 		results = query(db, sigs, params, inputs=inputs, progress=pconf)
 
 	else:
-		if l is not None:
-			files = read_genomes_list_file(l, ldir)
+		if listfile is not None:
+			files = read_genomes_list_file(listfile, ldir)
 		seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 		results = query_parse(db, seqfiles, params, progress=pconf)
 
