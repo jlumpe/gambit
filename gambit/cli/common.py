@@ -147,11 +147,11 @@ class CLIContext:
 		return ReferenceDatabase(gset, self.signatures)
 
 
-def filepath(**kw):
+def filepath(**kw) -> click.Path:
 	kw.setdefault('path_type', Path)
 	return click.Path(file_okay=True, dir_okay=False, **kw)
 
-def dirpath(**kw):
+def dirpath(**kw) -> click.Path:
 	kw.setdefault('path_type', Path)
 	return click.Path(file_okay=False, dir_okay=True, **kw)
 
@@ -173,11 +173,11 @@ def kspec_params(f):
 	kopt = click.option(
 		'-k',
 		type=int,
-		help='Number of nucleotides to recognize AFTER prefix',
+		help='Number of nucleotides to recognize AFTER prefix.',
 	)
-	return popt(kopt(f))
+	return kopt(popt(f))
 
-def kspec_from_params(k, prefix):
+def kspec_from_params(k: int, prefix: str) -> Optional[KmerSpec]:
 
 	if prefix is None and k is None:
 		return None
@@ -191,7 +191,7 @@ def read_genomes_list_file(fobj: TextIO, parent: FilePath = Path('.')):
 	return [Path(parent) / line.strip() for line in fobj.readlines() if line.strip()]
 
 
-def print_table(rows: Sequence[Sequence], colsep: str = ' ', left: str = '', right: str = ''):
+def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: str=''):
 	"""Print a basic table."""
 
 	echo = lambda s: click.echo(s, nl=False)
