@@ -4,6 +4,7 @@ from typing import TextIO, Optional, List
 import click
 
 from .common import CLIContext, genome_files_arg, filepath, dirpath, read_genomes_list_file
+from .root import cli
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import progress_config
 from gambit.sigs import load_signatures
@@ -26,7 +27,7 @@ def get_exporter(outfmt: str):
 	assert 0
 
 
-@click.command(name='query')
+@cli.command(name='query')
 @genome_files_arg()
 @click.option('-l', type=click.File('r'), help='File containing paths to genomes.')
 @click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in -l.')

@@ -5,6 +5,7 @@ import click
 
 from .common import CLIContext, genome_files_arg, print_table, filepath, dirpath, kspec_params, \
 	kspec_from_params, read_genomes_list_file
+from .root import cli
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
@@ -16,7 +17,7 @@ def format_none(value):
 	return '<none>' if value is None else value
 
 
-@click.group(name='signatures')
+@cli.group(name='signatures')
 def signatures_group():
 	"""Create and inspect GAMBIT signature files."""
 	pass

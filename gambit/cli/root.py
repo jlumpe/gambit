@@ -4,9 +4,6 @@ import click
 
 from gambit import __version__ as GAMBIT_VERSION
 from .common import CLIContext, dirpath
-from .query import query_cmd
-from .signatures import signatures_group
-from .debug import debug_group
 
 
 # Top-level cli group
@@ -22,9 +19,3 @@ from .debug import debug_group
 def cli(ctx: click.Context, **kw):
 	"""Tool for rapid taxonomic identification of microbial pathogens from genomic data."""
 	ctx.obj = CLIContext(ctx)
-
-
-# Add sub-commands
-cli.add_command(query_cmd)
-cli.add_command(signatures_group)
-cli.add_command(debug_group)

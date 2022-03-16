@@ -2,6 +2,8 @@ from typing import Dict, Any
 
 import click
 
+from .root import cli
+
 
 #: Modules to import in interactive shell.
 SHELL_MODULES = dict(
@@ -10,7 +12,7 @@ SHELL_MODULES = dict(
 )
 
 
-@click.group(
+@cli.group(
 	name='debug',
 	hidden=True,
 )
