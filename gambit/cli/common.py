@@ -1,4 +1,4 @@
-from typing import Optional, Sequence, TextIO
+from typing import Optional, Sequence, TextIO, Iterable
 from pathlib import Path
 
 import click
@@ -12,6 +12,7 @@ from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath
+from gambit.util.misc import join_list_human
 
 
 class CLIContext:
@@ -189,6 +190,69 @@ def kspec_from_params(k: int, prefix: str) -> Optional[KmerSpec]:
 
 def read_genomes_list_file(fobj: TextIO, parent: FilePath = Path('.')):
 	return [Path(parent) / line.strip() for line in fobj.readlines() if line.strip()]
+
+
+def params_by_name(cmd: click.Command, names: Optional[Iterable[str]]=None):
+	"""Get parameters of click command by name.
+
+	Parameters
+	----------
+	cmd
+	names
+		Names of specific parameters to get.
+
+	Returns
+	-------
+	Union[Dict[str, click.Parameter], List[click.Parameter]]
+		Parameters with given in ``names`` argument if not None, otherwise a dictionary containing
+		all of the command's parameters keyed by name.
+	"""
+	by_name = {param.name: param for param in cmd.params}
+	if names is None:
+		return by_name
+	else:
+		return [by_name[name] for name in names]
+
+def check_params_group(ctx: click.Context, names: Iterable[str], exclusive: bool, required: bool):
+	"""Check for the presence of the given parameter values and raise an informative error if needed.
+
+	Parameters
+	----------
+	ctx
+	names
+		Parameter names.
+	exclusive
+		No more than one of the parameters may be present.
+	required
+		At least one of the parameters must be present.
+
+	Raises
+	------
+	click.ClickException
+	"""
+	nfound = sum(bool(ctx.params[name]) for name in names)
+
+	if exclusive and nfound > 1:
+		params = params_by_name(ctx.command, names)
+		plist = join_list_human(map(param_name_human, params), 'and')
+		raise click.ClickException(f'{plist} are mutually exclusive')
+
+	if required and nfound == 0:
+		params = params_by_name(ctx.command, names)
+		plist = join_list_human(map(param_name_human, params), 'or')
+		raise click.ClickException(f'One of {plist} is required')
+
+def param_name_human(param: click.Parameter) -> str:
+	"""Get the name/metavar of the given parameter as it appears in the auto-generated help output."""
+	if isinstance(param, click.Option):
+		# return param.opts[0]
+		return '/'.join(param.opts)
+	if isinstance(param, click.Argument):
+		if param.metavar is not None:
+			return param.metavar.rstrip('.')  # Remove ellipsis
+		else:
+			return param.opts[0].upper()
+	raise TypeError(f'Expected click.Parameter, got {type(param)}')
 
 
 def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: str=''):

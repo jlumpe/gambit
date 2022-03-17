@@ -1,7 +1,7 @@
 """Utility code that doesn't fit anywhere else."""
 
 import sys
-from typing import Iterator, Tuple, Callable
+from typing import Iterator, Tuple, Callable, Iterable
 from functools import singledispatch, wraps
 
 
@@ -128,3 +128,16 @@ def is_importable(module: str) -> bool:
 	"""Check if the specified module is importable, without actually importing it."""
 	from importlib.util import find_spec
 	return find_spec(module) is not None
+
+
+def join_list_human(strings: Iterable[str], conj: str='and') -> str:
+	"""Join items into a single human-readable string with commas and the given conjunction."""
+	strings = list(strings)
+	if len(strings) > 2:
+		s = ', '.join(strings[:-1]) + ','
+		return ' '.join([s, conj, strings[-1]])
+	if len(strings) == 2:
+		return ' '.join([strings[0], conj, strings[1]])
+	if len(strings) == 1:
+		return strings[0]
+	return ''

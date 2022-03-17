@@ -58,8 +58,8 @@ def get_exporter(outfmt: str):
 	type=common.filepath(exists=True),
 	help='File containing query signatures, to use in place of GENOMES.',
 )
-@click.pass_obj
-def query_cmd(ctxobj: common.CLIContext,
+@click.pass_context
+def query_cmd(ctx: click.Context,
               listfile: Optional[TextIO],
               ldir: Optional[str],
               files: List[str],
@@ -70,13 +70,9 @@ def query_cmd(ctxobj: common.CLIContext,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 
-	count = (len(files) > 0) + (listfile is not None) + (sigfile is not None)
-	if count == 0:
-		raise click.ClickException('Must give value(s) for one of GENOMES, -s, or -l.')
-	if count > 1:
-		raise click.ClickException('The GENOMES, -s, and -l parameters are mutally exclusive.')
+	common.check_params_group(ctx, ['files', 'listfile', 'sigfile'], True, True)
 
-	db = ctxobj.get_database()
+	db = ctx.obj.get_database()
 	params = QueryParams(classify_strict=strict)
 	exporter = get_exporter(outfmt)
 	pconf = progress_config('click', file=sys.stderr)

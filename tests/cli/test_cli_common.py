@@ -111,3 +111,15 @@ class TestReadGenomesFileList:
 				assert file == Path(name)
 			else:
 				assert file == Path(wd) / name
+
+
+def test_params_by_name():
+	from gambit.cli.query import query_cmd as cmd
+
+	params = common.params_by_name(cmd)
+	assert set(params.values()) == set(cmd.params)
+	for name, param in params.items():
+		assert param.name == name
+
+	params2 = cmd.params[:3]
+	assert common.params_by_name(cmd, [param.name for param in params2]) == params2

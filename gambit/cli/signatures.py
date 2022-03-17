@@ -48,22 +48,22 @@ def signatures_group():
 	type=common.filepath(exists=True),
 	required=False,
 )
-@click.pass_obj
-def info(ctxobj: common.CLIContext, file: str, json: bool, pretty: bool, ids: bool, use_db: bool):
+@click.pass_context
+def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use_db: bool):
 	"""Inspect GAMBIT signature files."""
 
-	if use_db == (file is not None):
-		raise click.ClickException('Must specify exactly one of FILE or -d')
-	elif file is not None:
+	common.check_params_group(ctx, ['file', 'use_db'], True, True)
+	common.check_params_group(ctx, ['ids', 'json'], True, False)
+
+	if file is not None:
 		sigs = load_signatures(file)
+	elif use_db:
+		ctx.obj.require_signatures()
+		sigs = ctx.obj.signatures
 	else:
-		ctxobj.require_signatures()
-		sigs = ctxobj.signatures
+		assert 0
 
 	if ids:
-		if json:
-			raise click.ClickException('The -i/--ids and -j/--json options are mutually exclusive.')
-
 		for id in sigs.ids:
 			click.echo(id)
 
@@ -130,8 +130,8 @@ def info(ctxobj: common.CLIContext, file: str, json: bool, pretty: bool, ids: bo
 	help='Use k/prefix from reference database.'
 )
 @click.option('--dump-params', is_flag=True, hidden=True)
-@click.pass_obj
-def create(ctxobj: common.CLIContext,
+@click.pass_context
+def create(ctx: click.Context,
            list_file: Optional[TextIO],
            ldir: Optional[str],
            files: List[str],
@@ -145,14 +145,11 @@ def create(ctxobj: common.CLIContext,
            ):
 	"""Create k-mer signatures from genome sequences."""
 
+	common.check_params_group(ctx, ['list_file', 'files'], True, True)
+
 	# Get sequence files
-	if files:
-		if list_file is not None:
-			raise click.ClickException('-l and GENOMES are mutually exclusive.')
-	elif list_file is not None:
+	if list_file is not None:
 		files = common.read_genomes_list_file(list_file, ldir)
-	else:
-		raise click.ClickException('Must give value(s) for either -l or GENOMES.')
 
 	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 
@@ -161,8 +158,8 @@ def create(ctxobj: common.CLIContext,
 
 	if db_params:
 		if kspec is None:
-			ctxobj.require_signatures()
-			kspec = ctxobj.signatures.kmerspec
+			ctx.obj.require_signatures()
+			kspec = ctx.obj.signatures.kmerspec
 		else:
 			raise click.ClickException('The -k/--prefix and --db-params options are mutually exclusive.')
 

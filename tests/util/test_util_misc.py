@@ -60,3 +60,13 @@ def test_is_importable():
 	assert misc.is_importable('urllib.request')
 	assert not misc.is_importable('aklhaskhdkslkdjahkdf')
 	assert not misc.is_importable('urllib.aklhaskhdkslkdjahkdf')
+
+
+def test_join_list_human():
+	l = ['foo', 'bar', 'baz']
+	assert misc.join_list_human(l[:1]) == 'foo'
+	assert misc.join_list_human(l[:2]) == 'foo and bar'
+	assert misc.join_list_human(l[:3]) == 'foo, bar, and baz'
+	assert misc.join_list_human(l[:1], 'or') == 'foo'
+	assert misc.join_list_human(l[:2], 'or') == 'foo or bar'
+	assert misc.join_list_human(l[:3], 'or') == 'foo, bar, or baz'
