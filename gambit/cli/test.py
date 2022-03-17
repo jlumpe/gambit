@@ -33,14 +33,31 @@ def default_runner(**kw) -> CliRunner:
 	kw.setdefault('env', DEFAULT_ENV)
 	return CliRunner(**kw)
 
-def invoke_cli(args: Sequence, runner: Optional[CliRunner] = None, **kw) -> Result:
-	"""Invoke CLI in test context, using different defaults than base Click method."""
+def invoke_cli(args: Sequence, runner: Optional[CliRunner]=None, success: Optional[bool]=True, **kw) -> Result:
+	"""Invoke CLI in test context, using different defaults than base Click method.
+
+	Parameters
+	----------
+	args
+		Command line arguments.
+	runner
+		CLIRunner instance to use.
+	success
+		If not None, assert that the exit code is zero (True) or non-zero (False).
+	"""
 	if runner is None:
 		runner = default_runner(**pop_kwargs(kw, ['charset', 'echo_stdin', 'mix_stderr']))
 
 	kw.setdefault('catch_exceptions', False)
 	args = list(map(str, args))
-	return runner.invoke(cli, args, **kw)
+	result = runner.invoke(cli, args, **kw)
+
+	if success is True:
+		assert result.exit_code == 0
+	if success is False:
+		assert result.exit_code != 0
+
+	return result
 
 
 @contextmanager

@@ -26,14 +26,12 @@ class TestInfoCommand:
 
 	def test_standard(self, base_args):
 		result = invoke_cli(base_args)
-		assert result.exit_code == 0
 
 		# TODO: check
 
 	def test_json(self, base_args, testdb):
 		args = [*base_args, '--json']
 		result = invoke_cli(args)
-		assert result.exit_code == 0
 
 		data = json.loads(result.stdout)
 		assert data['count'] == len(testdb.ref_signatures)
@@ -43,7 +41,6 @@ class TestInfoCommand:
 	def test_ids(self, base_args, testdb):
 		args = [*base_args, '-i']
 		result = invoke_cli(args)
-		assert result.exit_code == 0
 
 		assert np.array_equal(result.stdout.splitlines(), testdb.ref_signatures.ids)
 
@@ -55,7 +52,7 @@ class TestInfoCommand:
 			'-d',
 			testdb.paths.ref_signatures,
 		]
-		assert invoke_cli(args).exit_code != 0
+		invoke_cli(args, success=False)
 
 
 class TestCreateCommand:
@@ -63,7 +60,7 @@ class TestCreateCommand:
 	@pytest.fixture(params=[False])
 	def infiles(self, request, testdb):
 		"""Input files. Parameter is whether or not they are gzipped."""
-		return testdb.get_query_files(request.param)
+		return [f.path for f in testdb.get_query_files(request.param)]
 
 	@pytest.fixture()
 	def outfile(self, tmp_path):
@@ -86,26 +83,23 @@ class TestCreateCommand:
 			args.extend(opts)
 
 			if positional_files:
-				args += [str(f.path) for f in infiles]
+				args += infiles
 			if list_file:
 				list_file = tmp_path / 'input-files.txt'
-				write_lines([f.path.name for f in infiles], list_file)
+				write_lines([f.name for f in infiles], list_file)
 				args += ['-l', str(list_file), f'--ldir={testdb.paths.query_genomes}']
 
-			return args
+			return list(map(str, args))
 
 		return make_args
 
 	@pytest.fixture(name='check_output')
 	def check_output_factory(self, outfile, testdb, infiles):
 
-		def check_output(ids=None):
+		def check_output(expected_ids):
 			out = load_signatures(outfile)
 			assert out == testdb.query_signatures  # Checks contents and .kmerspec
-
-			if ids is None:
-				ids = [f.path.name for f in infiles]
-			assert np.array_equal(out.ids, ids)
+			assert np.array_equal(out.ids, expected_ids)
 
 			return out
 
@@ -115,17 +109,16 @@ class TestCreateCommand:
 	def test_basic(self, make_args, check_output, infiles):
 		"""Test with basic arguments."""
 		args = make_args()
-		result = invoke_cli(args)
-		assert result.exit_code == 0
+		invoke_cli(args)
 
-		check_output()
+		ids = [f.name for f in infiles]
+		check_output(ids)
 
 	def test_list_file(self, make_args, infiles):
 		"""Test getting genome list from file."""
 
 		args = make_args(['--dump-params'], positional_files=False, list_file=True)
 		result = invoke_cli(args)
-		assert result.exit_code == 0
 		params = json.loads(result.stdout)
 		assert params['files'] == list(map(str, infiles))
 
@@ -154,8 +147,7 @@ class TestCreateCommand:
 			f'--meta-json={meta_file}',
 		])
 
-		result = invoke_cli(args)
-		assert result.exit_code == 0
+		invoke_cli(args)
 
 		out = check_output(ids)
 		assert out.meta == metadata
@@ -168,39 +160,37 @@ class TestCreateCommand:
 			with_kspec=False,
 		)
 		result = invoke_cli(args)
-		assert result.exit_code == 0
 		params = json.loads(result.stdout)
 		assert params['kmerspec'] == gjson.to_json(testdb.kmerspec)
-
-		# Without specifying db in root command group
-		args = make_args(['-d', '--dump-params'], with_kspec=False)
-		result = invoke_cli(args)
-		assert result.exit_code != 0
 
 	def test_invalid(self, testdb, make_args):
 		"""Test with invalid parameter combinations."""
 
 		# No genomes
 		args = make_args(positional_files=False, list_file=False)
-		assert invoke_cli(args).exit_code != 0
+		invoke_cli(args, success=False)
 
 		# Positional args and list file
 		args = make_args(positional_files=True, list_file=True)
-		assert invoke_cli(args).exit_code != 0
+		invoke_cli(args, success=False)
 
 		# No -k, --prefix, or --db-params
 		args = make_args(with_kspec=False)
-		assert invoke_cli(args).exit_code != 0
+		invoke_cli(args, success=False)
 
 		# Only -k/--prefix
 		args = make_args(['-k', str(testdb.kmerspec.k)], with_kspec=False)
-		assert invoke_cli(args).exit_code != 0
+		invoke_cli(args, success=False)
 		args = make_args(['--prefix', testdb.kmerspec.prefix_str], with_kspec=False)
-		assert invoke_cli(args).exit_code != 0
+		invoke_cli(args, success=False)
 
 		# Both both plus --db-params
 		args = make_args(['-d'])
-		assert invoke_cli(args).exit_code != 0
+		invoke_cli(args, success=False)
+
+		# --db-params without specifying db in root command group
+		args = make_args(['-d'], with_kspec=False)
+		invoke_cli(args, success=False)
 
 	def test_ids_wrong_len(self, testdb, make_args, tmp_path):
 		"""Test number of IDs do not match query files."""
@@ -210,5 +200,4 @@ class TestCreateCommand:
 		write_lines(ids, id_file)
 
 		args = make_args(['--ids', str(id_file)])
-		result = invoke_cli(args)
-		assert result.exit_code != 0
+		invoke_cli(args, success=False)

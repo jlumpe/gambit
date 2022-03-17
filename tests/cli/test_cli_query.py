@@ -22,10 +22,12 @@ def nqueries(request):
 	"""
 	return request.param
 
+
 @pytest.fixture()
 def query_files(testdb, nqueries):
 	"""Paths to query files."""
-	return testdb.get_query_files()[:nqueries]
+	return [f.path for f in testdb.get_query_files()[:nqueries]]
+
 
 @pytest.fixture(name='make_args')
 def make_args_factory(testdb, query_files, tmp_path):
@@ -38,21 +40,52 @@ def make_args_factory(testdb, query_files, tmp_path):
 
 		if output is not None:
 			args.append(f'--output={output}')
+
 		if outfmt is not None:
 			args.append(f'--outfmt={outfmt}')
 
 		if positional:
-			args.extend([str(f.path) for f in query_files])
+			args.extend(query_files)
+
 		if list_file:
 			list_file = tmp_path / 'genomes.txt'
-			write_lines([f.path.name for f in query_files], list_file)
-			args += ['-l', str(list_file), f'--ldir={query_files[0].path.parent}']
+			write_lines([f.name for f in query_files], list_file)
+			args += ['-l', str(list_file), f'--ldir={testdb.paths.query_genomes}']
+
 		if sig_file:
 			args.append(f'--sigfile={testdb.paths.query_signatures}')
 
-		return args
+		return list(map(str, args))
 
 	return make_args
+
+@pytest.fixture(name='make_ref_results')
+def make_ref_results_factory(testdb, nqueries):
+	"""
+	Make a copy of the reference query results to compare to, modifying to account for possibly
+	different query inputs and # of queries.
+	"""
+	def make_ref_results(strict, inputs=None, input_files=None, input_labels=None):
+		ref_results = copy(testdb.get_query_results(strict))
+		ref_results.items = ref_results.items[:nqueries]
+
+		# QueryInput values from list of files and/or labels
+		if input_files is not None:
+			if input_labels is not None:
+				inputs = list(map(QueryInput, input_labels, input_files))
+			else:
+				inputs = list(map(QueryInput.convert, input_files))
+		elif input_labels is not None:
+			inputs = list(map(QueryInput, input_labels))
+
+		# Replace inputs
+		if inputs is not None:
+			for item, input in zip_strict(ref_results.items, inputs):
+				item.input = input
+
+		return ref_results
+
+	return make_ref_results
 
 
 def check_results(results_file, out_fmt, ref_results):
@@ -72,22 +105,17 @@ def check_results(results_file, out_fmt, ref_results):
 	[
 		(None, False, 'json', False, False),
 		(20,   False, 'csv',  False, False),
-		(None, False, 'json', True,     False),
-		(20,   False, 'csv',  True,     False),
+		(None, False, 'json', True,  False),
+		(20,   False, 'csv',  True,  False),
 		(None, False, 'json', False, True),
 		(20,   True,  'json', False, False),
 	],
 	indirect=['nqueries'],
 )
-def test_full_query(make_args, testdb, query_files, nqueries, use_list_file, out_fmt, strict, gzipped, tmp_path):
+def test_full_query(make_args, make_ref_results, use_list_file, out_fmt, strict, gzipped, tmp_path):
 	"""Run a full query using the command line interface."""
 
-	# Modify results object to match file names and possibly reduced # of queries
-	ref_results = copy(testdb.get_query_results(strict))
-	ref_results.items = ref_results.items[:nqueries]
-	for item, file in zip_strict(ref_results.items, query_files):
-		item.input = QueryInput.convert(file)
-
+	ref_results = make_ref_results(strict)
 	results_file = tmp_path / ('results.' + out_fmt)
 
 	args = make_args(
@@ -98,24 +126,18 @@ def test_full_query(make_args, testdb, query_files, nqueries, use_list_file, out
 		strict=strict,
 	)
 
-	result = invoke_cli(args)
-	assert result.exit_code == 0
-
+	invoke_cli(args)
 	check_results(results_file, out_fmt, ref_results)
 
 
 # Not really necessary to check all combinations of parameters.
 @pytest.mark.parametrize('out_fmt', ['json'])
 @pytest.mark.parametrize('strict', [False])
-def test_sigfile(make_args, testdb, out_fmt, strict, tmp_path):
+def test_sigfile(make_args, make_ref_results, testdb, out_fmt, strict, tmp_path):
 	"""Test using signature file instead of parsing genome files."""
 
 	results_file = tmp_path / ('results.' + out_fmt)
-
-	# Modify results object inputs to match signature file
-	ref_results = copy(testdb.get_query_results(strict))
-	for item, id_ in zip_strict(ref_results.items, testdb.query_signatures.ids):
-		item.input = QueryInput(id_)
+	ref_results = make_ref_results(strict, input_labels=testdb.query_signatures.ids)
 
 	args = make_args(
 		sig_file=True,
@@ -124,9 +146,7 @@ def test_sigfile(make_args, testdb, out_fmt, strict, tmp_path):
 		strict=False,
 	)
 
-	result = invoke_cli(args)
-	assert result.exit_code == 0
-
+	invoke_cli(args)
 	check_results(results_file, out_fmt, ref_results)
 
 
@@ -137,12 +157,12 @@ def test_invalid(make_args, tmp_path):
 
 	# No genomes or signatures
 	args = make_args(output=results_file)
-	assert invoke_cli(args).exit_code != 0
+	invoke_cli(args, success=False)
 
 	# Multiple inputs
 	args = make_args(output=results_file, positional=True, list_file=True)
-	assert invoke_cli(args).exit_code != 0
+	assert invoke_cli(args, success=False)
 	args = make_args(output=results_file, positional=True, sig_file=True)
-	assert invoke_cli(args).exit_code != 0
+	assert invoke_cli(args, success=False)
 	args = make_args(output=results_file, list_file=True, sig_file=True)
-	assert invoke_cli(args).exit_code != 0
+	assert invoke_cli(args, success=False)
