@@ -209,6 +209,30 @@ def maybe_open(file_or_path: Union[FilePath, IO], mode: str = 'r', **open_kw) ->
 		return open(path, mode, **open_kw)
 
 
+def read_lines(file_or_path: Union[FilePath, IO], strip: bool=True, skip_empty: bool=False) -> Iterable[str]:
+	"""Iterate over lines in text file.
+
+	Parameters
+	----------
+	file_or_path
+		A path-like object or open file object.
+	strip
+		Strip whitespace from lines.
+	skip_empty
+		Omit empty lines.
+
+	Returns
+	-------
+	Iterable[str]
+		Iterator over lines with trailing newlines removed.
+	"""
+	with maybe_open(file_or_path) as file:
+		for line in file:
+			line = line.strip() if strip else line.rstrip('\n')
+			if not (skip_empty and not line):
+				yield line
+
+
 def write_lines(lines: Iterable, file_or_path: Union[FilePath, IO]):
 	"""Write strings to text file, one per line.
 

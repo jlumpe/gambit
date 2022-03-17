@@ -58,7 +58,8 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 	if file is not None:
 		sigs = load_signatures(file)
 	elif use_db:
-		ctx.obj.require_signatures()
+		ctxobj = ctx.obj  # type: common.CLIContext
+		ctxobj.require_signatures()
 		sigs = ctx.obj.signatures
 	else:
 		assert 0
@@ -134,7 +135,7 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 def create(ctx: click.Context,
            list_file: Optional[TextIO],
            ldir: Optional[str],
-           files: List[str],
+           files_arg: List[str],
            output: str,
            prefix: Optional[str],
            k: Optional[int],
@@ -145,12 +146,10 @@ def create(ctx: click.Context,
            ):
 	"""Create k-mer signatures from genome sequences."""
 
-	common.check_params_group(ctx, ['list_file', 'files'], True, True)
+	common.check_params_group(ctx, ['list_file', 'files_arg'], True, True)
 
 	# Get sequence files
-	if list_file is not None:
-		files = common.read_genomes_list_file(list_file, ldir)
-
+	ids, files = common.get_sequence_files(files_arg, list_file, ldir)
 	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 
 	# Get kmerspec
@@ -158,7 +157,8 @@ def create(ctx: click.Context,
 
 	if db_params:
 		if kspec is None:
-			ctx.obj.require_signatures()
+			ctxobj = ctx.obj  # type: common.CLIContext
+			ctxobj.require_signatures()
 			kspec = ctx.obj.signatures.kmerspec
 		else:
 			raise click.ClickException('The -k/--prefix and --db-params options are mutually exclusive.')
@@ -176,9 +176,6 @@ def create(ctx: click.Context,
 		ids = [line.strip() for line in ids_file.readlines()]
 		if len(ids) != len(seqfiles):
 			raise click.ClickException(f'Number of IDs ({len(ids)}) does not match number of genomes ({len(seqfiles)}).')
-
-	else:
-		ids = [f.path.name for f in seqfiles]
 
 	# Dump parameters
 	if dump_params:

@@ -1,4 +1,4 @@
-from typing import Optional, Sequence, TextIO, Iterable
+from typing import Optional, Sequence, TextIO, Union, Iterable, Tuple, List
 from pathlib import Path
 
 import click
@@ -11,7 +11,7 @@ from gambit.db import ReferenceDatabase
 from gambit.db.models import only_genomeset
 from gambit.db.sqla import ReadOnlySession
 from gambit.sigs.base import ReferenceSignatures, load_signatures
-from gambit.util.io import FilePath
+from gambit.util.io import FilePath, read_lines
 from gambit.util.misc import join_list_human
 
 
@@ -159,7 +159,7 @@ def dirpath(**kw) -> click.Path:
 
 def genome_files_arg():
 	return click.argument(
-		'files',
+		'files_arg',
 		nargs=-1,
 		type=filepath(exists=True),
 		metavar='GENOMES...',
@@ -188,8 +188,41 @@ def kspec_from_params(k: int, prefix: str) -> Optional[KmerSpec]:
 
 	return KmerSpec(k, prefix)
 
-def read_genomes_list_file(fobj: TextIO, parent: FilePath = Path('.')):
-	return [Path(parent) / line.strip() for line in fobj.readlines() if line.strip()]
+def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
+                       listfile: Union[None, FilePath, TextIO]=None,
+                       listfile_dir: Optional[str]=None,
+                       ) -> Tuple[Optional[List[str]], Optional[List[Path]]]:
+	"""Get list of sequence file paths from several types of CLI arguments.
+
+	Does not check for conflict between ``explicit`` and ``listfile``.
+
+	Parameters
+	----------
+	explicit
+		List of paths given explicitly, such as with a positional argument.
+	listfile
+		File listing sequence files, one per line.
+	listfile_dir
+		Parent directory for files in ``listfile``.
+
+	Returns
+	-------
+	Tuple[Optional[List[str]], Optional[List[Path]]]
+		``(ids, paths)`` tuple. ``ids`` is a list of string IDs that can be used to label output.
+		If the ``explicit`` and ``listfile`` arguments are None both components of the tuple will be
+		None as well.
+	"""
+	if explicit:
+		files = list(map(Path, explicit))
+		return list(map(str, files)), files
+
+	elif listfile is not None:
+		lines = list(read_lines(listfile, skip_empty=True))
+		paths = [Path(listfile_dir) / line for line in lines]
+		return lines, paths
+
+	else:
+		return None, None
 
 
 def params_by_name(cmd: click.Command, names: Optional[Iterable[str]]=None):

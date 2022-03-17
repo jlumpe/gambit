@@ -111,7 +111,7 @@ class TestCreateCommand:
 		args = make_args()
 		invoke_cli(args)
 
-		ids = [f.name for f in infiles]
+		ids = list(map(str, infiles))
 		check_output(ids)
 
 	def test_list_file(self, make_args, infiles):
@@ -121,6 +121,7 @@ class TestCreateCommand:
 		result = invoke_cli(args)
 		params = json.loads(result.stdout)
 		assert params['files'] == list(map(str, infiles))
+		assert params['ids'] == [f.name for f in infiles]
 
 	def test_with_metadata(self, testdb, make_args, check_output, tmp_path):
 		"""Test with ids and metadata JSON added."""

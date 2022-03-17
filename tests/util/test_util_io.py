@@ -185,3 +185,22 @@ class TestMaybeOpen:
 				assert f2 is f
 
 			assert not f.closed
+
+
+@pytest.mark.parametrize('strip', [False, True])
+@pytest.mark.parametrize('skip_empty', [False, True])
+def test_read_lines(strip, skip_empty, tmp_path):
+	"""Test the read_lines() function."""
+	file = tmp_path / 'test.txt'
+	lines = list(map(str, range(20)))
+
+	with open(file, 'w') as f:
+		for i, line in enumerate(lines):
+			# Extra random whitespace
+			f.write(f'\t{line}  ' if strip else line)
+			f.write('\n')
+			if skip_empty and i % 3 == 0:
+				f.write('  \n' if strip else '\n')
+
+	lines2 = list(ioutil.read_lines(file, strip, skip_empty))
+	assert lines2 == lines

@@ -2,12 +2,14 @@
 Test the 'gambit query' CLI command using the testdb_210818 database.
 """
 
+import os
 from copy import copy
 
 import pytest
 
 from gambit.cli.test import invoke_cli
 from gambit.results.test import check_json_results, check_csv_results
+from gambit.seq import SequenceFile
 from gambit.query import QueryInput
 from gambit.util.misc import zip_strict
 from gambit.util.io import write_lines
@@ -26,7 +28,18 @@ def nqueries(request):
 @pytest.fixture()
 def query_files(testdb, nqueries):
 	"""Paths to query files."""
-	return [f.path for f in testdb.get_query_files()[:nqueries]]
+	return [SequenceFile(f.path, f.format, f.compression) for f in testdb.get_query_files()[:nqueries]]
+
+
+@pytest.fixture()
+def cd_query_genomes(testdb):
+	"""Change working directory to query genomes directory."""
+	old_wd = os.getcwd()
+	try:
+		os.chdir(testdb.paths.query_genomes)
+		yield
+	finally:
+		os.chdir(old_wd)
 
 
 @pytest.fixture(name='make_args')
@@ -49,7 +62,7 @@ def make_args_factory(testdb, query_files, tmp_path):
 
 		if list_file:
 			list_file = tmp_path / 'genomes.txt'
-			write_lines([f.name for f in query_files], list_file)
+			write_lines(query_files, list_file)
 			args += ['-l', str(list_file), f'--ldir={testdb.paths.query_genomes}']
 
 		if sig_file:
@@ -60,28 +73,17 @@ def make_args_factory(testdb, query_files, tmp_path):
 	return make_args
 
 @pytest.fixture(name='make_ref_results')
-def make_ref_results_factory(testdb, nqueries):
+def make_ref_results_factory(testdb, nqueries, query_files):
 	"""
 	Make a copy of the reference query results to compare to, modifying to account for possibly
 	different query inputs and # of queries.
 	"""
-	def make_ref_results(strict, inputs=None, input_files=None, input_labels=None):
+	def make_ref_results(strict, inputs):
 		ref_results = copy(testdb.get_query_results(strict))
 		ref_results.items = ref_results.items[:nqueries]
 
-		# QueryInput values from list of files and/or labels
-		if input_files is not None:
-			if input_labels is not None:
-				inputs = list(map(QueryInput, input_labels, input_files))
-			else:
-				inputs = list(map(QueryInput.convert, input_files))
-		elif input_labels is not None:
-			inputs = list(map(QueryInput, input_labels))
-
-		# Replace inputs
-		if inputs is not None:
-			for item, input in zip_strict(ref_results.items, inputs):
-				item.input = input
+		for item, input in zip_strict(ref_results.items, inputs):
+			item.input = input
 
 		return ref_results
 
@@ -112,10 +114,12 @@ def check_results(results_file, out_fmt, ref_results):
 	],
 	indirect=['nqueries'],
 )
-def test_full_query(make_args, make_ref_results, use_list_file, out_fmt, strict, gzipped, tmp_path):
+def test_full_query(make_args, make_ref_results, use_list_file, out_fmt, strict, gzipped, query_files, tmp_path):
 	"""Run a full query using the command line interface."""
 
-	ref_results = make_ref_results(strict)
+	inputs = list(map(QueryInput.convert, query_files))
+	ref_results = make_ref_results(strict, inputs)
+
 	results_file = tmp_path / ('results.' + out_fmt)
 
 	args = make_args(
@@ -136,8 +140,10 @@ def test_full_query(make_args, make_ref_results, use_list_file, out_fmt, strict,
 def test_sigfile(make_args, make_ref_results, testdb, out_fmt, strict, tmp_path):
 	"""Test using signature file instead of parsing genome files."""
 
+	inputs = list(map(QueryInput, testdb.query_signatures.ids))
+	ref_results = make_ref_results(strict, inputs)
+
 	results_file = tmp_path / ('results.' + out_fmt)
-	ref_results = make_ref_results(strict, input_labels=testdb.query_signatures.ids)
 
 	args = make_args(
 		sig_file=True,

@@ -64,7 +64,7 @@ class QueryInput:
 		if isinstance(x, str):
 			return QueryInput(x)
 		if isinstance(x, SequenceFile):
-			return QueryInput(x.path.name, x)
+			return QueryInput(str(x.path), x)
 		raise TypeError(f'Cannot convert {type(x)} instance to QueryInput')
 
 

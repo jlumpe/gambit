@@ -62,7 +62,7 @@ def get_exporter(outfmt: str):
 def query_cmd(ctx: click.Context,
               listfile: Optional[TextIO],
               ldir: Optional[str],
-              files: List[str],
+              files_arg: List[str],
               sigfile: Optional[str],
               output: TextIO,
               outfmt: str,
@@ -70,7 +70,7 @@ def query_cmd(ctx: click.Context,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 
-	common.check_params_group(ctx, ['files', 'listfile', 'sigfile'], True, True)
+	common.check_params_group(ctx, ['files_arg', 'listfile', 'sigfile'], True, True)
 
 	db = ctx.obj.get_database()
 	params = QueryParams(classify_strict=strict)
@@ -83,9 +83,8 @@ def query_cmd(ctx: click.Context,
 		results = query(db, sigs, params, inputs=inputs, progress=pconf)
 
 	else:
-		if listfile is not None:
-			files = common.read_genomes_list_file(listfile, ldir)
+		ids, files = common.get_sequence_files(files_arg, listfile, ldir)
 		seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
-		results = query_parse(db, seqfiles, params, progress=pconf)
+		results = query_parse(db, seqfiles, params, file_labels=ids, progress=pconf)
 
 	exporter.export(output, results)

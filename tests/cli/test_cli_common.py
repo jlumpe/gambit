@@ -10,6 +10,7 @@ from gambit.cli import cli, common
 from gambit.cli.test import default_runner, allow_no_args
 from gambit.db import ReferenceDatabase
 from gambit.util.misc import zip_strict
+from gambit.util.io import write_lines
 
 
 class TestCLIContext:
@@ -78,39 +79,39 @@ class TestCLIContext:
 		assert np.array_equal(db.signatures.ids, ctx_db.signatures.ids)
 
 
-class TestReadGenomesFileList:
-	"""Test read_genomes_list_file()"""
+class TestGetSequenceFiles:
+	"""Test the get_sequence_files() function."""
 
-	@pytest.fixture()
-	def genomes_file(self, tmpdir):
-		return tmpdir / 'genomes.txt'
+	def test_explicit(self):
+		"""Test given explicit paths from CLI argument."""
+		paths = [f'path/to/{i + 1}.fasta' for i in range(10)]
+		ids, paths2 = common.get_sequence_files(paths, None, None)
+		assert ids == paths
+		assert paths2 == list(map(Path, paths))
 
 	@pytest.mark.parametrize('wd,absolute', [
 		('.', False),                # Relative to current directory
 		('path/to/genomes', False),  # Relative to other directory
 		('.', True),                 # Absolute paths in file, ignore wd
 	])
-	def test_(self, wd, absolute, genomes_file):
-		names = [f'{i + 1}.fasta' for i in range(10)]
+	def test_listfile(self, wd, absolute, tmpdir):
+		"""Test reading file paths from list file."""
+		paths = [f'{i + 1}.fasta' for i in range(10)]
 		if absolute:
 			wd2 = '/home/jlumpe'
-			names = [f'{wd2}/{name}' for name in names]
+			paths = [f'{wd2}/{name}' for name in paths]
 
-		with open(genomes_file, 'w') as f:
-			for i, name in enumerate(names):
-				# Extra random whitespace
-				f.write(f'\t{name}\n')
-				if i % 3 == 0:
-					f.write('  \n')
+		listfile = tmpdir / 'files.txt'
+		write_lines(paths, listfile)
 
-		files = common.read_genomes_list_file(genomes_file, wd)
+		ids, paths2 = common.get_sequence_files([], listfile, wd)
 
-		for name, file in zip_strict(names, files):
-			assert isinstance(file, Path)
+		for p1, id, p2 in zip_strict(paths, ids, paths2):
+			assert id == p1
 			if absolute:
-				assert file == Path(name)
+				assert p2 == Path(p1)
 			else:
-				assert file == Path(wd) / name
+				assert p2 == Path(wd) / p1
 
 
 def test_params_by_name():

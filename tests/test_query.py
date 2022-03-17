@@ -17,7 +17,7 @@ class TestQueryInput:
 
 		assert QueryInput.convert(qi) is qi
 		assert QueryInput.convert('foo') == QueryInput('foo', None)
-		assert QueryInput.convert(file) == QueryInput('file.fa', file)
+		assert QueryInput.convert(file) == QueryInput(str(file.path), file)
 
 		with pytest.raises(TypeError):
 			QueryInput.convert(3.4)
