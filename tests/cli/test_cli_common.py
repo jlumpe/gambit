@@ -6,8 +6,7 @@ import pytest
 import click
 import numpy as np
 
-from gambit.cli import cli
-from gambit.cli.common import CLIContext, read_genomes_list_file
+from gambit.cli import cli, common
 from gambit.cli.test import default_runner, allow_no_args
 from gambit.db import ReferenceDatabase
 from gambit.util.misc import zip_strict
@@ -21,7 +20,7 @@ class TestCLIContext:
 		with runner.isolation(env=env), allow_no_args(cli):
 			ctx = cli.make_context('gambit', args)
 
-		return CLIContext(ctx)
+		return common.CLIContext(ctx)
 
 	def test_no_db(self):
 		"""Test with no database specified."""
@@ -104,7 +103,7 @@ class TestReadGenomesFileList:
 				if i % 3 == 0:
 					f.write('  \n')
 
-		files = read_genomes_list_file(genomes_file, wd)
+		files = common.read_genomes_list_file(genomes_file, wd)
 
 		for name, file in zip_strict(names, files):
 			assert isinstance(file, Path)

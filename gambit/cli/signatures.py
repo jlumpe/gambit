@@ -3,8 +3,7 @@ import sys
 
 import click
 
-from .common import CLIContext, genome_files_arg, print_table, filepath, dirpath, kspec_params, \
-	kspec_from_params, read_genomes_list_file
+from . import common
 from .root import cli
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
@@ -46,11 +45,11 @@ def signatures_group():
 )
 @click.argument(
 	'file',
-	type=filepath(exists=True),
+	type=common.filepath(exists=True),
 	required=False,
 )
 @click.pass_obj
-def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use_db: bool):
+def info(ctxobj: common.CLIContext, file: str, json: bool, pretty: bool, ids: bool, use_db: bool):
 	"""Inspect GAMBIT signature files."""
 
 	if use_db == (file is not None):
@@ -84,7 +83,7 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 			('Prefix:', sigs.kmerspec.prefix.decode('ascii')),
 			('Data type:', sigs.dtype),
 		]
-		print_table(rows1, colsep='  ')
+		common.print_table(rows1, colsep='  ')
 
 		print('Metadata:')
 
@@ -96,23 +95,23 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 			('Genome ID attribute:', format_none(sigs.meta.id_attr)),
 			('Has extra:', 'yes' if sigs.meta.extra else 'no'),
 		]
-		print_table(rows2, colsep='  ', left='  ')
+		common.print_table(rows2, colsep='  ', left='  ')
 
 
 @signatures_group.command(no_args_is_help=True)
-@genome_files_arg()
+@common.genome_files_arg()
 @click.option(
 	'-l', 'list_file',
 	type=click.File('r'),
 	metavar='LISTFILE',
 	help='File containing names/paths of genome files.',
 )
-@click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
-@kspec_params
+@click.option('--ldir', type=common.dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
+@common.kspec_params
 @click.option(
 	'-o', '--output',
 	required=True,
-	type=filepath(writable=True),
+	type=common.filepath(writable=True),
 	help='File path to write to.',
 )
 @click.option(
@@ -132,7 +131,7 @@ def info(ctxobj: CLIContext, file: str, json: bool, pretty: bool, ids: bool, use
 )
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_obj
-def create(ctxobj: CLIContext,
+def create(ctxobj: common.CLIContext,
            list_file: Optional[TextIO],
            ldir: Optional[str],
            files: List[str],
@@ -151,14 +150,14 @@ def create(ctxobj: CLIContext,
 		if list_file is not None:
 			raise click.ClickException('-l and GENOMES are mutually exclusive.')
 	elif list_file is not None:
-		files = read_genomes_list_file(list_file, ldir)
+		files = common.read_genomes_list_file(list_file, ldir)
 	else:
 		raise click.ClickException('Must give value(s) for either -l or GENOMES.')
 
 	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 
 	# Get kmerspec
-	kspec = kspec_from_params(k, prefix)
+	kspec = common.kspec_from_params(k, prefix)
 
 	if db_params:
 		if kspec is None:

@@ -3,7 +3,7 @@ from typing import TextIO, Optional, List
 
 import click
 
-from .common import CLIContext, genome_files_arg, filepath, dirpath, read_genomes_list_file
+from . import common
 from .root import cli
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import progress_config
@@ -28,14 +28,14 @@ def get_exporter(outfmt: str):
 
 
 @cli.command(name='query', no_args_is_help=True)
-@genome_files_arg()
+@common.genome_files_arg()
 @click.option(
 	'-l', 'listfile',
 	type=click.File('r'),
 	metavar='LISTFILE',
 	help='File containing paths to genomes.',
 )
-@click.option('--ldir', type=dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
+@click.option('--ldir', type=common.dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
 @click.option(
 	'-o', '--output',
 	type=click.File(mode='w'),
@@ -55,11 +55,11 @@ def get_exporter(outfmt: str):
 )
 @click.option(
 	'-s', '--sigfile',
-	type=filepath(exists=True),
+	type=common.filepath(exists=True),
 	help='File containing query signatures, to use in place of GENOMES.',
 )
 @click.pass_obj
-def query_cmd(ctxobj: CLIContext,
+def query_cmd(ctxobj: common.CLIContext,
               listfile: Optional[TextIO],
               ldir: Optional[str],
               files: List[str],
@@ -88,7 +88,7 @@ def query_cmd(ctxobj: CLIContext,
 
 	else:
 		if listfile is not None:
-			files = read_genomes_list_file(listfile, ldir)
+			files = common.read_genomes_list_file(listfile, ldir)
 		seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
 		results = query_parse(db, seqfiles, params, progress=pconf)
 
