@@ -3,6 +3,8 @@
 
 ## 0.5.0
 
+* New features
+    * `gambit dist` command for calculating distance matrices.
 * CLI
   * Sequence files used as input to commands may be gzipped.
   * Minor changes to options of subcommands in `signatures` group.
