@@ -14,6 +14,10 @@ from gambit.util.progress import progress_config
 from gambit.cluster import dump_dmat_csv
 
 
+def fmt_kspec(kspec):
+	return f'{kspec.k}/{kspec.prefix_str}'
+
+
 @cli.command(name='dist', no_args_is_help=True)
 @common.kspec_params
 @click.option('-o', 'output', type=common.filepath(writable=True), required=True, help='Output file.')
@@ -84,8 +88,8 @@ def dist_cmd(ctx: click.Context,
 	if kspec is None:
 		if query_sigs is not None and ref_sigs is not None and query_sigs.kmerspec != ref_sigs.kmerspec:
 			raise click.ClickException(
-				f'K-mer search parameters of query signature file ({query_sigs.kmerspec}) do not '
-				f'match those of reference signature file ({ref_sigs.kmerspec}).'
+				f'K-mer search parameters of query signatures ({fmt_kspec(query_sigs.kmerspec)}) do '
+				f'not match those of reference signatures ({fmt_kspec(ref_sigs.kmerspec)}).'
 			)
 		if query_sigs is not None:
 			kspec = query_sigs.kmerspec
@@ -97,12 +101,12 @@ def dist_cmd(ctx: click.Context,
 	else:
 		if query_sigs is not None and query_sigs.kmerspec != kspec:
 			raise click.ClickException(
-				f'K-mer search parameters from command line options ({kspec}) do not match those of '
-				f'query signature file ({query_sigs.kmerspec})')
+				f'K-mer search parameters from command line options ({fmt_kspec(kspec)}) do not'
+				f'match those of query signatures ({fmt_kspec(query_sigs.kmerspec)}).')
 		if ref_sigs is not None and ref_sigs.kmerspec != kspec:
 			raise click.ClickException(
-				f'K-mer search parameters from command line options ({kspec}) do not match those of '
-				f'reference signature file ({ref_sigs.kmerspec})')
+				f'K-mer search parameters from command line options ({fmt_kspec(kspec)}) do not'
+				f'match those of reference signatures ({fmt_kspec(ref_sigs.kmerspec)}).')
 
 	# Dump parsed parameters
 	if dump_params:
