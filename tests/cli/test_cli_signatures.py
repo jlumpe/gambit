@@ -87,7 +87,7 @@ class TestCreateCommand:
 			if list_file:
 				list_file = tmp_path / 'input-files.txt'
 				write_lines([f.name for f in infiles], list_file)
-				args += ['-l', str(list_file), f'--ldir={testdb.paths.query_genomes}']
+				args += ['-l', str(list_file), f'--ldir={testdb.paths.query_genomes_dir}']
 
 			return list(map(str, args))
 
@@ -138,7 +138,7 @@ class TestCreateCommand:
 			gjson.dump(metadata, f)
 
 		# IDs file
-		ids = [f'seq-{i}' for i in range(len(testdb.queries))]
+		ids = [f'seq-{i}' for i in range(len(testdb.query_genomes))]
 		id_file = tmp_path / 'ids.txt'
 		write_lines(ids, id_file)
 
@@ -196,7 +196,7 @@ class TestCreateCommand:
 	def test_ids_wrong_len(self, testdb, make_args, tmp_path):
 		"""Test number of IDs do not match query files."""
 
-		ids = [f'seq-{i}' for i in range(len(testdb.queries) - 1)]
+		ids = [f'seq-{i}' for i in range(len(testdb.query_genomes) - 1)]
 		id_file = tmp_path / 'ids2.txt'
 		write_lines(ids, id_file)
 

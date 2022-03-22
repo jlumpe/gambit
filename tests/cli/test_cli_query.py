@@ -36,7 +36,7 @@ def cd_query_genomes(testdb):
 	"""Change working directory to query genomes directory."""
 	old_wd = os.getcwd()
 	try:
-		os.chdir(testdb.paths.query_genomes)
+		os.chdir(testdb.paths.query_genomes_dir)
 		yield
 	finally:
 		os.chdir(old_wd)
@@ -63,7 +63,7 @@ def make_args_factory(testdb, query_files, tmp_path):
 		if list_file:
 			list_file = tmp_path / 'genomes.txt'
 			write_lines(query_files, list_file)
-			args += ['-l', str(list_file), f'--ldir={testdb.paths.query_genomes}']
+			args += ['-l', str(list_file), f'--ldir={testdb.paths.query_genomes_dir}']
 
 		if sig_file:
 			args.append(f'--sigfile={testdb.paths.query_signatures}')

@@ -59,8 +59,10 @@ class TestDB:
 			root=root,
 			ref_genomes=root / 'ref-genomes.db',
 			ref_signatures=root / 'ref-signatures.h5',
+			refs_table=root / 'ref-genomes.csv',
+			ref_genomes_dir=root / 'ref-genomes/',
 			queries_table=root / 'queries/queries.csv',
-			query_genomes=root / 'queries/genomes/',
+			query_genomes_dir=root / 'queries/genomes/',
 			query_signatures=root / 'queries/query-signatures.h5',
 			results=root / 'results/',
 		)
@@ -105,36 +107,50 @@ class TestDB:
 		gset = only_genomeset(session)
 		return ReferenceDatabase(gset, self.ref_signatures)
 
-	@lazy
-	def queries(self):
-		"""Query files and their expected results."""
+	@classmethod
+	def _add_file_cols(cls, genomes_dir, row):
+		row['file'] = SequenceFile(
+			path=genomes_dir / (row['name'] + '.fasta'),
+			format='fasta',
+		)
+		row['file_gz'] = SequenceFile(
+			path=genomes_dir / (row['name'] + '.fasta.gz'),
+			format='fasta',
+			compression='gzip',
+		)
 
-		genomes_dir = self.paths.query_genomes
+	@lazy
+	def query_genomes(self):
+		"""Query genomes and their expected results."""
 
 		with open(self.paths.queries_table, newline='') as f:
 			rows = list(DictReader(f))
 
 		for row in rows:
 			row['warnings'] = row['warnings'].lower() == 'true'
-			row['file'] = SequenceFile(
-				path=genomes_dir / (row['name'] + '.fasta'),
-				format='fasta',
-			)
-			row['file_gz'] = SequenceFile(
-				path=genomes_dir / (row['name'] + '.fasta.gz'),
-				format='fasta',
-				compression='gzip',
-			)
+			self._add_file_cols(self.paths.query_genomes_dir, row)
 
 		return rows
 
-	def ensure_queries_gz(self):
-		"""Ensure gzipped versions of the testdb query files are available.
+	@lazy
+	def ref_genomes(self):
+		"""Reference genomes and their attributes."""
+
+		with open(self.paths.refs_table, newline='') as f:
+			rows = list(DictReader(f))
+
+		for row in rows:
+			self._add_file_cols(self.paths.ref_genomes_dir, row)
+
+		return rows
+
+	@classmethod
+	def _ensure_gz(cls, items):
+		"""Ensure gzipped versions of the query/ref files are available.
 
 		These aren't added to version control, so they are created the first time they are needed.
 		"""
-
-		for item in self.queries:
+		for item in items:
 			dst = item['file_gz'].path
 			if dst.is_file():
 				continue
@@ -145,13 +161,20 @@ class TestDB:
 			with gzip.open(dst, 'wt') as f:
 				f.write(content)
 
-	def get_query_files(self, gzipped: bool = False):
+	@classmethod
+	def _get_genome_files(cls, items, gzipped):
 		if gzipped:
 			col = 'file_gz'
-			self.ensure_queries_gz()
+			cls._ensure_gz(items)
 		else:
 			col = 'file'
-		return [q[col] for q in self.queries]
+		return [q[col] for q in items]
+
+	def get_query_files(self, gzipped: bool=False):
+		return self._get_genome_files(self.query_genomes, gzipped)
+
+	def get_ref_files(self, gzipped: bool=False):
+		return self._get_genome_files(self.ref_genomes, gzipped)
 
 	def get_query_results(self, strict: bool, session=None):
 		"""Pre-calculated query results."""

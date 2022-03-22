@@ -28,7 +28,7 @@ def test_query_python(testdb, strict):
 	"""Run a full query using the Python API."""
 	ref_results = testdb.get_query_results(strict)
 	params = ref_results.params
-	query_files = [item['file'] for item in testdb.queries]
+	query_files = [item['file'] for item in testdb.query_genomes]
 
 	results = query_parse(testdb.refdb, query_files, params)
 
