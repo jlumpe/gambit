@@ -2,13 +2,13 @@
 
 import pytest
 import numpy as np
-import pandas as pd
 
 from gambit.kmers import KmerSpec
 from gambit.metric import jaccarddist_matrix
 from gambit.sigs import SignatureList, dump_signatures
 from gambit.cli.test import invoke_cli
 from gambit.util.io import write_lines
+from gambit.cluster import load_dmat_csv
 
 
 @pytest.fixture()
@@ -104,8 +104,9 @@ def expected_matrix_square(testdb):
 @pytest.fixture(name='check_output')
 def check_output_factory(outfile, expected_matrix, nqueries, nrefs):
 	def check_output():
-		out_df = pd.read_csv(outfile, index_col=0)
-		assert np.allclose(out_df.values, expected_matrix[:nqueries, :nrefs], atol=1e-4)
+		dmat, row_ids, col_ids = load_dmat_csv(outfile)
+		assert np.allclose(dmat, expected_matrix[:nqueries, :nrefs], atol=1e-4)
+		# TODO check row/column IDs
 
 	return check_output
 
@@ -141,7 +142,6 @@ def test_basic(make_args, check_output, q_type, r_type):
 	)
 	invoke_cli(args)
 	check_output()
-	# TODO check row/column IDs
 
 def test_kspec(make_args, testdb, tmp_path):
 	"""Test selection of k-mer params and errors on inconsistencies."""
@@ -196,7 +196,6 @@ def test_square(make_args, q_type, outfile, expected_matrix_square, nqueries):
 	)
 	invoke_cli(args)
 
-	out_df = pd.read_csv(outfile, index_col=0)
-	assert np.allclose(out_df.values, expected_matrix_square[:nqueries, :nqueries], atol=1e-4)
-	assert np.array_equal(out_df.index, out_df.columns)
-
+	out_dmat, row_ids, col_ids = load_dmat_csv(outfile)
+	assert np.allclose(out_dmat, expected_matrix_square[:nqueries, :nqueries], atol=1e-4)
+	assert row_ids == col_ids
