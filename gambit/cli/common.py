@@ -13,6 +13,7 @@ from gambit.db.sqla import ReadOnlySession
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath, read_lines
 from gambit.util.misc import join_list_human
+from gambit.seq import validate_dna_seq_bytes
 
 
 class CLIContext:
@@ -170,6 +171,7 @@ def kspec_params(f):
 	popt = click.option(
 		'-p', '--prefix',
 		help='K-mer prefix.',
+		metavar='NUCS',
 	)
 	kopt = click.option(
 		'-k',
@@ -186,7 +188,22 @@ def kspec_from_params(k: int, prefix: str) -> Optional[KmerSpec]:
 	if not (prefix is not None and k is not None):
 		raise click.ClickException('Must specify values for both -k and --prefix arguments.')
 
-	return KmerSpec(k, prefix)
+	# TODO - minimum k and prefix length are fairly arbitrary here - is there a better method?
+	MIN_K = 5
+	if k < MIN_K:
+		raise click.ClickException(f'k must be at least {MIN_K}')
+
+	MIN_PREFIX_LEN = 2
+	if len(prefix) < MIN_PREFIX_LEN:
+		raise click.ClickException(f'Prefix length must be at least {MIN_PREFIX_LEN}')
+
+	prefix_bytes = prefix.upper().encode('ascii')
+	try:
+		validate_dna_seq_bytes(prefix_bytes)
+	except ValueError:
+		raise click.ClickException(f'Invalid nucleotide codes in prefix: {prefix}')
+
+	return KmerSpec(k, prefix_bytes)
 
 def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
                        listfile: Union[None, FilePath, TextIO]=None,
