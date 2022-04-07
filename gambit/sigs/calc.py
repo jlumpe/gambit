@@ -1,6 +1,6 @@
 """Calculate k-mer signatures from sequence data."""
 
-from typing import Optional, Sequence, MutableSet, Union, Iterable
+from typing import Optional, Sequence, MutableSet, MutableMapping, Union, Iterable
 from abc import abstractmethod
 from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from contextlib import nullcontext
@@ -43,41 +43,80 @@ class KmerAccumulator(MutableSet[int]):
 		pass
 
 
-class ArrayAccumulator(KmerAccumulator):
+class KmerCounter(KmerAccumulator, MutableMapping[int, int]):
+	"""Accumulator that also tracks the  number of times each k-mer has been seen.
+
+	In math terms this is a multiset, in Python it is a mutable mapping from k-mer indices to counts.
+	"""
+
+	@abstractmethod
+	def signature(self, min_count: int = 1) -> KmerSignature:
+		"""Get signature for k-mers which appear at least a given number of times."""
+		pass
+
+
+class ArrayAccumulatorBase(KmerAccumulator):
+	array: np.ndarray
+
+	def __init__(self, k: int, count_dtype: np.dtype):
+		self.k = k
+		self.array = np.zeros(nkmers(k), dtype=count_dtype)
+		self._index_dtype = index_dtype(self.k)
+
+	def __len__(self):
+		return np.count_nonzero(self.array)
+
+	def __iter__(self):
+		for i, x in enumerate(self.array):
+			if x > 0:
+				yield self._index_dtype.type(i)
+
+	def __contains__(self, index: int):
+		return self.array[index] > 0
+
+	def discard(self, i: int):
+		self.array[i] = 0
+
+	def clear(self):
+		self.array[:] = 0
+
+
+class ArrayAccumulator(ArrayAccumulatorBase):
 	"""K-mer accumulator implemented as a dense boolean array.
 
 	This is pretty efficient for smaller values of ``k``, but time and space requirements increase
 	exponentially with larger values.
 	"""
-	array: np.ndarray
 
 	def __init__(self, k: int):
-		self.k = k
-		self.array = np.zeros(nkmers(k), dtype=bool)
-		self._dtype = index_dtype(self.k)
+		ArrayAccumulatorBase.__init__(self, k, np.bool)
 
-	def __len__(self):
-		return self.array.sum()
+	def __getitem__(self, i: int):
+		return self.array[i]
 
-	def __iter__(self):
-		for i, x in enumerate(self.array):
-			if x:
-				yield self._dtype.type(i)
+	def __setitem__(self, i: int, c: int):
+		self.array[i] = c
 
-	def __contains__(self, index: int):
-		return self.array[index]
+	def __delitem__(self, i: int):
+		self.array[i] = 0
 
 	def add(self, i: int):
 		self.array[i] = True
 
-	def discard(self, i: int):
-		self.array[i] = False
-
-	def clear(self):
-		self.array[:] = False
-
 	def signature(self) -> KmerSignature:
-		return np.flatnonzero(self.array).astype(self._dtype)
+		return np.flatnonzero(self.array).astype(self._index_dtype)
+
+
+class ArrayCounter(ArrayAccumulatorBase, KmerCounter):
+
+	def __init__(self, k: int, count_dtype: np.dtype=np.uint16):
+		ArrayAccumulatorBase.__init__(self, k, count_dtype)
+
+	def add(self, i: int):
+		self.array[i] += 1
+
+	def signature(self, min_count: int = 1) -> KmerSignature:
+		return np.flatnonzero(self.array >= min_count).astype(self._index_dtype)
 
 
 class SetAccumulator(KmerAccumulator):
@@ -92,7 +131,7 @@ class SetAccumulator(KmerAccumulator):
 	def __init__(self, k: int):
 		self.k = k
 		self.set = set()
-		self._dtype = index_dtype(self.k)
+		self._index_dtype = index_dtype(self.k)
 
 	def __len__(self):
 		return len(self.set)
@@ -110,10 +149,57 @@ class SetAccumulator(KmerAccumulator):
 		self.set.discard(index)
 
 	def add(self, index: int):
-		self.set.add(self._dtype.type(index))
+		self.set.add(self._index_dtype.type(index))
 
 	def signature(self) -> KmerSignature:
-		sig = np.fromiter(self.set, dtype=self._dtype)
+		sig = np.fromiter(self.set, dtype=self._index_dtype)
+		sig.sort()
+		return sig
+
+
+class DictCounter(KmerCounter):
+	"""K-mer counter which uses the builtin Python ``dict`` class.
+
+	Performance compared to the array version should be similar to :class:`.SetAccumulator`.
+	"""
+
+	dict: dict
+
+	def __init__(self, k: int):
+		self.k = k
+		self.dict = dict()
+		self._index_dtype = index_dtype(self.k)
+
+	def __len__(self):
+		return len(self.dict)
+
+	def __iter__(self):
+		return iter(self.dict)
+
+	def __contains__(self, index: int):
+		return index in self.dict
+
+	def __getitem__(self, index: int):
+		return self.dict[index]
+
+	def __setitem__(self, index: int, c: int):
+		self.dict[index] = c
+
+	def __delitem__(self, index: int):
+		del self.dict[index]
+
+	def clear(self):
+		self.dict.clear()
+
+	def discard(self, index: int):
+		del self.dict[index]
+
+	def add(self, index: int):
+		index = self._index_dtype.type(index)
+		self.dict[index] = self.dict.get(index, 0) + 1
+
+	def signature(self, min_count: int = 1) -> KmerSignature:
+		sig = np.fromiter((i for i, c in self.dict.items() if c >= min_count), dtype=self._index_dtype)
 		sig.sort()
 		return sig
 
