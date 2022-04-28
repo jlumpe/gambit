@@ -177,6 +177,23 @@ class TestTaxon:
 
 		assert seen == expected
 
+	def test_genome_membership(self, testdb):
+		"""Test the subtree_genomes() and has_genome() methods."""
+		session = testdb.Session()
+
+		for taxon in session.query(Taxon):
+			sg = set()
+
+			for genome in session.query(AnnotatedGenome):
+				if genome.key.split('/')[-1].startswith(taxon.name):
+					sg.add(genome)
+					assert taxon.has_genome(genome)
+				else:
+					assert not taxon.has_genome(genome)
+
+			assert set(taxon.subtree_genomes()) == sg
+
+
 	def test_extra_json(self, empty_db_session):
 		"""Test storing JSON data in the 'extra' column."""
 		session = empty_db_session()

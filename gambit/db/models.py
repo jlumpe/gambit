@@ -392,6 +392,15 @@ class Taxon(Base):
 			for child in self.children:
 				yield from child.leaves()
 
+	def subtree_genomes(self) -> Iterable[AnnotatedGenome]:
+		"""Iterate through all genomes assigned to this taxon or its descendants."""
+		for taxon in self.traverse():
+			yield from taxon.genomes
+
+	def has_genome(self, genome: AnnotatedGenome) -> bool:
+		"""Check whether the given genome is assigned to this taxon or any of its descendants."""
+		return self in genome.taxon.ancestors(True)
+
 	def print_tree(self,
 	               f: Callable[['Taxon'], str] = None,
 	               *,
