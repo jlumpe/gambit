@@ -78,6 +78,16 @@ def test_revcomp():
 		assert revcomp(rc) == seq2
 
 
+def test_seq_to_bytes():
+	"""Test seq_to_bytes() function."""
+	# TODO
+
+
+def test_validate_dna_seq_bytes():
+	"""Test validate_dna_seq_bytes() function."""
+	# TODO
+
+
 class TestSequenceFile:
 	"""Test the SequenceFile class."""
 

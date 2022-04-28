@@ -53,7 +53,7 @@ def seq_to_bytes(seq: DNASeq) -> DNASeqBytes:
 
 
 def validate_dna_seq_bytes(seq : bytes):
-	"""Check that a sequence contains only valid nucleotide codes.
+	"""Check that a sequence contains only valid nucleotide codes (upper case).
 
 	Parameters
 	----------
