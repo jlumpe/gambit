@@ -38,44 +38,50 @@ def empty_db_session(make_empty_db):
 	return sessionmaker(engine)
 
 
+def check_json_col(empty_db_session, instance, col: str):
+	"""Check storing/loading data in JSON column."""
+	model = type(instance)
+
+	# Save instance with JSON data
+	session = empty_db_session()
+	setattr(instance, col, JSON_DATA)
+	session.add(instance)
+	session.commit()
+
+	# Reload in fresh session and check value
+	session = empty_db_session()
+	instance = session.query(model).one()
+	assert getattr(instance, col) == JSON_DATA
+
+	# Assign different data, save
+	setattr(instance, col, JSON_DATA2)
+	session.commit()
+
+	# Check new value
+	session = empty_db_session()
+	instance = session.query(model).one()
+	assert getattr(instance, col) == JSON_DATA2
+
+	# Assign NULL, save
+	setattr(instance, col, None)
+	session.commit()
+
+	# Check new value
+	session = empty_db_session()
+	instance = session.query(model).one()
+	assert getattr(instance, col) is None
+
+
 class TestGenome:
 	"""Test Genome model."""
 
 	def test_extra_json(self, empty_db_session):
 		"""Test storing JSON data in the 'extra' column."""
-		session = empty_db_session()
-
-		# Save genome with JSON data
 		genome = Genome(
 			key='foo',
 			description='test genome',
-			extra=JSON_DATA,
 		)
-		session.add(genome)
-		session.commit()
-
-		# Reload in fresh session and check value
-		session = empty_db_session()
-		genome = session.query(Genome).one()
-		assert genome.extra == JSON_DATA
-
-		# Assign different data, save
-		genome.extra = JSON_DATA2
-		session.commit()
-
-		# Check new value
-		session = empty_db_session()
-		genome = session.query(Genome).one()
-		assert genome.extra == JSON_DATA2
-
-		# Assign NULL, save
-		genome.extra = None
-		session.commit()
-
-		# Check new value
-		session = empty_db_session()
-		genome = session.query(Genome).one()
-		assert genome.extra is None
+		check_json_col(empty_db_session, genome, 'extra')
 
 
 class TestReferenceGenomeSet:
@@ -88,40 +94,13 @@ class TestReferenceGenomeSet:
 
 	def test_extra_json(self, empty_db_session):
 		"""Test storing JSON data in the 'extra' column."""
-		session = empty_db_session()
-
-		# Save genome set with JSON data
 		gset = ReferenceGenomeSet(
 			key='foo',
 			version='1.0',
 			name='test',
 			extra=JSON_DATA,
 		)
-		session.add(gset)
-		session.commit()
-
-		# Reload in fresh session and check value
-		session = empty_db_session()
-		gset = session.query(ReferenceGenomeSet).one()
-		assert gset.extra == JSON_DATA
-
-		# Assign different data, save
-		gset.extra = JSON_DATA2
-		session.commit()
-
-		# Check new value
-		session = empty_db_session()
-		gset = session.query(ReferenceGenomeSet).one()
-		assert gset.extra == JSON_DATA2
-
-		# Assign NULL, save
-		gset.extra = None
-		session.commit()
-
-		# Check new value
-		session = empty_db_session()
-		gset = session.query(ReferenceGenomeSet).one()
-		assert gset.extra is None
+		check_json_col(empty_db_session, gset, 'extra')
 
 
 class TestAnnotatedGenome:
@@ -208,38 +187,15 @@ class TestTaxon:
 			version='1.0',
 			name='test genome set',
 		)
+		session.add(gset)
+		session.commit()
+
 		taxon = Taxon(
-			genome_set=gset,
+			genome_set_id=gset.id,
 			key='test',
 			name='test taxon',
-			extra=JSON_DATA,
 		)
-		session.add(gset)
-		session.add(taxon)
-		session.commit()
-
-		# Reload in fresh session and check value
-		session = empty_db_session()
-		taxon = session.query(Taxon).one()
-		assert taxon.extra == JSON_DATA
-
-		# Assign different data, save
-		taxon.extra = JSON_DATA2
-		session.commit()
-
-		# Check new value
-		session = empty_db_session()
-		taxon = session.query(Taxon).one()
-		assert taxon.extra == JSON_DATA2
-
-		# Assign NULL, save
-		taxon.extra = None
-		session.commit()
-
-		# Check new value
-		session = empty_db_session()
-		taxon = session.query(Taxon).one()
-		assert taxon.extra is None
+		check_json_col(empty_db_session, taxon, 'extra')
 
 
 class TestGenomeIDMapping:
