@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Tuple, Sequence, Union, List, Dict, Optional, Any
 
-from sqlalchemy.orm import object_session
+from sqlalchemy.orm import object_session, Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from .models import ReferenceGenomeSet, AnnotatedGenome, Genome, only_genomeset
@@ -10,12 +10,15 @@ from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath
 
 
-def load_genomeset(genomes_file: FilePath) -> Tuple[ReferenceGenomeSet]:
-	pass
-
-
 # Type alias for argument specifying genome id attribute
 GenomeAttr = Union[str, InstrumentedAttribute]
+
+
+def load_genomeset(db_file: FilePath) -> Tuple[Session, ReferenceGenomeSet]:
+	"""Get the only :class:`gambit.db.models.ReferenceGenomeSet` from a genomes database file."""
+	session = file_sessionmaker(db_file)()
+	gset = only_genomeset(session)
+	return session, gset
 
 
 def _check_genome_id_attr(attr: GenomeAttr) -> InstrumentedAttribute:
@@ -228,8 +231,7 @@ class ReferenceDatabase:
 	@classmethod
 	def load(cls, genomes_file: FilePath, signatures_file: FilePath) -> 'ReferenceDatabase':
 		"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
-		session = file_sessionmaker(genomes_file)()
-		gset = only_genomeset(session)
+		session, gset = load_genomeset(genomes_file)
 		sigs = load_signatures(signatures_file)
 		return cls(gset, sigs)
 
