@@ -133,6 +133,7 @@ class TestTaxon:
 		for taxon in gset.taxa:
 			root = taxon.root()
 			assert root in roots
+			assert taxon.isroot() == (taxon is root)
 			assert taxon.isleaf() == (len(taxon.children) == 0)
 
 			# Test parent/child relationships match

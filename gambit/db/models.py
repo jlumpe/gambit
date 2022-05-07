@@ -337,6 +337,10 @@ class Taxon(Base):
 		else:
 			return self.parent.root()
 
+	def isroot(self) -> bool:
+		"""Check if the taxon is a root (has no parent)."""
+		return self.parent_id is None
+
 	def isleaf(self) -> bool:
 		"""Check if the taxon is a leaf (has no children)."""
 		return not self.children
