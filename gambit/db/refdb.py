@@ -1,12 +1,139 @@
 from pathlib import Path
-from typing import Tuple, Sequence
+from typing import Tuple, Sequence, Union, List, Dict, Optional, Any
 
 from sqlalchemy.orm import object_session
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from .models import ReferenceGenomeSet, AnnotatedGenome, genomes_by_id_subset, only_genomeset
+from .models import ReferenceGenomeSet, AnnotatedGenome, Genome, only_genomeset
 from .sqla import file_sessionmaker
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath
+
+
+def load_genomeset(genomes_file: FilePath) -> Tuple[ReferenceGenomeSet]:
+	pass
+
+
+# Type alias for argument specifying genome id attribute
+GenomeAttr = Union[str, InstrumentedAttribute]
+
+
+def _check_genome_id_attr(attr: GenomeAttr) -> InstrumentedAttribute:
+	"""Check that Genome ID attribute is valid, and convert from string argument.
+	"""
+	if isinstance(attr, str) and attr in Genome.ID_ATTRS:
+		return getattr(Genome, attr)
+
+	elif isinstance(attr, InstrumentedAttribute):
+		for allowed_name in Genome.ID_ATTRS:
+			allowed = getattr(Genome, allowed_name)
+			if attr is allowed:
+				return attr
+
+	raise ValueError('Genome ID attribute must be one of the following: ' + ', '.join(Genome.ID_ATTRS))
+
+
+def _get_genome_id(genome: Union[Genome, AnnotatedGenome], attr: InstrumentedAttribute):
+	"""Get value of ID attribute for genome."""
+	if isinstance(genome, AnnotatedGenome):
+		genome = genome.genome
+	return attr.__get__(genome, Genome)
+
+
+def _check_genomes_have_ids(genomeset: ReferenceGenomeSet, id_attr: InstrumentedAttribute):
+	"""Check all genomes in ReferenceGenomeSet have values for the given ID attribute or raise a ``RuntimeError``."""
+	c = genomeset.genomes \
+		.join(AnnotatedGenome.genome) \
+		.filter(id_attr == None) \
+		.count()
+
+	if c > 0:
+		raise RuntimeError(f'{c} genomes missing value for ID attribute {id_attr.key}')
+
+
+def _map_ids_to_genomes(genomeset: ReferenceGenomeSet, id_attr: Union[str, InstrumentedAttribute]) -> Dict[AnnotatedGenome, Any]:
+	"""Get dict mapping ID values to AnnotatedGenome."""
+	q = genomeset.genomes.join(AnnotatedGenome.genome).add_columns(id_attr)
+	return {id_: g for g, id_ in q}
+
+
+def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Sequence, strict: bool = True) -> List[Optional[AnnotatedGenome]]:
+	"""Match a :class:`ReferenceGenomeSet`'s genomes to a set of ID values.
+
+	This is primarily used to match genomes to signatures based on the ID values stored in a
+	signature file. It is expected that the signature file may contain signatures for more genomes
+	than are present in the genome set, see also :func:`.genomes_by_id_subset` for that condition.
+
+	Parameters
+	----------
+	genomeset
+	id_attr
+		ID attribute of :class:`gambit.db.models.Genome` to use for lookup. Can be used as the
+		attribute itself (e.g. ``Genome.refseq_acc``) or just the name (``'refsec_acc'``).
+		See :data:`.GENOME_IDS` for the set of allowed values.
+	ids
+		Sequence of ID values (strings or integers, matching type of attribute).
+	strict
+		Raise an exception if a matching genome cannot be found for any ID value.
+
+	Returns
+	-------
+	List[Optional[AnnotatedGenome]]
+		List of genomes of same length as ``ids``. If ``strict=False`` and a genome cannot be found
+		for a given ID the list will contain ``None`` at the corresponding position.
+
+	Raises
+	------
+	KeyError
+		If ``strict=True`` and any ID value cannot be found.
+	"""
+	id_attr = _check_genome_id_attr(id_attr)
+	_check_genomes_have_ids(genomeset, id_attr)
+	d = _map_ids_to_genomes(genomeset, id_attr)
+	if strict:
+		return [d[id_] for id_ in ids]
+	else:
+		return [d.get(id_) for id_ in ids]
+
+
+def genomes_by_id_subset(genomeset: ReferenceGenomeSet,
+                         id_attr: GenomeAttr,
+                         ids: Sequence,
+                         ) -> Tuple[List[AnnotatedGenome], List[int]]:
+	"""Match a :class:`ReferenceGenomeSet`'s genomes to a set of ID values, allowing missing genomes.
+
+	This calls :func:`.genomes_by_id` with ``strict=False`` and filters any ``None`` values from the
+	output. The filtered list is returned along with the indices of all values in ``ids`` which were
+	not filtered out. The indices can be used to load only those signatures which have a matched
+	genome from a signature file.
+
+	Note that it is not checked that every genome in ``genomeset`` is matched by an ID. Check the
+	size of the returned lists for this.
+
+	Parameters
+	----------
+	genomeset
+	id_attr
+		ID attribute of :class:`gambit.db.models.Genome` to use for lookup. Can be used as the
+		attribute itself (e.g. ``Genome.refseq_acc``) or just the name (``'refsec_acc'``).
+		See :data:`.GENOME_IDS` for the set of allowed values.
+	ids
+		Sequence of ID values (strings or integers, matching type of attribute).
+
+	Returns
+	-------
+	Tuple[List[AnnotatedGenome], List[int]]
+	"""
+	genomes = genomes_by_id(genomeset, id_attr, ids, strict=False)
+	genomes_out = []
+	idxs_out = []
+
+	for i, g in enumerate(genomes):
+		if g is not None:
+			genomes_out.append(g)
+			idxs_out.append(i)
+
+	return genomes_out, idxs_out
 
 
 class ReferenceDatabase:
