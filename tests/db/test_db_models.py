@@ -191,7 +191,6 @@ class TestTaxon:
 
 			assert set(taxon.subtree_genomes()) == sg
 
-
 	def test_extra_json(self, empty_db_session):
 		"""Test storing JSON data in the 'extra' column."""
 		session = empty_db_session()
@@ -211,6 +210,40 @@ class TestTaxon:
 			name='test taxon',
 		)
 		check_json_col(empty_db_session, taxon, 'extra')
+
+	def taxon_by_name(self, session, name):
+		return session.query(Taxon).filter_by(name=name).one()
+
+	def check_common_ancestry(self, session, names, expected_names):
+		taxa = [self.taxon_by_name(session, name) for name in names]
+		ca = Taxon.common_ancestors(taxa)
+		lca = Taxon.lca(taxa)
+
+		assert [taxon.name for taxon in ca] == expected_names
+		if ca:
+			assert lca is ca[-1]
+		else:
+			assert lca is None
+
+	def test_common_ancestry(self, testdb):
+		"""Test the common_ancestors() and lca() methods."""
+
+		session = testdb.Session()
+
+		self.check_common_ancestry(session, [], [])
+
+		self.check_common_ancestry(session, ['A1'], ['A1'])
+		self.check_common_ancestry(session, ['A1_B1'], ['A1', 'A1_B1'])
+		self.check_common_ancestry(session, ['A1_B1_C1'], ['A1', 'A1_B1', 'A1_B1_C1'])
+
+		self.check_common_ancestry(session, ['A1_B1', 'A1_B2'], ['A1'])
+		self.check_common_ancestry(session, ['A1_B1_C1', 'A1_B1_C2'], ['A1', 'A1_B1'])
+
+		self.check_common_ancestry(session, ['A1', 'A1_B1'], ['A1'])
+		self.check_common_ancestry(session, ['A1_B1', 'A1_B1_C1'], ['A1', 'A1_B1'])
+
+		self.check_common_ancestry(session, ['A1', 'A2'], [])
+		self.check_common_ancestry(session, ['A1_B1', 'A1_B2', 'A2_B1'], [])
 
 
 def test_reportable_taxon():

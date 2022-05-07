@@ -395,6 +395,53 @@ class Taxon(Base):
 		"""Check whether the given genome is assigned to this taxon or any of its descendants."""
 		return self in genome.taxon.ancestors(True)
 
+	@classmethod
+	def common_ancestors(cls, taxa: Iterable['Taxon']) -> List['Taxon']:
+		"""Get list of common ancestors of a set of taxa.
+
+		Returns
+		-------
+		List[.Taxon]
+			Common ancestors from top to bottom (same order as :meth:`lineage`. Will be empty if
+		"""
+		ancestors = None
+
+		for taxon in taxa:
+			lineage = taxon.lineage()
+
+			# First iteration?
+			if ancestors is None:
+				ancestors = lineage
+				continue
+
+			# Find first mismatch
+			for i, (t1, t2) in enumerate(zip(ancestors, lineage)):
+				if t1 != t2:
+					if i == 0:
+						# No common ancestors
+						return []
+					else:
+						# Remove those not present in current lineage
+						ancestors = ancestors[:i]
+						break
+
+			else:
+				# Made it all the way through without finding a mismatch, but current value of
+				# "ancestors" may be longer than "lineage".
+				if len(lineage) < len(ancestors):
+					ancestors = lineage
+
+		return [] if ancestors is None else ancestors
+
+	@classmethod
+	def lca(cls, taxa: Iterable['Taxon']) -> List['Taxon']:
+		"""Find the Least Common Ancestor of a set of taxa.
+
+		Returns None if `taxa` is empty or its members do not all lie in the same tree.
+		"""
+		ancestors = cls.common_ancestors(taxa)
+		return ancestors[-1] if ancestors else None
+
 	def print_tree(self,
 	               f: Callable[['Taxon'], str] = None,
 	               *,
