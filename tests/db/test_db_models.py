@@ -215,36 +215,83 @@ class TestTaxon:
 	def taxon_by_name(self, session, name):
 		return session.query(Taxon).filter_by(name=name).one()
 
-	def check_common_ancestry(self, session, names, expected_names):
-		taxa = [self.taxon_by_name(session, name) for name in names]
-		ca = Taxon.common_ancestors(taxa)
-		lca = Taxon.lca(taxa)
-
-		assert [taxon.name for taxon in ca] == expected_names
-		if ca:
-			assert lca is ca[-1]
-		else:
-			assert lca is None
-
 	def test_common_ancestry(self, testdb):
 		"""Test the common_ancestors() and lca() methods."""
 
 		session = testdb.Session()
 
-		self.check_common_ancestry(session, [], [])
+		def check(names, expected_names):
+			taxa = [self.taxon_by_name(session, name) for name in names]
+			ca = Taxon.common_ancestors(taxa)
+			lca = Taxon.lca(taxa)
 
-		self.check_common_ancestry(session, ['A1'], ['A1'])
-		self.check_common_ancestry(session, ['A1_B1'], ['A1', 'A1_B1'])
-		self.check_common_ancestry(session, ['A1_B1_C1'], ['A1', 'A1_B1', 'A1_B1_C1'])
+			assert [taxon.name for taxon in ca] == expected_names
+			if ca:
+				assert lca is ca[-1]
+			else:
+				assert lca is None
 
-		self.check_common_ancestry(session, ['A1_B1', 'A1_B2'], ['A1'])
-		self.check_common_ancestry(session, ['A1_B1_C1', 'A1_B1_C2'], ['A1', 'A1_B1'])
+		check([], [])
 
-		self.check_common_ancestry(session, ['A1', 'A1_B1'], ['A1'])
-		self.check_common_ancestry(session, ['A1_B1', 'A1_B1_C1'], ['A1', 'A1_B1'])
+		check(['A1'], ['A1'])
+		check(['A1_B1'], ['A1', 'A1_B1'])
+		check(['A1_B1_C1'], ['A1', 'A1_B1', 'A1_B1_C1'])
 
-		self.check_common_ancestry(session, ['A1', 'A2'], [])
-		self.check_common_ancestry(session, ['A1_B1', 'A1_B2', 'A2_B1'], [])
+		check(['A1_B1', 'A1_B2'], ['A1'])
+		check(['A1_B1_C1', 'A1_B1_C2'], ['A1', 'A1_B1'])
+
+		check(['A1', 'A1_B1'], ['A1'])
+		check(['A1_B1', 'A1_B1_C1'], ['A1', 'A1_B1'])
+
+		check(['A1', 'A2'], [])
+		check(['A1_B1', 'A1_B2', 'A2_B1'], [])
+
+	def test_ancestor_of_rank(self, testdb):
+		"""Test ancestor_of_rank() method."""
+
+		session = testdb.Session()
+
+		def check(name, rank, expected):
+			taxon = self.taxon_by_name(session, name)
+			ancestor = taxon.ancestor_of_rank(rank)
+			assert (ancestor is None) == (expected is None)
+			if expected is not None:
+				assert ancestor.name == expected
+
+		check('A1', 'genus', 'A1')
+		check('A1', 'species', None)
+		check('A1', 'strain', None)
+		check('A1', 'foo', None)
+		check('A1_B1', 'genus', 'A1')
+		check('A1_B1', 'species', 'A1_B1')
+		check('A1_B1', 'strain', None)
+		check('A1_B1', 'foo', None)
+		check('A1_B1_C1', 'genus', 'A1')
+		check('A1_B1_C1', 'species', 'A1_B1')
+		check('A1_B1_C1', 'strain', 'A1_B1_C1')
+		check('A1_B1_C1', 'foo', None)
+
+	def test_lineage_ranks(self, testdb):
+		"""Test lineage() method with argument."""
+
+		session = testdb.Session()
+
+		def check(name, ranks, expected):
+			taxon = self.taxon_by_name(session, name)
+			lineage = taxon.lineage(ranks)
+			assert len(lineage) == len(ranks)
+
+			for ancestor, e in zip(lineage, expected):
+				assert (ancestor is None) == (e is None)
+				if e is not None:
+					assert ancestor.name == e
+
+		check('A1', ['genus', 'species', 'strain'], ['A1', None, None])
+		check('A1_B1', ['genus', 'species', 'strain'], ['A1', 'A1_B1', None])
+		check('A1_B1_C1', ['genus', 'species', 'strain'], ['A1', 'A1_B1', 'A1_B1_C1'])
+
+		check('A1', [], [])
+		check('A1_B1_C1', ['genus', 'species', 'strain', 'foo'], ['A1', 'A1_B1', 'A1_B1_C1', None])
 
 
 def test_reportable_taxon():

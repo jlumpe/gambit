@@ -11,6 +11,7 @@
 * API
   * `gambit.db` subpackage:
       * Database-loading funcs moved to class methods of `ReferenceDatabase`.
+      * Additional taxonomy tree methods.
       * Some additional internal reorganization/refactoring.
 
 

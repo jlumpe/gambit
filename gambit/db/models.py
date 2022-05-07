@@ -318,11 +318,27 @@ class Taxon(Base):
 			yield taxon
 			taxon = taxon.parent
 
-	def lineage(self) -> List['Taxon']:
-		"""Get a sorted list of the taxon's ancestors from top to bottom, including itself."""
-		l = list(self.ancestors(incself=True))
-		l.reverse()
-		return l
+	def ancestor_of_rank(self, rank: str) -> Optional['Taxon']:
+		"""Get the taxon's ancestor with the given rank, if it exists."""
+		for ancestor in self.ancestors(True):
+			if ancestor.rank == rank:
+				return ancestor
+		return None
+
+	def lineage(self, ranks: Optional[Iterable[str]] = None) -> List[Optional['Taxon']]:
+		"""Get a last of this taxon's ancestors.
+
+		With an argument, gets ancestors with the given ranks. Without, gets a sorted list of the
+		taxon's ancestors from top to bottom (including itself)
+		"""
+
+		if ranks is None:
+			l = list(self.ancestors(incself=True))
+			l.reverse()
+			return l
+
+		else:
+			return [self.ancestor_of_rank(rank) for rank in ranks]
 
 	def root(self) -> 'Taxon':
 		"""Get the root taxon of this taxon's tree.
