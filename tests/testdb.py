@@ -77,7 +77,6 @@ class TestDB:
 		"""Sessionmaker for the reference genome database."""
 		return sessionmaker(self.engine, class_=ReadOnlySession)
 
-	@lazy
 	def copy_session(self):
 		"""Create an in-memory copy of the test database."""
 		src = sqlite3.connect(str(self.paths.ref_genomes))
