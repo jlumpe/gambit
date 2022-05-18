@@ -6,13 +6,16 @@
 * New features
     * `gambit dist` command for calculating distance matrices.
 * CLI
-  * Sequence files used as input to commands may be gzipped.
-  * Minor changes to options of subcommands in `signatures` group.
+    * Sequence file input
+        * Explicitly restrict input to FASTA format only.
+        * Files may be gzipped.
+        * Read input file lists from text files.
+    * Minor changes to options of subcommands in `signatures` group.
 * API
-  * `gambit.db` subpackage:
-      * Database-loading funcs moved to class methods of `ReferenceDatabase`.
-      * Additional taxonomy tree methods.
-      * Some additional internal reorganization/refactoring.
+    * `gambit.db` subpackage:
+        * Database-loading funcs moved to class methods of `ReferenceDatabase`.
+        * Additional taxonomy tree methods.
+        * Some additional internal reorganization/refactoring.
 
 
 ## 0.4.0
