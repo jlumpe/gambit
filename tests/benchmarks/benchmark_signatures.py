@@ -1,4 +1,4 @@
-"""Benchmarks for gambit.search module."""
+"""Benchmarks for signature calculation module."""
 
 import pytest
 import numpy as np
