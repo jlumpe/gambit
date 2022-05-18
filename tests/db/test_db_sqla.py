@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 
-from gambit.db.sqla import ReadOnlySession, file_sessionmaker
+from gambit.db import ReadOnlySession, file_sessionmaker
 
 
 def test_file_sessionmaker(testdb):

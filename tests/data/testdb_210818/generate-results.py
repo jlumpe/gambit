@@ -12,8 +12,7 @@ from pathlib import Path
 from csv import DictReader
 
 from gambit.seq import SequenceFile
-from gambit.db import ReferenceDatabase
-from gambit.db.models import reportable_taxon
+from gambit.db import ReferenceDatabase, reportable_taxon
 from gambit.query import QueryParams, query_parse
 from gambit.results.archive import ResultsArchiveWriter
 from gambit.util.misc import zip_strict

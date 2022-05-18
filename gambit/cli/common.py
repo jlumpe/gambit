@@ -7,9 +7,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from gambit.kmers import KmerSpec
-from gambit.db import ReferenceDatabase
-from gambit.db.models import only_genomeset
-from gambit.db.sqla import ReadOnlySession
+from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath, read_lines
 from gambit.util.misc import join_list_human

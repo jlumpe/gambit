@@ -10,8 +10,7 @@ import numpy as np
 from gambit import __version__ as GAMBIT_VERSION
 from gambit.classify import classify, ClassifierResult, GenomeMatch, compare_classifier_results, \
 	compare_genome_matches
-from gambit.db.models import reportable_taxon
-from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet
+from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet, reportable_taxon
 from gambit.seq import SequenceFile
 from gambit.sigs import KmerSignature, SignaturesMeta
 from gambit.metric import jaccarddist_matrix

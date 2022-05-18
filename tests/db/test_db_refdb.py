@@ -6,8 +6,7 @@ import pytest
 from sqlalchemy.orm import sessionmaker
 
 from gambit.db import refdb
-from gambit.db.refdb import ReferenceDatabase
-from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon
+from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon, ReferenceDatabase
 
 
 GENOME_ID_ATTRS = {attr: getattr(Genome, attr) for attr in Genome.ID_ATTRS}

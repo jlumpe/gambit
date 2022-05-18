@@ -11,11 +11,9 @@ import gzip
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from gambit.db.sqla import ReadOnlySession
 from gambit.seq import SequenceFile
 from gambit.sigs import load_signatures
-from gambit.db import ReferenceDatabase
-from gambit.db.models import only_genomeset
+from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
 from gambit.results.archive import ResultsArchiveReader
 
 
