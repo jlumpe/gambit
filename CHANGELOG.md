@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.6.0
+
+* CLI
+    * Add option to disable progress bar printing.
+
+
 ## 0.5.1
 
 Minor edits to project README and metadata.

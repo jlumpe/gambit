@@ -58,6 +58,7 @@ def get_exporter(outfmt: str):
 	type=common.filepath(exists=True),
 	help='File containing query signatures, to use in place of GENOMES.',
 )
+@common.progress_arg()
 @click.pass_context
 def query_cmd(ctx: click.Context,
               listfile: Optional[TextIO],
@@ -67,6 +68,7 @@ def query_cmd(ctx: click.Context,
               output: TextIO,
               outfmt: str,
               strict: bool,
+              progress: bool,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 
@@ -75,7 +77,7 @@ def query_cmd(ctx: click.Context,
 	db = ctx.obj.get_database()
 	params = QueryParams(classify_strict=strict)
 	exporter = get_exporter(outfmt)
-	pconf = progress_config('click', file=sys.stderr)
+	pconf = progress_config('click' if progress else None)
 
 	if sigfile:
 		sigs = load_signatures(sigfile)

@@ -240,6 +240,10 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
 		return None, None
 
 
+def progress_arg():
+	return click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
+
+
 def params_by_name(cmd: click.Command, names: Optional[Iterable[str]]=None):
 	"""Get parameters of click command by name.
 

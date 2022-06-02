@@ -8,7 +8,6 @@ from .root import cli
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
-from gambit.util.progress import ClickProgressMeter
 from gambit.seq import SequenceFile
 
 
@@ -130,6 +129,8 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 	is_flag=True,
 	help='Use k/prefix from reference database.'
 )
+@click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
+@common.progress_arg()
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_context
 def create(ctx: click.Context,
@@ -142,6 +143,7 @@ def create(ctx: click.Context,
            meta_file: Optional[TextIO],
            ids_file: Optional[TextIO],
            db_params: bool,
+           progress: bool,
            dump_params: bool,
            ):
 	"""Create k-mer signatures from genome sequences."""
@@ -189,6 +191,6 @@ def create(ctx: click.Context,
 		return
 
 	# Calculate and save
-	sigs = calc_file_signatures(kspec, seqfiles, progress=ClickProgressMeter)
+	sigs = calc_file_signatures(kspec, seqfiles, progress='click' if progress else None)
 	sigs = AnnotatedSignatures(sigs, ids, meta)
 	dump_signatures(output, sigs)
