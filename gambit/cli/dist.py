@@ -66,6 +66,8 @@ def dist_cmd(ctx: click.Context,
 		query_ids, query_files = common.get_sequence_files(q, ql, qdir)
 		query_sigs = None
 
+	common.warn_duplicate_file_ids(query_ids, 'Warning: the following query file IDs are present more than once: {ids}')
+
 	# Ref files/signatures
 	if rs is not None:
 		ref_sigs = load_signatures(rs)
@@ -83,6 +85,8 @@ def dist_cmd(ctx: click.Context,
 	else:
 		ref_ids, ref_files = common.get_sequence_files(r, rl, rdir)
 		ref_sigs = None
+
+	common.warn_duplicate_file_ids(ref_ids, 'Warning: the following reference file IDs are present more than once: {ids}')
 
 	# Kmerspec
 	kspec = common.kspec_from_params(k, prefix)
@@ -115,10 +119,10 @@ def dist_cmd(ctx: click.Context,
 	# Dump parsed parameters
 	if dump_params:
 		params = dict(
-			query_files=query_files,
+			query_files=[f.path for f in query_files],
 			query_sigs_file=qs,
 			query_ids=query_ids,
-			ref_files=ref_files,
+			ref_files=[f.path for f in ref_files],
 			ref_sigs_file=rs,
 			ref_ids=ref_ids,
 			kmerspec=kspec,

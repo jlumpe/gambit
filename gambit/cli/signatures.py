@@ -8,7 +8,7 @@ from .root import cli
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
-from gambit.seq import SequenceFile
+from gambit.util.io import read_lines
 
 
 def format_none(value):
@@ -129,6 +129,18 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 	is_flag=True,
 	help='Use k/prefix from reference database.'
 )
+@click.option(
+	'-D', 'no_strip_dir',
+	is_flag=True,
+	default=False,
+	help='Use the full paths of input files as the IDs. Ignored if --ids is specified. Implies -E.',
+)
+@click.option(
+	'-E', 'no_strip_ext',
+	is_flag=True,
+	default=False,
+	help='Include extension of input file names in their IDS. Ignored if --ids is specified.',
+)
 @click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
 @common.progress_arg()
 @click.option('--dump-params', is_flag=True, hidden=True)
@@ -143,6 +155,8 @@ def create(ctx: click.Context,
            meta_file: Optional[TextIO],
            ids_file: Optional[TextIO],
            db_params: bool,
+           no_strip_dir: bool,
+           no_strip_ext: bool,
            progress: bool,
            dump_params: bool,
            ):
@@ -151,8 +165,11 @@ def create(ctx: click.Context,
 	common.check_params_group(ctx, ['list_file', 'files_arg'], True, True)
 
 	# Get sequence files
-	ids, files = common.get_sequence_files(files_arg, list_file, ldir)
-	seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
+	ids, files = common.get_sequence_files(
+		files_arg, list_file, ldir,
+		strip_dir=not no_strip_dir,
+		strip_ext=not no_strip_ext,
+	)
 
 	# Get kmerspec
 	kspec = common.kspec_from_params(k, prefix)
@@ -175,15 +192,17 @@ def create(ctx: click.Context,
 		meta = None
 
 	if ids_file is not None:
-		ids = [line.strip() for line in ids_file.readlines()]
-		if len(ids) != len(seqfiles):
-			raise click.ClickException(f'Number of IDs ({len(ids)}) does not match number of genomes ({len(seqfiles)}).')
+		ids = list(read_lines(ids_file))
+		if len(ids) != len(files):
+			raise click.ClickException(f'Number of IDs ({len(ids)}) does not match number of genomes ({len(files)}).')
+
+	common.warn_duplicate_file_ids(ids, 'Warning: the following file IDs are present more than once: {ids}')
 
 	# Dump parameters
 	if dump_params:
 		params = dict(
 			kmerspec=kspec,
-			files=files,
+			files=[f.path for f in files],
 			meta=meta,
 			ids=ids,
 		)
@@ -191,6 +210,6 @@ def create(ctx: click.Context,
 		return
 
 	# Calculate and save
-	sigs = calc_file_signatures(kspec, seqfiles, progress='click' if progress else None)
+	sigs = calc_file_signatures(kspec, files, progress='click' if progress else None)
 	sigs = AnnotatedSignatures(sigs, ids, meta)
 	dump_signatures(output, sigs)

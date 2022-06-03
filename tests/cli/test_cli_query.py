@@ -13,6 +13,7 @@ from gambit.seq import SequenceFile
 from gambit.query import QueryInput
 from gambit.util.misc import zip_strict
 from gambit.util.io import write_lines
+from gambit.cli.common import strip_seq_file_ext
 
 
 @pytest.fixture(params=[None])
@@ -117,7 +118,10 @@ def check_results(results_file, out_fmt, ref_results):
 def test_full_query(make_args, make_ref_results, use_list_file, out_fmt, strict, gzipped, query_files, tmp_path):
 	"""Run a full query using the command line interface."""
 
-	inputs = list(map(QueryInput.convert, query_files))
+	inputs = [
+		QueryInput(strip_seq_file_ext(file.path.name), file)
+		for file in query_files
+	]
 	ref_results = make_ref_results(strict, inputs)
 
 	results_file = tmp_path / ('results.' + out_fmt)

@@ -86,7 +86,7 @@ def query_cmd(ctx: click.Context,
 
 	else:
 		ids, files = common.get_sequence_files(files_arg, listfile, ldir)
-		seqfiles = SequenceFile.from_paths(files, 'fasta', 'auto')
-		results = query_parse(db, seqfiles, params, file_labels=ids, progress=pconf)
+		common.warn_duplicate_file_ids(ids, 'Warning: the following query file IDs are present more than once: {ids}')
+		results = query_parse(db, files, params, file_labels=ids, progress=pconf)
 
 	exporter.export(output, results)

@@ -1,5 +1,7 @@
+import os
 from typing import Optional, Sequence, TextIO, Union, Iterable, Tuple, List
 from pathlib import Path
+from collections import Counter
 
 import click
 from sqlalchemy import create_engine
@@ -11,7 +13,8 @@ from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath, read_lines
 from gambit.util.misc import join_list_human
-from gambit.seq import validate_dna_seq_bytes
+from gambit.seq import validate_dna_seq_bytes, SequenceFile
+from gambit._cython.threads import omp_set_num_threads
 
 
 class CLIContext:
@@ -203,11 +206,29 @@ def kspec_from_params(k: int, prefix: str) -> Optional[KmerSpec]:
 
 	return KmerSpec(k, prefix_bytes)
 
+
+FASTA_EXTENSIONS = ['.fasta', '.fna', '.ffn', '.faa', '.frn', '.fa']
+GZIP_EXTENSIONS = ['.gz']
+
+def strip_extensions(filename: str, extensions: List[str]) -> str:
+	for ext in extensions:
+		if filename.endswith(ext):
+			return filename[:-len(ext)]
+	return filename
+
+def strip_seq_file_ext(filename: str) -> str:
+	"""Strip FASTA and/or gzip extensions from sequence file name."""
+	filename = strip_extensions(filename, GZIP_EXTENSIONS)
+	filename = strip_extensions(filename, FASTA_EXTENSIONS)
+	return filename
+
 def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
                        listfile: Union[None, FilePath, TextIO]=None,
                        listfile_dir: Optional[str]=None,
-                       ) -> Tuple[Optional[List[str]], Optional[List[Path]]]:
-	"""Get list of sequence file paths from several types of CLI arguments.
+                       strip_dir: bool = True,
+                       strip_ext: bool = True,
+                       ) -> Union[Tuple[List[str], List[SequenceFile]], Tuple[None, None]]:
+	"""Get list of sequence file paths and IDs from several types of CLI arguments.
 
 	Does not check for conflict between ``explicit`` and ``listfile``.
 
@@ -219,25 +240,55 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
 		File listing sequence files, one per line.
 	listfile_dir
 		Parent directory for files in ``listfile``.
+	strip_dir
+		Strip leading path components from file paths to derive IDs.
+	strip_ext
+		Strip file extension from file names to derive IDs.
 
 	Returns
 	-------
-	Tuple[Optional[List[str]], Optional[List[Path]]]
-		``(ids, paths)`` tuple. ``ids`` is a list of string IDs that can be used to label output.
-		If the ``explicit`` and ``listfile`` arguments are None both components of the tuple will be
-		None as well.
+	Tuple[Optional[List[str]], Optional[List[SequenceFile]]]
+		``(ids, files)`` tuple. ``ids`` is a list of string IDs that can be used to label output.
+		If the ``explicit`` and ``listfile`` arguments are None/empty both components of the tuple
+		will be None as well.
 	"""
 	if explicit:
-		files = list(map(Path, explicit))
-		return list(map(str, files)), files
+		paths = list(map(Path, explicit))
+		ids = list(map(str, paths))
 
 	elif listfile is not None:
 		lines = list(read_lines(listfile, skip_empty=True))
 		paths = [Path(listfile_dir) / line for line in lines]
-		return lines, paths
+		ids = lines
 
 	else:
 		return None, None
+
+	files = SequenceFile.from_paths(paths, 'fasta', 'auto')
+
+	if strip_dir:
+		ids = list(map(os.path.basename, ids))
+		if strip_ext:
+			ids = list(map(strip_seq_file_ext, ids))
+
+	return ids, files
+
+def warn_duplicate_file_ids(ids: List[str], template: str):
+	"""Print a warning message if duplicate file IDs are present.
+
+	Parameters
+	----------
+	ids
+		List of file ID strings, such as from :func:`.get_sequence_files`.
+	template
+		Message template. May contain formatting placeholders for ``ids`` (comma-delimited string of
+		duplicated IDs), ``id`` (first duplicated ID), and ``n`` (number of duplicated IDs).
+	"""
+	counts = Counter(ids)
+	duplicates = [id_ for id_, count in counts.items() if count > 1]
+	if duplicates:
+		msg = template.format(id=duplicates[0], ids=', '.join(duplicates), n=len(duplicates))
+		click.echo(msg, err=True)
 
 
 def progress_arg():

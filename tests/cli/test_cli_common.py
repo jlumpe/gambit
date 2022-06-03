@@ -9,6 +9,7 @@ import numpy as np
 from gambit.cli import cli, common
 from gambit.cli.test import default_runner, allow_no_args
 from gambit.db import ReferenceDatabase
+from gambit.seq import SequenceFile
 from gambit.util.misc import zip_strict
 from gambit.util.io import write_lines
 
@@ -79,39 +80,67 @@ class TestCLIContext:
 		assert np.array_equal(db.signatures.ids, ctx_db.signatures.ids)
 
 
+def test_strip_seq_file_ext():
+	"""Test the strip_seq_file_ext function."""
+	for stem in ['foo', 'GCF_000000000.1']:
+		for ext in ['.fasta', '.fna', '.fa']:
+			assert common.strip_seq_file_ext(stem) == stem
+			assert common.strip_seq_file_ext(stem + ext) == stem
+			assert common.strip_seq_file_ext(stem + ext + '.gz') == stem
+
+
+@pytest.mark.parametrize(
+	['strip_dir', 'strip_ext'],
+	[(True, True), (True, False), (False, False)],
+)
 class TestGetSequenceFiles:
 	"""Test the get_sequence_files() function."""
 
-	def test_explicit(self):
+	def check_ids(self, ids, paths, strip_dir, strip_ext):
+		for id_, path in zip_strict(ids, paths):
+			if strip_dir:
+				expected = Path(path).name
+				if strip_ext:
+					expected = expected.split('.')[0]
+			else:
+				expected = str(path)
+
+			assert id_ == expected
+
+	def check_files(self, files, paths):
+		for file, path in zip_strict(files, paths):
+			assert isinstance(file, SequenceFile)
+			assert file.path == Path(path)
+			assert file.format == 'fasta'
+			assert file.compression == 'auto'
+
+	def test_explicit(self, strip_dir, strip_ext):
 		"""Test given explicit paths from CLI argument."""
 		paths = [f'path/to/{i + 1}.fasta' for i in range(10)]
-		ids, paths2 = common.get_sequence_files(paths, None, None)
-		assert ids == paths
-		assert paths2 == list(map(Path, paths))
+		ids, files = common.get_sequence_files(paths, None, None, strip_dir=strip_dir, strip_ext=strip_ext)
+		self.check_ids(ids, paths, strip_dir, strip_ext)
+		self.check_files(files, paths)
 
 	@pytest.mark.parametrize('wd,absolute', [
 		('.', False),                # Relative to current directory
 		('path/to/genomes', False),  # Relative to other directory
-		('.', True),                 # Absolute paths in file, ignore wd
+		('foo/baz', True),           # Absolute paths in file, ignore wd
 	])
-	def test_listfile(self, wd, absolute, tmpdir):
+	def test_listfile(self, wd, absolute, tmpdir, strip_dir, strip_ext):
 		"""Test reading file paths from list file."""
-		paths = [f'{i + 1}.fasta' for i in range(10)]
+		wd = Path(wd)
+		list_paths = [f'{i + 1}.fasta' for i in range(10)]
 		if absolute:
-			wd2 = '/home/jlumpe'
-			paths = [f'{wd2}/{name}' for name in paths]
+			wd2 = Path('/home/jlumpe')
+			list_paths = [wd2 / p for p in list_paths]
 
 		listfile = tmpdir / 'files.txt'
-		write_lines(paths, listfile)
+		write_lines(list_paths, listfile)
+		true_paths = [wd / p for p in list_paths]
 
-		ids, paths2 = common.get_sequence_files([], listfile, wd)
-
-		for p1, id, p2 in zip_strict(paths, ids, paths2):
-			assert id == p1
-			if absolute:
-				assert p2 == Path(p1)
-			else:
-				assert p2 == Path(wd) / p1
+		ids, files = common.get_sequence_files([], listfile, wd, strip_dir=strip_dir, strip_ext=strip_ext)
+		self.check_ids(ids, list_paths, strip_dir, strip_ext)
+		self.check_files(files, true_paths)
 
 
 def test_params_by_name():

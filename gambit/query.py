@@ -55,7 +55,7 @@ class QueryInput:
 	def convert(cls, x: Union['QueryInput', SequenceFile, str]) -> 'QueryInput':
 		"""Convenience function to convert flexible argument types into QueryInput.
 
-		Accepts single string label, ``SequenceFile`` (uses file name for label), or existing
+		Accepts single string label, ``SequenceFile`` (uses file path for label), or existing
 		``QueryInput`` instance (returned unchanged).
 		"""
 		if isinstance(x, QueryInput):

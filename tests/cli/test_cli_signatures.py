@@ -9,6 +9,7 @@ from gambit.cli.test import invoke_cli
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, load_signatures
 from gambit.util.io import write_lines
+from gambit.cli.common import strip_seq_file_ext
 
 
 class TestInfoCommand:
@@ -93,10 +94,14 @@ class TestCreateCommand:
 
 		return make_args
 
-	@pytest.fixture(name='check_output')
-	def check_output_factory(self, outfile, testdb, infiles):
+	@pytest.fixture()
+	def default_ids(self, infiles):
+		return [strip_seq_file_ext(file.name) for file in infiles]
 
-		def check_output(expected_ids):
+	@pytest.fixture(name='check_output')
+	def check_output_factory(self, outfile, testdb, infiles, default_ids):
+
+		def check_output(expected_ids=default_ids):
 			out = load_signatures(outfile)
 			assert out == testdb.query_signatures  # Checks contents and .kmerspec
 			assert np.array_equal(out.ids, expected_ids)
@@ -110,18 +115,16 @@ class TestCreateCommand:
 		"""Test with basic arguments."""
 		args = make_args()
 		invoke_cli(args)
+		check_output()
 
-		ids = list(map(str, infiles))
-		check_output(ids)
-
-	def test_list_file(self, make_args, infiles):
+	def test_list_file(self, make_args, infiles, default_ids):
 		"""Test getting genome list from file."""
 
 		args = make_args(['--dump-params'], positional_files=False, list_file=True)
 		result = invoke_cli(args)
 		params = json.loads(result.stdout)
 		assert params['files'] == list(map(str, infiles))
-		assert params['ids'] == [f.name for f in infiles]
+		assert params['ids'] == default_ids
 
 	def test_with_metadata(self, testdb, make_args, check_output, tmp_path):
 		"""Test with ids and metadata JSON added."""
@@ -194,7 +197,7 @@ class TestCreateCommand:
 		invoke_cli(args, success=False)
 
 	def test_ids_wrong_len(self, testdb, make_args, tmp_path):
-		"""Test number of IDs do not match query files."""
+		"""Test where number of IDs does not match query files."""
 
 		ids = [f'seq-{i}' for i in range(len(testdb.query_genomes) - 1)]
 		id_file = tmp_path / 'ids2.txt'
@@ -202,3 +205,18 @@ class TestCreateCommand:
 
 		args = make_args(['--ids', str(id_file)])
 		invoke_cli(args, success=False)
+
+	@pytest.mark.parametrize('with_dir', [True, False])
+	def test_default_id_opts(self, make_args, check_output, infiles, with_dir):
+		"""Check options for deriving IDs from file paths."""
+
+		if with_dir:
+			opt = '-D'
+			expected_ids = [str(file) for file in infiles]
+		else:
+			opt = '-E'
+			expected_ids = [file.name for file in infiles]
+
+		args = make_args([opt])
+		invoke_cli(args)
+		check_output(expected_ids)
