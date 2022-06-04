@@ -214,7 +214,7 @@ def calc_file_signature(kspec: KmerSpec,
 def calc_file_signatures(kspec: KmerSpec,
                          files: Sequence[SequenceFile],
                          progress=None,
-                         concurrency: Optional[str] = 'threads',
+                         concurrency: Optional[str] = 'processes',
                          max_workers: Optional[int] = None,
                          executor: Optional[Executor] = None,
                          ) -> SignatureList:
@@ -229,8 +229,8 @@ def calc_file_signatures(kspec: KmerSpec,
 	progress
 		Display a progress meter. See :func:`gambit.util.progress.get_progress` for allowed values.
 	concurrency
-		Process files concurrently. ``"threads"`` for thread-based (default), ``"processes"`` for
-		process-based, ``None`` for no concurrency.
+		Process files concurrently. ``"processes"`` for process-based (default), ``"threads"`` for
+		threads-based, ``None`` for no concurrency.
 	max_workers
 		Number of worker threads/processes to use if ``concurrency`` is not None.
 	executor

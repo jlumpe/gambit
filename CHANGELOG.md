@@ -3,6 +3,8 @@
 
 ## 0.6.0
 
+* General
+	* Use process-based parallelism by default for parsing multiple sequence files (much faster).
 * CLI
 	* Strip directory and extension from input file IDs.
 	* Add option to specify number of cores to use.
