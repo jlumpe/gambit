@@ -20,28 +20,28 @@ Minor edits to project README and metadata.
 ## 0.5.0
 
 * New features
-    * `gambit dist` command for calculating distance matrices.
+	* `gambit dist` command for calculating distance matrices.
 * CLI
-    * Sequence file input
-        * Explicitly restrict input to FASTA format only.
-        * Files may be gzipped.
-        * Read input file lists from text files.
-    * Minor changes to options of subcommands in `signatures` group.
+	* Sequence file input
+		* Explicitly restrict input to FASTA format only.
+		* Files may be gzipped.
+		* Read input file lists from text files.
+	* Minor changes to options of subcommands in `signatures` group.
 * API
-    * `gambit.db` subpackage:
-        * Database-loading funcs moved to class methods of `ReferenceDatabase`.
-        * Additional taxonomy tree methods.
-        * Some additional internal reorganization/refactoring.
+	* `gambit.db` subpackage:
+		* Database-loading funcs moved to class methods of `ReferenceDatabase`.
+		* Additional taxonomy tree methods.
+		* Some additional internal reorganization/refactoring.
 
 
 ## 0.4.0
 
 * New features
-    * Result reporting
-        * Results include list of closest reference genomes. This is only reported in JSON-based
-          output formats.
-        * New "next_taxon" attribute, indicating the next most specific taxon for which the
-          threshold was not met.
+	* Result reporting
+		* Results include list of closest reference genomes. This is only reported in JSON-based
+		  output formats.
+		* New "next_taxon" attribute, indicating the next most specific taxon for which the
+		  threshold was not met.
 * CLI
 	* `signatures info` subcommand uses current reference DB by default.
 * Documentation
