@@ -1,5 +1,7 @@
 """Abstract interface for progress meters."""
 
+import sys
+
 from abc import ABC, abstractmethod
 from typing import Optional, Union, Callable, Iterable, TextIO, Dict, Mapping, Any, cast, List, \
 	Tuple, Iterator, ContextManager
@@ -486,6 +488,8 @@ class ClickProgressMeter(AbstractProgressMeter):
 	           **kw,
 	           ):
 		import click
+		if file is None:
+			file = sys.stderr
 		pbar = click.progressbar(length=total, label=desc, file=file, **kw)
 		if initial != 0:
 			pbar.update(initial)
