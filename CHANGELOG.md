@@ -5,6 +5,7 @@
 
 * CLI
 	* Strip directory and extension from input file IDs.
+	* Add option to specify number of cores to use.
     * Add option to disable progress bar printing.
 
 

@@ -8,7 +8,7 @@ from .root import cli
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import progress_config
 from gambit.sigs import load_signatures
-from gambit.seq import SequenceFile
+from gambit._cython.threads import omp_set_num_threads
 
 
 def get_exporter(outfmt: str):
@@ -59,6 +59,7 @@ def get_exporter(outfmt: str):
 	help='File containing query signatures, to use in place of GENOMES.',
 )
 @common.progress_arg()
+@click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
 @click.pass_context
 def query_cmd(ctx: click.Context,
               listfile: Optional[TextIO],
@@ -69,6 +70,7 @@ def query_cmd(ctx: click.Context,
               outfmt: str,
               strict: bool,
               progress: bool,
+              cores: Optional[int],
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 
@@ -79,6 +81,9 @@ def query_cmd(ctx: click.Context,
 	exporter = get_exporter(outfmt)
 	pconf = progress_config('click' if progress else None)
 
+	if cores is not None:
+		omp_set_num_threads(cores)
+
 	if sigfile:
 		sigs = load_signatures(sigfile)
 		inputs = [QueryInput(id) for id in sigs.ids]
@@ -87,6 +92,11 @@ def query_cmd(ctx: click.Context,
 	else:
 		ids, files = common.get_sequence_files(files_arg, listfile, ldir)
 		common.warn_duplicate_file_ids(ids, 'Warning: the following query file IDs are present more than once: {ids}')
-		results = query_parse(db, files, params, file_labels=ids, progress=pconf)
+		results = query_parse(
+			db, files, params,
+			file_labels=ids,
+			progress=pconf,
+			parse_kw=dict(max_workers=cores),
+		)
 
 	exporter.export(output, results)

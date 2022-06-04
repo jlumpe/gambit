@@ -143,6 +143,7 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 )
 @click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
 @common.progress_arg()
+@click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_context
 def create(ctx: click.Context,
@@ -158,6 +159,7 @@ def create(ctx: click.Context,
            no_strip_dir: bool,
            no_strip_ext: bool,
            progress: bool,
+           cores: Optional[int],
            dump_params: bool,
            ):
 	"""Create k-mer signatures from genome sequences."""
@@ -210,6 +212,6 @@ def create(ctx: click.Context,
 		return
 
 	# Calculate and save
-	sigs = calc_file_signatures(kspec, files, progress='click' if progress else None)
+	sigs = calc_file_signatures(kspec, files, progress='click' if progress else None, max_workers=cores)
 	sigs = AnnotatedSignatures(sigs, ids, meta)
 	dump_signatures(output, sigs)
