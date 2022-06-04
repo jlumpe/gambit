@@ -8,7 +8,7 @@ from .root import cli
 from gambit.seq import SequenceFile
 from gambit.sigs import load_signatures
 from gambit.sigs.calc import calc_file_signatures
-from gambit.metric import jaccarddist_matrix
+from gambit.metric import jaccarddist_matrix, jaccarddist_pairwise
 import gambit.util.json as gjson
 from gambit.util.progress import progress_config
 from gambit.cluster import dump_dmat_csv
@@ -146,7 +146,7 @@ def dist_cmd(ctx: click.Context,
 		omp_set_num_threads(cores)
 
 	if square:
-		dmat = jaccarddist_matrix(query_sigs, query_sigs, progress=dist_pconf)  # TODO use jaccarddist_pairwise
+		dmat = jaccarddist_pairwise(query_sigs, progress=dist_pconf)  # TODO use jaccarddist_pairwise
 
 	else:
 		if ref_sigs is None:
