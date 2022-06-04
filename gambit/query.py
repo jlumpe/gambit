@@ -235,6 +235,7 @@ def query_parse(db: ReferenceDatabase,
                 params: Optional[QueryParams] = None,
                 *,
                 file_labels: Optional[Sequence[str]] = None,
+                parse_kw: Optional[Dict[str, Any]] = None,
                 **kw,
                 ) -> QueryResults:
 	"""Query a database with signatures derived by parsing a set of genome sequence files.
@@ -246,26 +247,27 @@ def query_parse(db: ReferenceDatabase,
 	files
 		Sequence files containing query files.
 	params
-		``QueryParams`` instance defining parameter values. If None will take values from additional
+		``QueryParams`` instance defining parameter values. If None take values from additional
 		keyword arguments or use defaults.
 	file_labels
-		Custom labels to use for each file in returned results object. If None will use file names.
+		Custom labels to use for each file in returned results object. If None use file names.
+	parse_kw
+		Keyword parameters to pass to :func:`gambit.sigs.calc.calc_file_signatures`.
 	\\**kw
 		Additional keyword arguments passed to :func:`.query`.
 	"""
 	from gambit.sigs.calc import calc_file_signatures
 
 	pconf = progress_config(kw.pop('progress', None))
+	if parse_kw is None:
+		parse_kw = dict()
+	parse_kw.setdefault('progress', pconf.update(desc='Parsing input'))
 
 	if file_labels is None:
 		inputs = files
 	else:
 		inputs = [QueryInput(label, file) for label, file in zip_strict(file_labels, files)]
 
-	query_sigs = calc_file_signatures(
-		db.signatures.kmerspec,
-		files,
-		progress=pconf.update(desc='Parsing input'),
-	)
+	query_sigs = calc_file_signatures(db.signatures.kmerspec, files, **parse_kw)
 
 	return query(db, query_sigs, params, inputs=inputs, progress=pconf, **kw)
