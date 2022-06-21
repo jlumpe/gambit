@@ -1,3 +1,5 @@
+.. _cli-page:
+
 Command Line Interface
 **********************
 
@@ -19,7 +21,7 @@ Options
 
 .. option:: -d, --db DIR
 
-    Path to directory containing GAMBIT database files. Required by most subcommands.
+    Path to the directory containing reference database files. Required by most subcommands.
     As an alternative you can specify the database location with the :envvar:`GAMBIT_DB_PATH`
     environment variable.
 
@@ -29,7 +31,6 @@ Environment variables
 .. envvar:: GAMBIT_DB_PATH
 
     Alternative to :option:`-d` for specifying path to database.
-
 
 
 Querying the database
@@ -42,12 +43,13 @@ query
 
 ::
 
-   gambit query [OPTIONS] GENOMES...
+    gambit query [OPTIONS] (-s SIGFILE | -l LIST | GENOMES...)
 
 
 Predict taxonomy of microbial samples from genome sequences.
 
-``GENOMES`` must contain assembled genome sequences, but may have multiple contigs. Alternatively
+``GENOMES`` are one or more FASTA files containing assembled query genomes. Alternatively
+
 a file containing pre-calculated signatures may be used with the ``--sigfile`` option. The
 reference database must be specified from the root command group.
 
@@ -55,21 +57,18 @@ reference database must be specified from the root command group.
 Options
 .......
 
+
+.. option:: -s, --sigfile FILE
+
+    Path to file containing query signatures.
+
 .. option:: -o, --output FILE
 
    File to write output to. If omitted will write to stdout.
 
-.. option:: -s, --seqfmt {fasta}
-
-   Format of genome sequence files. Currently only FASTA is supported.
-
 .. option:: -f, --outfmt {csv|json|archive}
 
    Results format (see next section).
-
-.. option:: --sigfile FILE
-
-    Path to file containing query signatures.
 
 
 Result Formats
@@ -84,7 +83,7 @@ A .csv file with one row per query. Contains the following columns:
 * ``query.path`` - Path to query file, if any.
 * ``predicted.name`` - Name of predicted taxon.
 * ``predicted.rank`` - Rank of predicted taxon.
-* ``predicted.ncbi_id`` - ID of taxon in NCBI taxonomy database.
+* ``predicted.ncbi_id`` - ID of predicted taxon in NCBI taxonomy database.
 * ``predicted.threshold`` - Distance threshold of predicted taxon.
 * ``closest.distance`` - Distance to closest genome.
 * ``closest.description`` - Description of closest genome.
@@ -103,7 +102,6 @@ Archive
 .......
 
 A more verbose JSON-based format used for testing and development.
-
 
 
 Generating and inspecting k-mer signatures
@@ -167,10 +165,6 @@ Options
 .. option:: -p, --prefix STRING
 
    K-mer prefix to match, a non-empty string of DNA nucleotide codes.
-
-.. option:: -s, --seqfmt {fasta}
-
-   Format of genome sequence files. Currently only FASTA is supported.
 
 .. option:: -i, --ids FILE
 

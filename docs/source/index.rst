@@ -8,7 +8,7 @@ Contents
    :maxdepth: 1
 
    install
-   quickstart
+   tutorial
    cli
    api/api
 

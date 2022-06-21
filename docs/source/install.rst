@@ -1,9 +1,11 @@
+.. _install-page:
+
 Installation and Setup
-======================
+**********************
 
 
-Install from bioconda
----------------------
+Install from Bioconda
+=====================
 
 The recommended way to install the tool is through the conda package manager (available
 `here <https://docs.conda.io/en/latest/miniconda.html>`_)::
@@ -12,7 +14,7 @@ The recommended way to install the tool is through the conda package manager (av
 
 
 Install from source
--------------------
+===================
 
 Installing from source requires the ``cython`` package as well as a C compiler be installed on your
 system. Clone the repository and navigate to the directory, and then run::
@@ -25,7 +27,7 @@ Or do an editable development install with::
 
 
 Database files
---------------
+==============
 
 Download the following files and place them in a directory of your choice:
 
