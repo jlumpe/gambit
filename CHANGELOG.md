@@ -3,6 +3,8 @@
 
 ## 0.6.0
 
+* New features
+	* `tree` command for generating hierarchical clustering trees from distance matrices.
 * General
 	* Use process-based parallelism by default for parsing multiple sequence files (much faster).
 * CLI
