@@ -155,7 +155,7 @@ def query(db: ReferenceDatabase,
 	queries
 		Sequence of k-mer signatures for query genomes.
 	params
-		``QueryParams`` instance defining parameter values. If None will take values from additional
+		``QueryParams`` instance defining parameter values. If None take values from additional
 		keyword arguments or use defaults.
 	inputs
 		Description for each input, converted to :class:`gambit.query.result.QueryInput` in results

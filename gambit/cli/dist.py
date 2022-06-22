@@ -146,7 +146,7 @@ def dist_cmd(ctx: click.Context,
 		omp_set_num_threads(cores)
 
 	if square:
-		dmat = jaccarddist_pairwise(query_sigs, progress=dist_pconf)  # TODO use jaccarddist_pairwise
+		dmat = jaccarddist_pairwise(query_sigs, progress=dist_pconf)
 
 	else:
 		if ref_sigs is None:
