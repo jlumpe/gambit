@@ -205,18 +205,3 @@ class TestCreateCommand:
 
 		args = make_args(['--ids', str(id_file)])
 		invoke_cli(args, success=False)
-
-	@pytest.mark.parametrize('with_dir', [True, False])
-	def test_default_id_opts(self, make_args, check_output, infiles, with_dir):
-		"""Check options for deriving IDs from file paths."""
-
-		if with_dir:
-			opt = '-D'
-			expected_ids = [str(file) for file in infiles]
-		else:
-			opt = '-E'
-			expected_ids = [file.name for file in infiles]
-
-		args = make_args([opt])
-		invoke_cli(args)
-		check_output(expected_ids)

@@ -129,18 +129,6 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 	is_flag=True,
 	help='Use k/prefix from reference database.'
 )
-@click.option(
-	'-D', 'no_strip_dir',
-	is_flag=True,
-	default=False,
-	help='Use the full paths of input files as the IDs. Ignored if --ids is specified. Implies -E.',
-)
-@click.option(
-	'-E', 'no_strip_ext',
-	is_flag=True,
-	default=False,
-	help='Include extension of input file names in their IDS. Ignored if --ids is specified.',
-)
 @click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
 @common.progress_arg()
 @click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
@@ -156,8 +144,6 @@ def create(ctx: click.Context,
            meta_file: Optional[TextIO],
            ids_file: Optional[TextIO],
            db_params: bool,
-           no_strip_dir: bool,
-           no_strip_ext: bool,
            progress: bool,
            cores: Optional[int],
            dump_params: bool,
@@ -167,11 +153,7 @@ def create(ctx: click.Context,
 	common.check_params_group(ctx, ['list_file', 'files_arg'], True, True)
 
 	# Get sequence files
-	ids, files = common.get_sequence_files(
-		files_arg, list_file, ldir,
-		strip_dir=not no_strip_dir,
-		strip_ext=not no_strip_ext,
-	)
+	ids, files = common.get_sequence_files(files_arg, list_file, ldir)
 
 	# Get kmerspec
 	kspec = common.kspec_from_params(k, prefix)
