@@ -21,3 +21,19 @@ def test_dmat_csv(tmp_path):
 	assert np.allclose(dmat, dmat2, atol=1e-4)
 	assert rids2 == row_ids
 	assert cids2 == col_ids
+
+
+def test_tree():
+	"""Test hierarchical clustering and converting to BioPython tree object."""
+
+	# Made-up linkage array, (((A, B), C), D)
+	link = np.asarray([
+		[0, 1, .1, 2],
+		[2, 4, .2, 3],
+		[3, 5, .3, 4],
+	], dtype=float)
+	labels = list('ABCD')
+
+	tree = cluster.linkage_to_bio_tree(link, labels)
+	assert tree.rooted
+	cluster.check_tree_matches_linkage(tree, link, labels)
