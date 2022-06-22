@@ -8,7 +8,7 @@ Install from bioconda
 The recommended way to install the tool is through the conda package manager (available
 `here <https://docs.conda.io/en/latest/miniconda.html>`_)::
 
-    conda install -c bioconda hesslab-gambit
+    conda install -c bioconda gambit
 
 
 Install from source

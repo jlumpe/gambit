@@ -1,16 +1,17 @@
 # GAMBIT
 
-[![Build Status](https://github.com/hesslab-gambit/gambit/actions/workflows/ci.yml/badge.svg)](https://github.com/hesslab-gambit/gambit/actions/workflows/ci.yml)
-[![Documentation Status](https://readthedocs.org/projects/hesslab-gambit/badge/?version=latest)](https://hesslab-gambit.readthedocs.io/en/latest/?badge=latest)
-[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/hesslab-gambit/README.html)
+[![Build Status](https://github.com/jlumpe/gambit/actions/workflows/ci.yml/badge.svg)](https://github.com/jlumpe/gambit/actions/workflows/ci.yml)
+[![Documentation Status](https://readthedocs.org/projects/gambit-genomics/badge/?version=latest)](https://gambit-genomics.readthedocs.io/en/latest/?badge=latest)
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/gambit/README.html)
 
 GAMBIT (Genomic Approximation Method for Bacterial Identification and Tracking) is a tool for rapid taxonomic identification of microbial pathogens.
 It uses an extremely efficient genomic distance metric along with a curated database of approximately 50,000 reference genomes (derived from NCBI
-[RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)) to identify query genomes within seconds.
+[RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)) to identify unknown bacterial genomes within seconds.
 
-Developed by Jared Lumpe in collaboration with the David Hess lab at Santa Clara University. Publication coming soon.
+Developed by Jared Lumpe in collaboration with the Nevada State Public Health Lab and the David Hess lab at Santa Clara University.
+Preprint available [here](https://www.biorxiv.org/content/10.1101/2022.06.14.496173v1).
 
-See the [documentation](https://hesslab-gambit.readthedocs.io/en/stable) for more
+See the [documentation](https://gambit-genomics.readthedocs.io/en/latest) for more
 detailed information on the tool and how to use it.
 
 
@@ -19,7 +20,7 @@ detailed information on the tool and how to use it.
 Install the Python library from Bioconda:
 
 ```
-conda install -c bioconda hesslab-gambit
+conda install -c bioconda gambit
 ```
 
 Then download the reference database files and place them in a directory of your choice:
@@ -32,20 +33,15 @@ Then download the reference database files and place them in a directory of your
 
 ## Usage
 
-    gambit [-d DB_DIR] query [-f {csv|json}] [-o OUTFILE] GENOMES*
+    gambit [-d /path/to/database/] query [-o results.csv] genome1.fasta genome2.fasta ...
 
-* `GENOMES` are one or more files containing query genomes. Currently only FASTA format is supported.
-  They must be assembled but may consist of multiple contigs. Support for unassembled raw reads in
-  FASTQ format is in development.
-* `DB_DIR` is the directory containing the database files. Alternatively you may set the
-  `GAMBIT_DB_PATH` environment variable in order to avoid typing this each time.
-* `OUTFILE` is the file to write results to.
-* `-f` sets the output format (defaults to `csv`).
+Positional arguments are one or more FASTA files containing query genome assemblies. You must
+provide the path to the directory containing the database files using either the `-d` option
+(*before* the `query` subcommand) or by setting`GAMBIT_DB_PATH` environment variable.
 
 See the documentation for additional details on the command line interface and description of the output.
 
 
 ## Contact
 
-For questions regarding usage of the software itself, please contact Jared Lumpe at [mjlumpe@gmail.com](mailto:mjlumpe@gmail.com).
-All other questions should be directed to David Hess at [dchess@scu.edu](mailto:dchess@scu.edu).
+Please contact Jared Lumpe at [mjlumpe@gmail.com](mailto:mjlumpe@gmail.com).
