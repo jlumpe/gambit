@@ -222,6 +222,23 @@ def strip_seq_file_ext(filename: str) -> str:
 	filename = strip_extensions(filename, FASTA_EXTENSIONS)
 	return filename
 
+def get_file_id(path: FilePath, strip_dir: bool = True, strip_ext: bool = True) -> str:
+	"""Get sequence file ID derived from file path.
+
+	Parameters
+	----------
+	strip_dir
+		Strip leading path components.
+	strip_ext
+		Strip file extension(s).
+	"""
+	id = os.fspath(path)
+	if strip_dir:
+		id = os.path.basename(id)
+		if strip_ext:
+			id = strip_seq_file_ext(id)
+	return id
+
 def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
                        listfile: Union[None, FilePath, TextIO]=None,
                        listfile_dir: Optional[str]=None,
@@ -254,22 +271,18 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
 	"""
 	if explicit:
 		paths = list(map(Path, explicit))
-		ids = list(map(str, paths))
+		paths_str = list(map(str, paths))
 
 	elif listfile is not None:
 		lines = list(read_lines(listfile, skip_empty=True))
 		paths = [Path(listfile_dir) / line for line in lines]
-		ids = lines
+		paths_str = lines
 
 	else:
 		return None, None
 
 	files = SequenceFile.from_paths(paths, 'fasta', 'auto')
-
-	if strip_dir:
-		ids = list(map(os.path.basename, ids))
-		if strip_ext:
-			ids = list(map(strip_seq_file_ext, ids))
+	ids = [get_file_id(f, strip_dir, strip_ext) for f in paths_str]
 
 	return ids, files
 
