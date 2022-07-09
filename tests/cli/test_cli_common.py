@@ -83,7 +83,7 @@ class TestCLIContext:
 def test_strip_seq_file_ext():
 	"""Test the strip_seq_file_ext function."""
 	for stem in ['foo', 'GCF_000000000.1']:
-		for ext in ['.fasta', '.fna', '.fa']:
+		for ext in common.FASTA_EXTENSIONS:
 			assert common.strip_seq_file_ext(stem) == stem
 			assert common.strip_seq_file_ext(stem + ext) == stem
 			assert common.strip_seq_file_ext(stem + ext + '.gz') == stem

@@ -14,7 +14,6 @@ from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath, read_lines
 from gambit.util.misc import join_list_human
 from gambit.seq import validate_dna_seq_bytes, SequenceFile
-from gambit._cython.threads import omp_set_num_threads
 
 
 class CLIContext:
@@ -207,10 +206,10 @@ def kspec_from_params(k: int, prefix: str) -> Optional[KmerSpec]:
 	return KmerSpec(k, prefix_bytes)
 
 
-FASTA_EXTENSIONS = ['.fasta', '.fna', '.ffn', '.faa', '.frn', '.fa']
-GZIP_EXTENSIONS = ['.gz']
+FASTA_EXTENSIONS = ('.fasta', '.fna', '.ffn', '.faa', '.frn', '.fa')
+GZIP_EXTENSIONS = ('.gz',)
 
-def strip_extensions(filename: str, extensions: List[str]) -> str:
+def strip_extensions(filename: str, extensions: Iterable[str]) -> str:
 	for ext in extensions:
 		if filename.endswith(ext):
 			return filename[:-len(ext)]
