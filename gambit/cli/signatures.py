@@ -129,7 +129,6 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 	is_flag=True,
 	help='Use k/prefix from reference database.'
 )
-@click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
 @common.progress_arg()
 @click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
 @click.option('--dump-params', is_flag=True, hidden=True)
