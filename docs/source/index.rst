@@ -10,6 +10,7 @@ Contents
    install
    tutorial
    cli
+   databases
    api/api
 
 

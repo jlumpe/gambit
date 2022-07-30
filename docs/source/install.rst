@@ -29,7 +29,6 @@ Or do an editable development install with::
 Database files
 ==============
 
-Download the following files and place them in a directory of your choice:
-
-* `gambit-genomes-1.0b1-210719.db <https://storage.googleapis.com/hesslab-gambit-public/databases/refseq-curated/1.0-beta/gambit-genomes-1.0b1-210719.db>`_
-* `gambit-signatures-1.0b1-210719.h5 <https://storage.googleapis.com/hesslab-gambit-public/databases/refseq-curated/1.0-beta/gambit-signatures-1.0b1-210719.h5>`_
+Download files for the latest database release from the :ref:`Database Releases` page and place them
+in a directory of your choice. The directory should not contain any other files with the same
+extension.
