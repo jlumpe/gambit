@@ -36,6 +36,8 @@ Environment variables
 Querying the database
 =====================
 
+.. _query-cmd:
+
 query
 -----
 
@@ -49,7 +51,6 @@ query
 Predict taxonomy of microbial samples from genome sequences.
 
 ``GENOMES`` are one or more FASTA files containing assembled query genomes. Alternatively
-
 a file containing pre-calculated signatures may be used with the ``--sigfile`` option. The
 reference database must be specified from the root command group.
 
@@ -71,6 +72,8 @@ Options
    Results format (see next section).
 
 
+.. _query-result-formats:
+
 Result Formats
 --------------
 
@@ -79,14 +82,22 @@ CSV
 
 A .csv file with one row per query. Contains the following columns:
 
-* ``query.name`` - Name of query.
-* ``query.path`` - Path to query file, if any.
-* ``predicted.name`` - Name of predicted taxon.
-* ``predicted.rank`` - Rank of predicted taxon.
-* ``predicted.ncbi_id`` - ID of predicted taxon in NCBI taxonomy database.
-* ``predicted.threshold`` - Distance threshold of predicted taxon.
-* ``closest.distance`` - Distance to closest genome.
-* ``closest.description`` - Description of closest genome.
+* ``query.*`` - Query genome.
+    * ``query.name`` - Name of query.
+    * ``query.path`` - Path to query file, if any.
+* ``predicted.*`` - Predicted taxon.
+    * ``predicted.name``
+    * ``predicted.rank``
+    * ``predicted.ncbi_id`` - Numeric ID in NCBI taxonomy database.
+    * ``predicted.threshold``
+* ``closest.*`` - Reference genome closest to query.
+    * ``closest.distance`` - Distance to closest genome.
+    * ``closest.decription`` - Text description.
+* ``next.*`` - Next most specific taxon for which the classification threshold was not met.
+    * ``next.name``
+    * ``next.rank``
+    * ``next.ncbi_id``
+    * ``next.threshold``
 
 
 JSON
@@ -106,6 +117,8 @@ A more verbose JSON-based format used for testing and development.
 
 Generating and inspecting k-mer signatures
 ==========================================
+
+.. _signatures-info-cmd:
 
 signatures info
 ---------------
@@ -135,6 +148,8 @@ Options
 
    Print IDs of all signatures in file.
 
+
+.. _signatures-create-cmd:
 
 signatures create
 -----------------
@@ -175,4 +190,4 @@ Options
    JSON file containing metadata to attach to file.
 
    .. todo::
-      Document schema
+      Document metadata schema
