@@ -33,9 +33,14 @@ def get_exporter(outfmt: str):
 	'-l', 'listfile',
 	type=click.File('r'),
 	metavar='LISTFILE',
-	help='File containing paths to genomes.',
+	help='File containing paths to query genomes.',
 )
-@click.option('--ldir', type=common.dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
+@click.option(
+	'--ldir',
+	type=common.dirpath(),
+	default='.',
+	help='Parent directory of paths in LISTFILE.',
+)
 @click.option(
 	'-o', '--output',
 	type=click.File(mode='w'),
