@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 0.5.1
+
+Minor edits to project README and metadata.
+
+
 ## 0.5.0
 
 * New features
