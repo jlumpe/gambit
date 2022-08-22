@@ -37,7 +37,7 @@ Then download the reference database files and place them in a directory of your
 
 Positional arguments are one or more FASTA files containing query genome assemblies. You must
 provide the path to the directory containing the database files using either the `-d` option
-(*before* the `query` subcommand) or by setting`GAMBIT_DB_PATH` environment variable.
+(*before* the `query` subcommand) or by setting the `GAMBIT_DB_PATH` environment variable.
 
 See the documentation for additional details on the command line interface and description of the output.
 
