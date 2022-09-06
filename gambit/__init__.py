@@ -2,7 +2,7 @@
 Genomic Approximation Method for Bacterial Identification and Tracking.
 
 Author: Jared Lumpe
-Author email: mjlumpe@gmail.com
+Author email: jared@jaredlumpe.com
 """
 
 __version__ = '0.6.0'
