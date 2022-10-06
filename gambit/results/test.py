@@ -142,14 +142,7 @@ def check_csv_results(file: TextIO, results: QueryResults, strict: bool = False)
 	assert len(rows) == len(results.items)
 
 	for item, row in zip(results.items, rows):
-		assert row['query.name'] == item.input.label
-
-		if item.input.file is None:
-			assert row['query.path'] == ''
-		elif strict:
-			assert row['query.path'] == str(item.input.file.path)
-		else:
-			assert Path(row['query.path']).name == item.input.file.path.name
+		assert row['query'] == item.input.label
 
 		cmp_csv_taxon(row, item.report_taxon, 'predicted')
 		cmp_csv_taxon(row, item.classifier_result.next_taxon, 'next')

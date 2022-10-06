@@ -32,8 +32,7 @@ class CSVResultsExporter(AbstractResultsExporter):
 	format_opts: Dict[str, Any]
 
 	COLUMNS = [
-		('query.name', 'input.label'),
-		('query.path', 'input.file.path'),
+		('query', 'input.label'),
 		('predicted.name', 'report_taxon.name'),
 		('predicted.rank', 'report_taxon.rank'),
 		('predicted.ncbi_id', 'report_taxon.ncbi_id'),
