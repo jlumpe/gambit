@@ -21,6 +21,7 @@ def expected_linkage(expected_dmat):
 
 @pytest.mark.parametrize('from_sigs', [False, True])
 def test_tree_command(from_sigs, expected_linkage, testdb):
+	"""Test running the command and checking the output."""
 	seqfiles = [str(f.path) for f in testdb.get_query_files()]
 
 	args = ['tree']
@@ -38,4 +39,3 @@ def test_tree_command(from_sigs, expected_linkage, testdb):
 	expected_labels = list(map(common.get_file_id, seqfiles))
 
 	check_tree_matches_linkage(result_tree, expected_linkage, expected_labels)
-

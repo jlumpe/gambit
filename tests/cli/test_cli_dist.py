@@ -175,9 +175,9 @@ def test_kspec(make_args, testdb, tmp_path):
 	invoke_cli(args, success=False)
 
 	# Ref and query signatures inconsistent
-	args = make_args(r_sigs=True) + ['--qs', alt_sigfile]
+	args = make_args(r_sigs=True, extra=('--qs', alt_sigfile))
 	invoke_cli(args, success=False)
-	args = make_args(r_db=True) + ['--qs', alt_sigfile]
+	args = make_args(r_db=True, extra=('--qs', alt_sigfile))
 	invoke_cli(args, success=False)
 
 @pytest.mark.parametrize(

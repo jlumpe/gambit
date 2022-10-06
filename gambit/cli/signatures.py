@@ -101,13 +101,8 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 
 @signatures_group.command(no_args_is_help=True)
 @common.genome_files_arg()
-@click.option(
-	'-l', 'list_file',
-	type=click.File('r'),
-	metavar='LISTFILE',
-	help='File containing names/paths of genome files.',
-)
-@click.option('--ldir', type=common.dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
+@common.listfile_param('-l', 'listfile', metavar='LISTFILE', help='File containing paths to genome files, one per line.')
+@common.listfile_dir_param('--ldir', file_metavar='LISTFILE')
 @common.kspec_params()
 @click.option(
 	'-o', '--output',
@@ -131,11 +126,11 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 	help='Use k/prefix from reference database.'
 )
 @common.progress_arg()
-@click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
+@common.cores_param()
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_context
 def create(ctx: click.Context,
-           list_file: Optional[TextIO],
+           listfile: Optional[TextIO],
            ldir: Optional[str],
            files_arg: List[str],
            output: str,
@@ -150,10 +145,10 @@ def create(ctx: click.Context,
            ):
 	"""Create k-mer signatures from genome sequences."""
 
-	common.check_params_group(ctx, ['list_file', 'files_arg'], True, True)
+	common.check_params_group(ctx, ['listfile', 'files_arg'], True, True)
 
 	# Get sequence files
-	ids, files = common.get_sequence_files(files_arg, list_file, ldir)
+	ids, files = common.get_sequence_files(files_arg, listfile, ldir)
 
 	# Get kmerspec
 	kspec = common.kspec_from_params(k, prefix)

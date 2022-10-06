@@ -17,20 +17,15 @@ from gambit.cluster import hclust, linkage_to_bio_tree
 
 @cli.command(name='tree', no_args_is_help=True)
 @common.genome_files_arg()
-@click.option(
-	'-l', 'listfile',
-	type=click.File('r'),
-	metavar='LISTFILE',
-	help='File containing paths to genomes.',
-)
-@click.option('--ldir', type=common.dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
+@common.listfile_param('-l', 'listfile', metavar='LISTFILE', help='File containing paths to genomes files, one per line.')
+@common.listfile_dir_param('--ldir', file_metavar='LISTFILE')
 @click.option(
 	'-s', '--sigfile',
 	type=common.filepath(exists=True),
 	help='GAMBIT signatures file.',
 )
 @common.kspec_params()
-@click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
+@common.cores_param()
 @common.progress_arg()
 @click.pass_context
 def tree_cmd(ctx: click.Context,
@@ -60,7 +55,7 @@ def tree_cmd(ctx: click.Context,
 
 	else:
 		labels, genome_files = common.get_sequence_files(files_arg, listfile, ldir)
-		common.warn_duplicate_file_ids(labels, 'Warning: the following query file IDs are present more than once: {ids}')
+		common.warn_duplicate_file_ids(labels, 'Warning: the following file IDs are present more than once: {ids}')
 
 		kspec = common.kspec_from_params(k, prefix, default=True)
 		sigfiles = SequenceFile.from_paths(genome_files, 'fasta', 'auto')

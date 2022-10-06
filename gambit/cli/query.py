@@ -29,18 +29,8 @@ def get_exporter(outfmt: str):
 
 @cli.command(name='query', no_args_is_help=True)
 @common.genome_files_arg()
-@click.option(
-	'-l', 'listfile',
-	type=click.File('r'),
-	metavar='LISTFILE',
-	help='File containing paths to query genomes.',
-)
-@click.option(
-	'--ldir',
-	type=common.dirpath(),
-	default='.',
-	help='Parent directory of paths in LISTFILE.',
-)
+@common.listfile_param('-l', 'listfile', metavar='LISTFILE', help='File containing paths to query genomes, one per line.')
+@common.listfile_dir_param('--ldir', file_metavar='LISTFILE')
 @click.option(
 	'-o', '--output',
 	type=click.File(mode='w'),
@@ -64,7 +54,7 @@ def get_exporter(outfmt: str):
 	help='File containing query signatures, to use in place of GENOMES.',
 )
 @common.progress_arg()
-@click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
+@common.cores_param()
 @click.pass_context
 def query_cmd(ctx: click.Context,
               listfile: Optional[TextIO],

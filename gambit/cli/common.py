@@ -169,6 +169,23 @@ def genome_files_arg():
 		metavar='GENOMES...',
 	)
 
+def cores_param():
+	"""Click parameter for number of CPU cores."""
+	return click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
+
+
+def listfile_param(*param: str, **kw):
+	"""Returns decorator to add param for file listing input paths."""
+	return click.option(*param, type=click.File('r'), **kw)
+
+def listfile_dir_param(*param: str, file_metavar=None, **kw):
+	"""Returns decorator to add param for parent directory of paths in list file."""
+	kw.setdefault('default', '.')
+	if file_metavar is not None:
+		kw.setdefault('help', f'Parent directory of paths in {file_metavar}.')
+
+	return click.option(*param, type=dirpath(), **kw)
+
 
 def kspec_params(default: bool = False):
 	"""Returns a decorator to add k and prefix options to command.
@@ -325,6 +342,7 @@ def warn_duplicate_file_ids(ids: List[str], template: str):
 
 
 def progress_arg():
+	"""Click argument to show progress meter."""
 	return click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
 
 
