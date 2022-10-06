@@ -1,7 +1,7 @@
 """Store k-mer signature sets in HDF5 format."""
 
 import json
-from typing import Sequence, Union, Optional
+from typing import Optional
 
 import numpy as np
 import h5py as h5
@@ -148,7 +148,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		elif ids.dtype.kind in 'OS':
 			ids_dtype = h5.string_dtype()
 		elif ids.dtype.kind in 'ui':
-			ids_dtype=ids.dtype
+			ids_dtype = ids.dtype
 		else:
 			raise ValueError('ids array must contain integers or strings.')
 
