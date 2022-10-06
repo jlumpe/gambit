@@ -150,15 +150,18 @@ class CLIContext:
 
 
 def filepath(**kw) -> click.Path:
+	"""Click Path argument type accepting files only."""
 	kw.setdefault('path_type', Path)
 	return click.Path(file_okay=True, dir_okay=False, **kw)
 
 def dirpath(**kw) -> click.Path:
+	"""Click Path argument type accepting directories only."""
 	kw.setdefault('path_type', Path)
 	return click.Path(file_okay=False, dir_okay=True, **kw)
 
 
 def genome_files_arg():
+	"""Click positional argument for genome files."""
 	return click.argument(
 		'files_arg',
 		nargs=-1,
