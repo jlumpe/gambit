@@ -13,6 +13,7 @@ import gambit.util.json as gjson
 from gambit.util.progress import progress_config
 from gambit.cluster import dump_dmat_csv
 from gambit._cython.threads import omp_set_num_threads
+from gambit.kmers import DEFAULT_KMERSPEC
 
 
 def fmt_kspec(kspec):
@@ -20,7 +21,7 @@ def fmt_kspec(kspec):
 
 
 @cli.command(name='dist', no_args_is_help=True)
-@common.kspec_params
+@common.kspec_params()
 @click.option('-o', 'output', type=common.filepath(writable=True), required=True, help='Output file.')
 @click.option('-q', type=common.filepath(exists=True), multiple=True, help='Query genome(s) (may be used multiple times).')
 @click.option('--ql', type=click.File('r'), help='File containing paths to query genomes, one per line.')
@@ -105,7 +106,7 @@ def dist_cmd(ctx: click.Context,
 		elif ref_sigs is not None:
 			kspec = ref_sigs.kmerspec
 		else:
-			raise click.ClickException('Require values for the -k and --prefix options.')
+			kspec = DEFAULT_KMERSPEC
 
 	else:
 		if query_sigs is not None and query_sigs.kmerspec != kspec:

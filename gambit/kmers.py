@@ -123,6 +123,10 @@ class KmerSpec(Jsonable):
 		return cls(data['k'], data['prefix'])
 
 
+#: Default settings for k-mer search
+DEFAULT_KMERSPEC = KmerSpec(11, 'ATGAC')
+
+
 @attrs(slots=True)
 class KmerMatch:
 	"""Represents a

@@ -1,5 +1,7 @@
 """Tests for the "dist" command."""
 
+import json
+
 import pytest
 import numpy as np
 
@@ -9,6 +11,8 @@ from gambit.sigs import SignatureList, dump_signatures
 from gambit.cli.test import invoke_cli
 from gambit.util.io import write_lines
 from gambit.cluster import load_dmat_csv
+import gambit.util.json as gjson
+from gambit.kmers import DEFAULT_KMERSPEC
 
 
 @pytest.fixture()
@@ -154,9 +158,11 @@ def test_kspec(make_args, testdb, tmp_path):
 	alt_sigs = SignatureList([], alt_kspec)
 	dump_signatures(alt_sigfile, alt_sigs)
 
-	# No kspec
-	args = make_args(q_list=True, r_list=True)
-	invoke_cli(args, success=False)
+	# Default kspec
+	args = make_args(q_list=True, r_list=True, extra=('--dump-params',))
+	result = invoke_cli(args)
+	params = json.loads(result.stdout)
+	assert params['kmerspec'] == gjson.to_json(DEFAULT_KMERSPEC)
 
 	# Kspec from args inconsistent with query or reference signatures
 	args = make_args(q_sigs=True, r_sigs=True) + alt_kspec_args

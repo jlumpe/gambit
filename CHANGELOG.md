@@ -9,8 +9,9 @@
 	* Use process-based parallelism by default for parsing multiple sequence files (much faster).
 * CLI
 	* Strip directory and extension from input file IDs.
+	* `-k` and `--prefix` parameters now default to values used Refseq database.
 	* Add option to specify number of cores to use.
-    * Add option to disable progress bar printing.
+	* Add option to disable progress bar printing.
 	* Speed up `gambit dist` with `-s` option applied.
 
 

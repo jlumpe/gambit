@@ -29,7 +29,7 @@ from gambit.cluster import hclust, linkage_to_bio_tree
 	type=common.filepath(exists=True),
 	help='GAMBIT signatures file.',
 )
-@common.kspec_params
+@common.kspec_params()
 @click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
 @common.progress_arg()
 @click.pass_context
@@ -62,10 +62,7 @@ def tree_cmd(ctx: click.Context,
 		labels, genome_files = common.get_sequence_files(files_arg, listfile, ldir)
 		common.warn_duplicate_file_ids(labels, 'Warning: the following query file IDs are present more than once: {ids}')
 
-		kspec = common.kspec_from_params(k, prefix)
-		if kspec is None:
-			raise click.ClickException('Require values for the -k and --prefix options.')
-
+		kspec = common.kspec_from_params(k, prefix, default=True)
 		sigfiles = SequenceFile.from_paths(genome_files, 'fasta', 'auto')
 		sigs = calc_file_signatures(kspec, sigfiles, progress=pconf.update(desc='Calculating signatures'), max_workers=cores)
 

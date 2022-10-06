@@ -10,6 +10,7 @@ import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, load_signatures
 from gambit.util.io import write_lines
 from gambit.cli.common import strip_seq_file_ext
+from gambit.kmers import DEFAULT_KMERSPEC
 
 
 class TestInfoCommand:
@@ -167,6 +168,16 @@ class TestCreateCommand:
 		params = json.loads(result.stdout)
 		assert params['kmerspec'] == gjson.to_json(testdb.kmerspec)
 
+	def test_default_kspec(self, make_args, testdb):
+		"""Test with default KmerSpec."""
+		args = make_args(
+			['--dump-params'],
+			with_kspec=False,
+		)
+		result = invoke_cli(args)
+		params = json.loads(result.stdout)
+		assert params['kmerspec'] == gjson.to_json(DEFAULT_KMERSPEC)
+
 	def test_invalid(self, testdb, make_args):
 		"""Test with invalid parameter combinations."""
 
@@ -176,10 +187,6 @@ class TestCreateCommand:
 
 		# Positional args and list file
 		args = make_args(positional_files=True, list_file=True)
-		invoke_cli(args, success=False)
-
-		# No -k, --prefix, or --db-params
-		args = make_args(with_kspec=False)
 		invoke_cli(args, success=False)
 
 		# Only -k/--prefix

@@ -9,6 +9,7 @@ import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, AnnotatedSignatures, load_signatures, dump_signatures
 from gambit.sigs.calc import calc_file_signatures
 from gambit.util.io import read_lines
+from gambit.kmers import DEFAULT_KMERSPEC
 
 
 def format_none(value):
@@ -107,7 +108,7 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 	help='File containing names/paths of genome files.',
 )
 @click.option('--ldir', type=common.dirpath(), default='.', help='Parent directory of paths in LISTFILE.')
-@common.kspec_params
+@common.kspec_params()
 @click.option(
 	'-o', '--output',
 	required=True,
@@ -166,7 +167,7 @@ def create(ctx: click.Context,
 			raise click.ClickException('The -k/--prefix and --db-params options are mutually exclusive.')
 
 	elif kspec is None:
-		raise click.ClickException('Must give values for -k/--prefix or specify --db-params.')
+		kspec = DEFAULT_KMERSPEC
 
 	# Metadata / IDs
 	if meta_file is not None:

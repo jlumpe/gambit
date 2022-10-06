@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
-from gambit.kmers import KmerSpec
+from gambit.kmers import KmerSpec, DEFAULT_KMERSPEC
 from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath, read_lines
@@ -169,26 +169,44 @@ def genome_files_arg():
 		metavar='GENOMES...',
 	)
 
-def kspec_params(f):
-	"""Decorator to add k and prefix options to command."""
+
+def kspec_params(default: bool = False):
+	"""Returns a decorator to add k and prefix options to command.
+
+	Parameters
+	----------
+	default
+		Whether to add default values.
+	"""
 	popt = click.option(
 		'-p', '--prefix',
 		help='K-mer prefix.',
+		default=DEFAULT_KMERSPEC.prefix_str if default else None,
 		metavar='NUCS',
 	)
 	kopt = click.option(
 		'-k',
 		type=int,
 		help='Number of nucleotides to recognize AFTER prefix.',
+		default=DEFAULT_KMERSPEC.k if default else None,
 	)
-	return kopt(popt(f))
+	return lambda f: kopt(popt(f))
 
-def kspec_from_params(k: int, prefix: str) -> Optional[KmerSpec]:
+def kspec_from_params(k: Optional[int], prefix: Optional[str], default: bool = False) -> Optional[KmerSpec]:
+	"""Get KmerSpec from CLI arguments and validate.
+
+	Parameters
+	----------
+	k
+	prefix
+	default
+		Return default KmerSpec if arguments are None.
+	"""
 
 	if prefix is None and k is None:
-		return None
+		return DEFAULT_KMERSPEC if default else None
 
-	if not (prefix is not None and k is not None):
+	if prefix is None or k is None:
 		raise click.ClickException('Must specify values for both -k and --prefix arguments.')
 
 	# TODO - minimum k and prefix length are fairly arbitrary here - is there a better method?
