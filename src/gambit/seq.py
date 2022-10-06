@@ -76,6 +76,51 @@ def validate_dna_seq_bytes(seq: DNASeqBytes):
 			raise ValueError(f'Invalid byte at position {i}: {nuc}')
 
 
+def parse_seqs(path: FilePath,
+               format: str = 'fasta',
+               compression: str = 'auto',
+               **kwargs) -> ClosingIterator[SeqIO.SeqRecord]:
+	"""Open a sequence file and lazily parse its contents.
+
+	This is essentially a wrapper over BioPython's :func:`Bio.SeqIO.parse` function that
+	transparently handles compressed files.
+
+	Returns iterator over sequence data in file. File is parsed lazily, and so must be kept open.
+	The returned iterator is of type :class:`gambit.util.io.ClosingIterator` so it will close the
+	file stream automatically when it finishes. It may also be used as a context manager that closes
+	the stream on exit. You may also close the stream explicitly using the iterator's ``close``
+	method.
+
+	Parameters
+	----------
+	path
+		Path to the file.
+	format
+		String describing the file format as interpreted by :func:`Bio.SeqIO.parse`.
+	compression
+		String describing compression method of the file, e.g. ``'gzip'``. None means no
+		compression. Default is to determine compression automatically (can only detect gzip or
+		none). See :func:`gambit.util.io.open_compressed`.
+	kwargs
+		Keyword arguments to :func:`gambit.util.io.open_compressed`.
+
+	Returns
+	-------
+	gambit.util.io.ClosingIterator
+		Iterator yielding :class:`Bio.SeqIO.SeqRecord` instances for each sequence in the file.
+	"""
+
+	fobj = open_compressed(path, 'rt', compression, **kwargs)
+
+	try:
+		records = SeqIO.parse(fobj, format)
+		return ClosingIterator(records, fobj)
+
+	except:
+		fobj.close()
+		raise
+
+
 @attrs(frozen=True, slots=True)
 class SequenceFile(PathLike):
 	"""A reference to a DNA sequence file stored in the file system.

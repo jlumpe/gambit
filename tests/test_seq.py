@@ -8,9 +8,11 @@ import pytest
 import numpy as np
 from Bio import Seq, SeqIO
 
-from gambit.seq import SequenceFile, revcomp
+from gambit.seq import SequenceFile, revcomp, parse_seqs
 from gambit.kmers import nkmers, index_to_kmer
 from gambit.util.misc import zip_strict
+from gambit.util.io import open_compressed
+
 from .common import random_seq
 
 
@@ -247,3 +249,44 @@ class TestSequenceFile:
 			assert str(seqfile.path) == path
 			assert seqfile.format == format
 			assert seqfile.compression == compression
+
+
+@pytest.fixture(scope='module')
+def seqrecords():
+	"""Random SeqRecord instances."""
+
+	records = []
+
+	np.random.seed(0)
+
+	for i in range(20):
+		seq = Seq.Seq(random_seq(1000).decode('ascii'))
+		id_ = f'seq{i + 1}'
+		descr = f'{id_} Test sequence {i + 1}'
+		records.append(SeqIO.SeqRecord(seq, id=id_, description=descr))
+
+	return records
+
+
+@pytest.mark.parametrize('compression', ['none', 'gzip'])
+@pytest.mark.parametrize('auto', [False, True])
+def test_parse_seqs(tmp_path: Path, seqrecords: list[SeqIO.SeqRecord], compression: str, auto: bool):
+	"""Test the parse_seqs() function."""
+
+	# Write FASTA file
+	file = tmp_path / ('test.fa' + ('.gz' if compression == 'gzip' else ''))
+	with open_compressed(file, 'wt', compression) as fh:
+		SeqIO.write(seqrecords, fh, 'fasta')
+
+	# Parse
+	with parse_seqs(file, 'fasta', compression='auto' if auto else compression) as parsed:
+		records2 = list(parsed)
+
+		# Check ClosingIterator closes the underlying file object when last record is read
+		assert parsed.fobj.closed
+
+	# Check parsed records are correct
+	for record, record2 in zip_strict(seqrecords, records2):
+		assert record2.seq == record.seq
+		assert record2.id == record.id
+		assert record2.description == record.description
