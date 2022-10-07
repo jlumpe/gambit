@@ -13,9 +13,9 @@ Reference database releases
 
    * - File
      - Size
-   * - `gambit-genomes-1.0b2-rev2-211116.db`_
+   * - `gambit-genomes-1.0b2-rev2-211116.gdb`_
      - 15.8 MB
-   * - `gambit-signatures-1.0b1-210719.h5`_
+   * - `gambit-signatures-1.0b1-210719.gs`_
      - 1.3 GB
 
 Note - the signatures file is identical to 1.0b1.
@@ -33,12 +33,12 @@ Note - the signatures file is identical to 1.0b1.
 
    * - File
      - Size
-   * - `gambit-genomes-1.0b1-210719.db`_
+   * - `gambit-genomes-1.0b1-210719.gdb`_
      - 15.8 MB
-   * - `gambit-signatures-1.0b1-210719.h5`_
+   * - `gambit-signatures-1.0b1-210719.gs`_
      - 1.3 GB
 
 
-.. _gambit-genomes-1.0b2-rev2-211116.db: https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0-beta/gambit-genomes-1.0b2-rev2-211116.db
-.. _gambit-signatures-1.0b1-210719.h5: https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0-beta/gambit-signatures-1.0b1-210719.h5
-.. _gambit-genomes-1.0b1-210719.db: https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0-beta/gambit-genomes-1.0b1-210719.db
+.. _gambit-genomes-1.0b2-rev2-211116.gdb: https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0-beta/gambit-genomes-1.0b2-rev2-211116.gdb
+.. _gambit-signatures-1.0b1-210719.gs: https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0-beta/gambit-signatures-1.0b1-210719.gs
+.. _gambit-genomes-1.0b1-210719.gdb: https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0-beta/gambit-genomes-1.0b1-210719.gdb

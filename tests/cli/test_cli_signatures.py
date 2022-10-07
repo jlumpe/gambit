@@ -66,7 +66,7 @@ class TestCreateCommand:
 
 	@pytest.fixture()
 	def outfile(self, tmp_path):
-		return tmp_path / 'signatures.h5'
+		return tmp_path / 'signatures.gs'
 
 	@pytest.fixture(name='make_args')
 	def make_args_factory(self, outfile, testdb, infiles, tmp_path):

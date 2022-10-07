@@ -154,7 +154,7 @@ def test_kspec(make_args, testdb, tmp_path):
 	assert alt_kspec != testdb.kmerspec
 	alt_kspec_args = ['-k', alt_kspec.k, '-p', alt_kspec.prefix_str]
 
-	alt_sigfile = tmp_path / 'alt_sigs.h5'
+	alt_sigfile = tmp_path / 'alt_sigs.gs'
 	alt_sigs = SignatureList([], alt_kspec)
 	dump_signatures(alt_sigfile, alt_sigs)
 

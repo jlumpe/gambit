@@ -24,7 +24,7 @@ EXTRA = dict(
 def test_metadata(tmp_path, optional_attrs):
 	"""Test reading/writing metadata"""
 
-	fname = tmp_path / 'test.h5'
+	fname = tmp_path / 'test.gs'
 
 	meta = SignaturesMeta(
 		id='test',
@@ -46,7 +46,7 @@ def test_metadata(tmp_path, optional_attrs):
 
 def dump_load(sigs, path, **kw):
 	"""Dump signatures to HDF5 file and load them again."""
-	f = path / 'test.h5'
+	f = path / 'test.gs'
 	dump_signatures_hdf5(f, sigs, **kw)
 	return load_signatures_hdf5(f)
 
@@ -65,7 +65,7 @@ class TestHDF5Signatures:
 	@pytest.fixture(scope='class')
 	def h5file(self, tmp_path_factory, sigs):
 		"""Write signatures to file and return file name."""
-		fname = tmp_path_factory.mktemp('HDF5FileSignatures') / 'test.h5'
+		fname = tmp_path_factory.mktemp('HDF5FileSignatures') / 'test.gs'
 		dump_signatures_hdf5(fname, sigs)
 		return fname
 

@@ -55,13 +55,13 @@ class TestDB:
 		root = Path(root)
 		self.paths = SimpleNamespace(
 			root=root,
-			ref_genomes=root / 'ref-genomes.db',
-			ref_signatures=root / 'ref-signatures.h5',
+			ref_genomes=root / 'ref-genomes.gdb',
+			ref_signatures=root / 'ref-signatures.gs',
 			refs_table=root / 'ref-genomes.csv',
 			ref_genomes_dir=root / 'ref-genomes/',
 			queries_table=root / 'queries/queries.csv',
 			query_genomes_dir=root / 'queries/genomes/',
-			query_signatures=root / 'queries/query-signatures.h5',
+			query_signatures=root / 'queries/query-signatures.gs',
 			results=root / 'results/',
 		)
 

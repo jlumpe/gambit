@@ -194,8 +194,8 @@ class ReferenceDatabase:
 	def locate_files(cls, path: FilePath) -> Tuple[Path, Path]:
 		"""Locate an SQLite genome database file and HDF5 signatures file in a directory.
 
-		Files are located by extension, ``.db`` for SQLite file and ``.h5`` for signatures file.
-		Does not look in subdirectories.
+		Files are located by extension, ``.gdb`` or ``.db`` for SQLite file and ``.gs`` or ``.h5``
+		for signatures file. Does not look in subdirectories.
 
 		Parameters
 		----------
@@ -208,25 +208,27 @@ class ReferenceDatabase:
 
 		Raises
 		------
-		RuntimeError
+		FileNotFoundError
 			If files could not be located or if multiple files with the same extension exist in the
 			directory.
 		"""
 		path = Path(path)
 
-		genomes_matches = list(path.glob('*.db'))
-		if len(genomes_matches) == 0:
-			raise RuntimeError(f'No genome database (.db) files found in directory {path}')
-		if len(genomes_matches) > 1:
-			raise RuntimeError(f'Multiple genome database (.db) files found in directory {path}')
+		def check_single_match(matches, desc: str):
+			n = len(matches)
+			if n != 1:
+				num = "Multiple" if n else "No"
+				raise FileNotFoundError(f'{num} {desc} files found in directory {path}')
 
-		signatures_matches = list(path.glob('*.h5'))
-		if len(signatures_matches) == 0:
-			raise RuntimeError(f'No signature (.h5) files found in directory {path}')
-		if len(signatures_matches) > 1:
-			raise RuntimeError(f'Multiple signature (.h5) files found in directory {path}')
+		genomes_matches = set(path.glob('*.gdb')) | set(path.glob('*.db'))
+		check_single_match(genomes_matches, 'genome database (.gdb or .db)')
+		genomes_file = genomes_matches.pop()
 
-		return genomes_matches[0], signatures_matches[0]
+		signatures_matches = set(path.glob('*.gs')) | set(path.glob('*.h5'))
+		check_single_match(signatures_matches, 'signature (.gs or .h5)')
+		signatures_file = signatures_matches.pop()
+
+		return genomes_file, signatures_file
 
 	@classmethod
 	def load(cls, genomes_file: FilePath, signatures_file: FilePath) -> 'ReferenceDatabase':

@@ -84,7 +84,7 @@ def refs(request, refs_array, tmp_path):
 		return
 
 	if request.param == 'HDF5Signatures':
-		file = tmp_path / 'signatures.h5'
+		file = tmp_path / 'signatures.gs'
 		dump_signatures(file, refs_array, 'hdf5')
 		with load_signatures(file) as h5sigs:
 			yield h5sigs

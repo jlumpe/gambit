@@ -126,10 +126,34 @@ class TestGenomeIDMapping:
 class TestReferenceDatabase:
 	"""Test the ReferenceDatabase class."""
 
-	def test_locate_files(self, testdb):
-		db_file, sigs_file = ReferenceDatabase.locate_files(testdb.paths.root)
-		assert db_file == testdb.paths.ref_genomes
-		assert sigs_file == testdb.paths.ref_signatures
+	def test_locate_files(self, tmp_path):
+		genomes = tmp_path / 'test.gdb'
+		genomes2 = tmp_path / 'test2.gdb'
+		signatures = tmp_path / 'test.gs'
+
+		# None
+		with pytest.raises(FileNotFoundError):
+			ReferenceDatabase.locate_files(tmp_path)
+
+		# Genomes but no signatures
+		genomes.touch()
+		with pytest.raises(FileNotFoundError):
+			ReferenceDatabase.locate_files(tmp_path)
+
+		# Both
+		signatures.touch()
+		assert ReferenceDatabase.locate_files(tmp_path) == (genomes, signatures)
+
+		# Extra genomes file
+		genomes2.touch()
+		with pytest.raises(FileNotFoundError):
+			ReferenceDatabase.locate_files(tmp_path)
+
+		# Alternate extensions
+		genomes = genomes.rename(tmp_path / 'test.db')
+		genomes2.unlink()
+		signatures = signatures.rename(tmp_path / 'test.gs')
+		assert ReferenceDatabase.locate_files(tmp_path) == (genomes, signatures)
 
 	def test_load(self, testdb):
 		db = ReferenceDatabase.load(testdb.paths.ref_genomes, testdb.paths.ref_signatures)
