@@ -43,7 +43,7 @@ class TestGenomeIDMapping:
 
 		for i in range(20):
 			g = Genome(
-				key=f'test/genome_{i}',
+				key=f'genome_{i}',
 				description=f'Test genome {i}',
 				ncbi_db='assembly',
 				ncbi_id=i,
@@ -150,9 +150,12 @@ class TestReferenceDatabase:
 			ReferenceDatabase.locate_files(tmp_path)
 
 		# Alternate extensions
-		genomes = genomes.rename(tmp_path / 'test.db')
-		genomes2.unlink()
-		signatures = signatures.rename(tmp_path / 'test.gs')
+		for file in [genomes, genomes2, signatures]:
+			file.unlink()
+		genomes = tmp_path / 'test.db'
+		signatures = tmp_path / 'test.gs'
+		genomes.touch()
+		signatures.touch()
 		assert ReferenceDatabase.locate_files(tmp_path) == (genomes, signatures)
 
 	def test_load(self, testdb):
