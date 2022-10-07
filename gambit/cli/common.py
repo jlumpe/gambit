@@ -149,10 +149,15 @@ class CLIContext:
 		return ReferenceDatabase(gset, self.signatures)
 
 
+################################################################################
+# Shared CLI parameters
+################################################################################
+
 def filepath(**kw) -> click.Path:
 	"""Click Path argument type accepting files only."""
 	kw.setdefault('path_type', Path)
 	return click.Path(file_okay=True, dir_okay=False, **kw)
+
 
 def dirpath(**kw) -> click.Path:
 	"""Click Path argument type accepting directories only."""
@@ -169,14 +174,21 @@ def genome_files_arg():
 		metavar='GENOMES...',
 	)
 
+
 def cores_param():
 	"""Click parameter for number of CPU cores."""
 	return click.option('-c', '--cores', type=click.IntRange(min=1), help='Number of CPU cores to use.')
 
 
+def progress_param():
+	"""Click argument to show progress meter."""
+	return click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
+
+
 def listfile_param(*param: str, **kw):
 	"""Returns decorator to add param for file listing input paths."""
 	return click.option(*param, type=click.File('r'), **kw)
+
 
 def listfile_dir_param(*param: str, file_metavar=None, **kw):
 	"""Returns decorator to add param for parent directory of paths in list file."""
@@ -208,6 +220,7 @@ def kspec_params(default: bool = False):
 		default=DEFAULT_KMERSPEC.k if default else None,
 	)
 	return lambda f: kopt(popt(f))
+
 
 def kspec_from_params(k: Optional[int], prefix: Optional[str], default: bool = False) -> Optional[KmerSpec]:
 	"""Get KmerSpec from CLI arguments and validate.
@@ -244,8 +257,13 @@ def kspec_from_params(k: Optional[int], prefix: Optional[str], default: bool = F
 	return KmerSpec(k, prefix_bytes)
 
 
+################################################################################
+# Sequence file input
+################################################################################
+
 FASTA_EXTENSIONS = ('.fasta', '.fna', '.ffn', '.faa', '.frn', '.fa')
 GZIP_EXTENSIONS = ('.gz',)
+
 
 def strip_extensions(filename: str, extensions: Iterable[str]) -> str:
 	for ext in extensions:
@@ -253,11 +271,13 @@ def strip_extensions(filename: str, extensions: Iterable[str]) -> str:
 			return filename[:-len(ext)]
 	return filename
 
+
 def strip_seq_file_ext(filename: str) -> str:
 	"""Strip FASTA and/or gzip extensions from sequence file name."""
 	filename = strip_extensions(filename, GZIP_EXTENSIONS)
 	filename = strip_extensions(filename, FASTA_EXTENSIONS)
 	return filename
+
 
 def get_file_id(path: FilePath, strip_dir: bool = True, strip_ext: bool = True) -> str:
 	"""Get sequence file ID derived from file path.
@@ -275,6 +295,7 @@ def get_file_id(path: FilePath, strip_dir: bool = True, strip_ext: bool = True) 
 		if strip_ext:
 			id = strip_seq_file_ext(id)
 	return id
+
 
 def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
                        listfile: Union[None, FilePath, TextIO]=None,
@@ -323,6 +344,7 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
 
 	return ids, files
 
+
 def warn_duplicate_file_ids(ids: List[str], template: str):
 	"""Print a warning message if duplicate file IDs are present.
 
@@ -341,10 +363,9 @@ def warn_duplicate_file_ids(ids: List[str], template: str):
 		click.echo(msg, err=True)
 
 
-def progress_arg():
-	"""Click argument to show progress meter."""
-	return click.option('--progress/--no-progress', default=True, help="Show/don't show progress meter.")
-
+################################################################################
+# Click introspection
+################################################################################
 
 def params_by_name(cmd: click.Command, names: Optional[Iterable[str]]=None):
 	"""Get parameters of click command by name.
@@ -396,6 +417,7 @@ def check_params_group(ctx: click.Context, names: Iterable[str], exclusive: bool
 		plist = join_list_human(map(param_name_human, params), 'or')
 		raise click.ClickException(f'One of {plist} is required')
 
+
 def param_name_human(param: click.Parameter) -> str:
 	"""Get the name/metavar of the given parameter as it appears in the auto-generated help output."""
 	if isinstance(param, click.Option):
@@ -408,6 +430,10 @@ def param_name_human(param: click.Parameter) -> str:
 			return param.opts[0].upper()
 	raise TypeError(f'Expected click.Parameter, got {type(param)}')
 
+
+################################################################################
+# Misc
+################################################################################
 
 def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: str=''):
 	"""Print a basic table."""

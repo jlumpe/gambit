@@ -125,7 +125,7 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 	is_flag=True,
 	help='Use k/prefix from reference database.'
 )
-@common.progress_arg()
+@common.progress_param()
 @common.cores_param()
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_context

@@ -34,7 +34,7 @@ def fmt_kspec(kspec):
 @click.option('-s', '--square', is_flag=True, help='Calculate square distance matrix using query signatures only.')
 @click.option('-d', '--use-db', is_flag=True, help='Use reference signatures from database.')
 @common.cores_param()
-@common.progress_arg()
+@common.progress_param()
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_context
 def dist_cmd(ctx: click.Context,

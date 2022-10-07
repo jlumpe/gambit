@@ -53,7 +53,7 @@ def get_exporter(outfmt: str):
 	type=common.filepath(exists=True),
 	help='File containing query signatures, to use in place of GENOMES.',
 )
-@common.progress_arg()
+@common.progress_param()
 @common.cores_param()
 @click.pass_context
 def query_cmd(ctx: click.Context,

@@ -26,7 +26,7 @@ from gambit.cluster import hclust, linkage_to_bio_tree
 )
 @common.kspec_params()
 @common.cores_param()
-@common.progress_arg()
+@common.progress_param()
 @click.pass_context
 def tree_cmd(ctx: click.Context,
              listfile: Optional[TextIO],
