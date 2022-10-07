@@ -4,15 +4,19 @@
 ## 0.6.0
 
 * New features
-	* `tree` command for generating hierarchical clustering trees from distance matrices.
+    * `tree` command for generating hierarchical clustering trees from distance matrices.
 * General
-	* Use process-based parallelism by default for parsing multiple sequence files (much faster).
+    * Preferred extensions for genome database files and signatures files have been changed from
+	  `.db` and `.h5` to `.gdb` and `.gs`. 
+* Performance improvements
+    * Use process-based parallelism by default for parsing multiple sequence files (much faster).
+    * Speed up `gambit dist` with `-s` option applied.
 * CLI
-	* Strip directory and extension from input file IDs.
-	* `-k` and `--prefix` parameters now default to values used Refseq database.
-	* Add option to specify number of cores to use.
-	* Add option to disable progress bar printing.
-	* Speed up `gambit dist` with `-s` option applied.
+    * Strip directory and extension from input file IDs. This applies to CSV output for querying and 
+      distance calculation and IDs in generated signature files.
+    * `-k` and `--prefix` parameters now default to values used RefSeq database.
+    * Add option to specify number of cores to use.
+    * Add option to disable progress bar printing.
 
 
 ## 0.5.1
