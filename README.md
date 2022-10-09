@@ -12,7 +12,9 @@ Developed by Jared Lumpe in collaboration with the [Nevada State Public Health L
 the [Alameda County Public Health Lab](https://acphd.org/public-health-lab/),
 and the David Hess lab at Santa Clara University.
 
-Preprint available [here](https://www.biorxiv.org/content/10.1101/2022.06.14.496173v1).
+Preprint available [here](https://www.biorxiv.org/content/10.1101/2022.06.14.496173v1). See
+[jlumpe/gambit-publication](https://github.com/jlumpe/gambit-publication) for a reproducible
+workflow to generate all analyses and figures in the paper.
 
 See the [documentation](https://gambit-genomics.readthedocs.io/en/latest) for more
 detailed information on the tool and how to use it.
