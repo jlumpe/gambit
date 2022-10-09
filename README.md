@@ -33,8 +33,8 @@ conda install -c bioconda gambit
 
 Then download the reference database files and place them in a directory of your choice:
 
-* [gambit-genomes-1.0b2-rev2-211116.gdb](https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0-beta/gambit-genomes-1.0b2-rev2-211116.gdb)
-* [gambit-signatures-1.0b1-210719.gs](https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0-beta/gambit-signatures-1.0b1-210719.gs)
+* [gambit-refseq-curated-1.0.gdb](https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0/gambit-refseq-curated-1.0.gdb)
+* [gambit-refseq-curated-1.0.gs](https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0/gambit-refseq-curated-1.0.gs)
 
 (Note - these are marked as "beta" but little is likely to change in the upcoming 1.0 release).
 
