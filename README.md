@@ -38,8 +38,6 @@ Then download the reference database files and place them in a directory of your
 * [gambit-refseq-curated-1.0.gdb](https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0/gambit-refseq-curated-1.0.gdb)
 * [gambit-refseq-curated-1.0.gs](https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0/gambit-refseq-curated-1.0.gs)
 
-(Note - these are marked as "beta" but little is likely to change in the upcoming 1.0 release).
-
 
 ## Usage
 
