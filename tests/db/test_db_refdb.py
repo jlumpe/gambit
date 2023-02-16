@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy.orm import sessionmaker
 
 from gambit.db import refdb
-from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon, ReferenceDatabase
+from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon, ReferenceDatabase, DatabaseLoadError
 
 
 GENOME_ID_ATTRS = {attr: getattr(Genome, attr) for attr in Genome.ID_ATTRS}
@@ -132,12 +132,12 @@ class TestReferenceDatabase:
 		signatures = tmp_path / 'test.gs'
 
 		# None
-		with pytest.raises(FileNotFoundError):
+		with pytest.raises(DatabaseLoadError):
 			ReferenceDatabase.locate_files(tmp_path)
 
 		# Genomes but no signatures
 		genomes.touch()
-		with pytest.raises(FileNotFoundError):
+		with pytest.raises(DatabaseLoadError):
 			ReferenceDatabase.locate_files(tmp_path)
 
 		# Both
@@ -146,7 +146,7 @@ class TestReferenceDatabase:
 
 		# Extra genomes file
 		genomes2.touch()
-		with pytest.raises(FileNotFoundError):
+		with pytest.raises(DatabaseLoadError):
 			ReferenceDatabase.locate_files(tmp_path)
 
 		# Alternate extensions

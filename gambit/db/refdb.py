@@ -14,6 +14,30 @@ from gambit.util.io import FilePath
 GenomeAttr = Union[str, InstrumentedAttribute]
 
 
+class DatabaseLoadError(Exception):
+	"""Raised when there is a problem loading a database.
+
+	Attributes
+	----------
+	msg
+	directory
+		Directory we're attempting to load from.
+	genomes_file
+	signatures_file
+	"""
+
+	msg: str
+	directory: Optional[Path]
+	genomes_file: Optional[Path]
+	signatures_file: Optional[Path]
+
+	def __init__(self, msg, directory=None, genomes_file=None, signatures_file=None):
+		self.msg = msg
+		self.directory = directory
+		self.genomes_file = genomes_file
+		self.signatures_file = signatures_file
+
+
 def load_genomeset(db_file: FilePath) -> Tuple[Session, ReferenceGenomeSet]:
 	"""Get the only :class:`gambit.db.models.ReferenceGenomeSet` from a genomes database file."""
 	session = file_sessionmaker(db_file)()
@@ -209,6 +233,10 @@ class ReferenceDatabase:
 		Raises
 		------
 		FileNotFoundError
+			If the path does not exist.
+		NotADirectoryError
+			If the given path does not point to a directory.
+		DatabaseLoadError
 			If files could not be located or if multiple files with the same extension exist in the
 			directory.
 		"""
@@ -217,14 +245,16 @@ class ReferenceDatabase:
 		def check_single_match(matches, desc: str):
 			n = len(matches)
 			if n != 1:
-				num = "Multiple" if n else "No"
-				raise FileNotFoundError(f'{num} {desc} files found in directory {path}')
+				raise DatabaseLoadError(
+					f'{"Multiple" if n else "No"} {desc} files found in directory {path}',
+					directory=path,
+				)
 
-		genomes_matches = set(path.glob('*.gdb')) | set(path.glob('*.db'))
+		genomes_matches = {f for f in path.iterdir() if f.suffix in ('.gdb', '.db')}
 		check_single_match(genomes_matches, 'genome database (.gdb or .db)')
 		genomes_file = genomes_matches.pop()
 
-		signatures_matches = set(path.glob('*.gs')) | set(path.glob('*.h5'))
+		signatures_matches = {f for f in path.iterdir() if f.suffix in ('.gs', '.h5')}
 		check_single_match(signatures_matches, 'signature (.gs or .h5)')
 		signatures_file = signatures_matches.pop()
 

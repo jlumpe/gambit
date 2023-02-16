@@ -9,7 +9,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from gambit.kmers import KmerSpec, DEFAULT_KMERSPEC
-from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
+from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset, DatabaseLoadError
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath, read_lines
 from gambit.util.misc import join_list_human
@@ -83,8 +83,11 @@ class CLIContext:
 			self._has_genomes = self._has_signatures = False
 
 		else:
+			try:
+				self._genomes_path, self._signatures_path = ReferenceDatabase.locate_files(self.db_path)
+			except DatabaseLoadError as e:
+				raise click.ClickException(str(e))
 			self._has_genomes = self._has_signatures = True
-			self._genomes_path, self._signatures_path = ReferenceDatabase.locate_files(self.db_path)
 
 		self._db_found = True
 
