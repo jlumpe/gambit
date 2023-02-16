@@ -1,3 +1,5 @@
 # Package build requirements for readthedocs.org
 numpy
 cython
+sphinx-rtd-theme
+linuxdoc

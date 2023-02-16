@@ -39,6 +39,7 @@ extensions = [
 	# 'sphinx.ext.mathjax',
 	# 'sphinx.ext.viewcode',
 	'sphinx.ext.napoleon',
+	'linuxdoc.rstFlatTable',  # For table cells spanning multiple rows
 ]
 
 # Add any paths that contain templates here, relative to this directory.
