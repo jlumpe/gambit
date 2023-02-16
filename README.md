@@ -12,17 +12,25 @@ Developed by Jared Lumpe in collaboration with the [Nevada State Public Health L
 the [Alameda County Public Health Lab](https://acphd.org/public-health-lab/),
 and the David Hess lab at Santa Clara University.
 
-Preprint available [here](https://www.biorxiv.org/content/10.1101/2022.06.14.496173v1). See
-[jlumpe/gambit-publication](https://github.com/jlumpe/gambit-publication) for a reproducible
-workflow to generate all analyses and figures in the paper.
+See below for basic installation and usage instructions, or check out the
+[documentation](https://gambit-genomics.readthedocs.io/en/latest) for more detailed information and
+a basic tutorial.
 
-See the [documentation](https://gambit-genomics.readthedocs.io/en/latest) for more
-detailed information on the tool and how to use it.
+
+### Publication
+
+Lumpe J, Gumbleton L, Gorzalski A, Libuit K, Varghese V, et al. (2023) GAMBIT (Genomic Approximation
+Method for Bacterial Identification and Tracking): A methodology to rapidly leverage whole genome
+sequencing of bacterial isolates for clinical identification. PLOS ONE 18(2): e0277575.
+https://doi.org/10.1371/journal.pone.0277575
+
+See [jlumpe/gambit-publication](https://github.com/jlumpe/gambit-publication) for a reproducible
+workflow to generate all analyses and figures in the paper.
 
 
 ### Contact
 
-Please contact Jared Lumpe at [jared@jaredlumpe.com](mailto:jared@jaredlumpe.com).
+Please contact Jared Lumpe at [jared@jaredlumpe.com](mailto:jared@jaredlumpe.com) with any questions or feedback.
 
 
 ## Installation
@@ -39,7 +47,7 @@ Then download the reference database files and place them in a directory of your
 * [gambit-refseq-curated-1.0.gs](https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0/gambit-refseq-curated-1.0.gs)
 
 
-## Usage
+## Basic usage
 
     gambit [-d /path/to/database/] query [-o results.csv] genome1.fasta genome2.fasta ...
 
