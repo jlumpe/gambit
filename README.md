@@ -5,8 +5,8 @@
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/gambit/README.html)
 
 GAMBIT (Genomic Approximation Method for Bacterial Identification and Tracking) is a tool for rapid taxonomic identification of microbial pathogens.
-It uses an extremely efficient genomic distance metric along with a curated database of approximately 50,000 reference genomes (derived from NCBI
-[RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)) to identify unknown bacterial genomes within seconds.
+It uses an efficient genomic distance metric along with a curated database of approximately 50,000 reference genomes (derived from NCBI
+[RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)) to identify genome assemblies from across the Bacterial kingdom in seconds.
 
 See below for basic installation and usage instructions, or check out the
 [documentation](https://gambit-genomics.readthedocs.io/en/latest) for more detailed information and
