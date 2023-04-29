@@ -80,22 +80,25 @@ CSV
 
 A .csv file with one row per query. Contains the following columns:
 
-* ``query.*`` - Query genome.
-    * ``query.name`` - Name of query.
-    * ``query.path`` - Path to query file, if any.
-* ``predicted.*`` - Predicted taxon.
-    * ``predicted.name``
-    * ``predicted.rank``
-    * ``predicted.ncbi_id`` - Numeric ID in NCBI taxonomy database.
-    * ``predicted.threshold``
-* ``closest.*`` - Reference genome closest to query.
-    * ``closest.distance`` - Distance to closest genome.
-    * ``closest.decription`` - Text description.
-* ``next.*`` - Next most specific taxon for which the classification threshold was not met.
-    * ``next.name``
-    * ``next.rank``
-    * ``next.ncbi_id``
-    * ``next.threshold``
+- ``query`` - Query genome file name (minus extension).
+- ``predicted`` - Predicted taxon.
+
+  - ``predicted.name`` - Name of taxon.
+  - ``predicted.rank`` - Taxonomic rank (genus, species, etc.).
+  - ``predicted.ncbi_id`` - Numeric ID in NCBI taxonomy database, if any.
+  - ``predicted.threshold`` - Classification threshold.
+
+- ``closest`` - Reference genome closest to query.
+
+  - ``closest.distance`` - Distance to closest genome.
+  - ``closest.decription`` - Text description.
+
+- ``next`` - Next most specific taxon for which the classification threshold was not met.
+
+  - ``next.name``
+  - ``next.rank``
+  - ``next.ncbi_id``
+  - ``next.threshold``
 
 
 JSON
