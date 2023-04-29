@@ -77,6 +77,8 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	----------
 	group
 		HDF5 group object data is read from.
+	format_version
+		Version of file format
 
 	Parameters
 	----------
@@ -84,6 +86,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		Open, readable :class:`h5py.Group` or :class:`h5py.File` object.
 	"""
 	group: h5.Group
+	format_version: int
 	ids: h5.Dataset
 
 	def __init__(self, group: h5.Group):
@@ -92,9 +95,9 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		if FMT_VERSION_ATTR not in group.attrs:
 			raise RuntimeError('HDF5 group does not contain a signature set')
 
-		version = group.attrs[FMT_VERSION_ATTR]
-		if version != CURRENT_FMT_VERSION:
-			raise ValueError(f'Unrecognized format version: {version}')
+		self.format_version = group.attrs[FMT_VERSION_ATTR]
+		if self.format_version != CURRENT_FMT_VERSION:
+			raise ValueError(f'Unrecognized format version: {self.format_version}')
 
 		self.kmerspec = KmerSpec(group.attrs['kmerspec_k'], group.attrs['kmerspec_prefix'])
 		self.meta = read_metadata(group)
