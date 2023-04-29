@@ -73,15 +73,17 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 			count=len(sigs),
 			kmerspec=sigs.kmerspec,
 			metadata=sigs.meta,
+			hdf5_format_version=sigs.format_version,  # HDF5-specific
 		)
 		kw = dict(indent=' ', sort_keys=True) if pretty else dict()
 		gjson.dump(data, sys.stdout, **kw)
 
 	else:
 		rows1 = [
-			('Count:', len(sigs)),
+			('Genome Count:', len(sigs)),
 			('k:', sigs.kmerspec.k),
 			('Prefix:', sigs.kmerspec.prefix.decode('ascii')),
+			('File format:', f'HDF5, version {sigs.format_version}'),  # HDF5-specific
 			('Data type:', sigs.dtype),
 		]
 		common.print_table(rows1, colsep='  ')
@@ -91,7 +93,7 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 		rows2 = [
 			('ID:', format_none(sigs.meta.id)),
 			('Name:', format_none(sigs.meta.name)),
-			('Version:', format_none(sigs.meta.version )),
+			('Version:', format_none(sigs.meta.version)),
 			('Description:', format_none(sigs.meta.description)),
 			('Genome ID attribute:', format_none(sigs.meta.id_attr)),
 			('Has extra:', 'yes' if sigs.meta.extra else 'no'),
