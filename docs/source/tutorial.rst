@@ -23,11 +23,12 @@ From here on we'll pretend they've been downloaded to a directory called ``genom
 
 These are from genome set 3 in the initial GAMBIT publication, derived from clinical samples.
 
-.. _16AC1611138-CAP.fasta.gz: https://storage.googleapis.com/hesslab-gambit-public/genomes/set3/fasta/16AC1611138-CAP.fasta.gz>
-.. _17AC0001410A.fasta.gz: https://storage.googleapis.com/hesslab-gambit-public/genomes/set3/fasta/17AC0001410A.fasta.gz>
-.. _17AC0006310.fasta.gz: https://storage.googleapis.com/hesslab-gambit-public/genomes/set3/fasta/17AC0006310.fasta.gz>
-.. _17AC0006313-1.fasta.gz: https://storage.googleapis.com/hesslab-gambit-public/genomes/set3/fasta/17AC0006313-1.fasta.gz>
-.. _19AC0011210.fasta.gz: https://storage.googleapis.com/hesslab-gambit-public/genomes/set3/fasta/19AC0011210.fasta.gz>
+
+.. _16AC1611138-CAP.fasta.gz: https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/16AC1611138-CAP.fasta.gz
+.. _17AC0001410A.fasta.gz:    https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/17AC0001410A.fasta.gz
+.. _17AC0006310.fasta.gz:     https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/17AC0006310.fasta.gz
+.. _17AC0006313-1.fasta.gz:   https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/17AC0006313-1.fasta.gz
+.. _19AC0011210.fasta.gz:     https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/19AC0011210.fasta.gz
 
 
 .. _Locate DB:
@@ -86,15 +87,15 @@ So for example, you can create the file ``genomes.txt`` containing the following
 
 The command would then be::
 
-    gambit COMMAND [OPTIONS] -l genomes.txt --ldir genomes/
+    gambit COMMAND [OPTIONS] -l genomes.txt --ldir genomes
 
 This method makes more sense when you have a lot of files to include.
 Note that the ``gambit dist`` command has different names for these options because there are two
 lists of genomes to specify. See the :ref:`cli-page` page for more complete information.
 
 
-Predicting taxonomy of unknown genomes
-======================================
+Taxonomic prediction of unknown genomes
+=======================================
 
 The :ref:`query <query-cmd>` command compares a set of query genomes against the reference database
 and attempts to predict their taxonomy. The following runs a query with our five FASTA files and
@@ -117,7 +118,7 @@ In this example GAMBIT was able to make a species-level prediction for the first
 but stopped at the genus level for the fourth and made no prediction for the fifth.
 This is because GAMBIT attempts to be conservative and error on the side of making a less specific
 prediction or no prediction rather than giving false positives. The ``next`` columns can give you a
-clue as to what a more specific classifiction might be, however.
+clue as to what a more specific classification might be, however.
 
 See the :ref:`cli documentation <query-result-formats>` for a complete description of the output
 columns. Generally the CSV output format should be sufficient, but there is also a JSON-based format

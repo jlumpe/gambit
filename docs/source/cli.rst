@@ -21,7 +21,8 @@ Options
 
 .. option:: -d, --db DIR
 
-    Path to the directory containing reference database files. Required by most subcommands.
+    Path to the directory containing reference database files. Required by the :ref:`query <query-cmd>`
+    subcommand.
     As an alternative you can specify the database location with the :envvar:`GAMBIT_DB_PATH`
     environment variable.
 
@@ -47,17 +48,14 @@ query
 
     gambit query [OPTIONS] (-s SIGFILE | -l LIST | GENOMES...)
 
-
 Predict taxonomy of microbial samples from genome sequences.
 
 ``GENOMES`` are one or more FASTA files containing assembled query genomes. Alternatively
 a file containing pre-calculated signatures may be used with the ``--sigfile`` option. The
 reference database must be specified from the root command group.
 
-
 Options
 .......
-
 
 .. option:: -s, --sigfile FILE
 
@@ -129,9 +127,7 @@ signatures info
 
    gambit signatures info [OPTIONS] FILE
 
-
 Print information about a GAMBIT signatures file. Defaults to a basic human-readable format.
-
 
 Options
 .......
@@ -164,7 +160,6 @@ Calculate GAMBIT signatures of ``GENOMES`` and write to file.
 
 The ``-k`` and ``--prefix`` options may be omitted if a reference database is specified through the
 root command group, in which case the parameters of the database will be used.
-
 
 Options
 .......

@@ -12,10 +12,3 @@ Contents
    cli
    databases
    api/api
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`

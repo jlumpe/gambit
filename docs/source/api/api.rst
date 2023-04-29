@@ -11,3 +11,8 @@ Python API
    results
    cli
    misc
+
+Indices
+-------
+
+:ref:`modindex`

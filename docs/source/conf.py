@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'GAMBIT'
-copyright = '2021, Jared Lumpe'
+copyright = '2021 - 2023, Jared Lumpe'
 author = 'Jared Lumpe'
 
 # The full version, including alpha/beta/rc tags

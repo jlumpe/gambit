@@ -5,7 +5,7 @@ Miscellaneous and Utility Code
 gambit.util
 -----------
 
-.. automodule:: gambit.db
+.. automodule:: gambit.util
 
 
 gambit.util.misc
