@@ -1,18 +1,25 @@
 # Changelog
 
 
+## 1.0.1
+
+* Misc
+  * Better error reporting when database files cannot be found (in CLI and API).
+  * Minor documentation updates.
+
+
 ## 1.0.0
 
 * New features
 	* `tree` command for generating hierarchical clustering trees from distance matrices.
 * General
 	* Preferred extensions for genome database files and signatures files have been changed from
-	  `.db` and `.h5` to `.gdb` and `.gs`. 
+	  `.db` and `.h5` to `.gdb` and `.gs`.
 * Performance improvements
 	* Use process-based parallelism by default for parsing multiple sequence files (much faster).
 	* Speed up `gambit dist` with `-s` option applied.
 * CLI
-	* Strip directory and extension from input file IDs. This applies to CSV output for querying and 
+	* Strip directory and extension from input file IDs. This applies to CSV output for querying and
 	  distance calculation and IDs in generated signature files.
 	* `-k` and `--prefix` parameters now default to values used RefSeq database.
 	* Add option to specify number of cores to use.
