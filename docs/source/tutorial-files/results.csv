@@ -1,0 +1,6 @@
+query,predicted.name,predicted.rank,predicted.ncbi_id,predicted.threshold,closest.distance,closest.description,next.name,next.rank,next.ncbi_id,next.threshold
+16AC1611138-CAP,Escherichia coli,species,562,0.0000,0.1586,[GCF_000351725.1] Escherichia coli KTE77 (E. coli),,,,
+17AC0001410A,Enterococcus faecalis,species,1351,0.4698,0.1264,[GCF_000148005.1] Enterococcus faecalis DAPTO 512 (firmicutes),,,,
+17AC0006310,Bacillus cereus,species,1396,0.0000,0.1068,[GCF_001619385.1] Bacillus cereus (firmicutes),,,,
+17AC0006313-1,Veillonella,genus,29465,0.9439,0.9127,[GCF_000024945.1] Veillonella parvula DSM 2008 (firmicutes),Veillonella parvula,species,29466,0.6693
+19AC0011210,,,,,0.9917,[GCF_000169595.1] Ureaplasma urealyticum serovar 9 str. ATCC 33175 (mycoplasmas),Ureaplasma,genus,2129,0.8897

@@ -8,29 +8,6 @@ Also see the :ref:`cli-page` page for complete documentation of all GAMBIT subco
 and options.
 
 
-Example data set
-================
-
-The examples in this page make use of the following genome assembly files:
-
-* `16AC1611138-CAP.fasta.gz`_
-* `17AC0001410A.fasta.gz`_
-* `17AC0006310.fasta.gz`_
-* `17AC0006313-1.fasta.gz`_
-* `19AC0011210.fasta.gz`_
-
-From here on we'll pretend they've been downloaded to a directory called ``genomes/``.
-
-These are from genome set 3 in the initial GAMBIT publication, derived from clinical samples.
-
-
-.. _16AC1611138-CAP.fasta.gz: https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/16AC1611138-CAP.fasta.gz
-.. _17AC0001410A.fasta.gz:    https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/17AC0001410A.fasta.gz
-.. _17AC0006310.fasta.gz:     https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/17AC0006310.fasta.gz
-.. _17AC0006313-1.fasta.gz:   https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/17AC0006313-1.fasta.gz
-.. _19AC0011210.fasta.gz:     https://storage.googleapis.com/jlumpe-gambit/public/publication/genomes/set3/fasta/19AC0011210.fasta.gz
-
-
 .. _Locate DB:
 
 Telling GAMBIT where the database files are
@@ -58,6 +35,16 @@ running the following command at the beginning of your shell session::
 
 Alternatively, you can add this line to your ``.bashrc`` to have it apply to all future sessions
 (make sure to restart your current session after doing so).
+
+
+Example data set
+================
+
+Download and unzip the file below, it should result in a directory ``genomes/`` containing five
+compressed FASTA files.
+They are from Genome Set 3 in the GAMBIT publication, derived from clinical samples.
+
+:download:`example-genomes.zip <tutorial-files/example-genomes.zip>`
 
 
 Genome input
@@ -104,9 +91,12 @@ writes the results to ``out.csv``::
     gambit query -o out.csv genomes/*.fasta.gz
 
 
-.. csv-table:: Contents of out.csv
-   :file: example-results.csv
+This gives the following output table (shown here transposed in order to better fit on the page):
+
+.. csv-table:: Contents of ``out.csv`` (transposed)
+   :file: tutorial-files/results-transposed.csv
    :header-rows: 1
+   :stub-columns: 1
 
 The ``predicted`` columns describe the predicted taxonomic classification of each query genome.
 ``closest.description`` is the database reference genome closest to the query, ``closest.distance``
