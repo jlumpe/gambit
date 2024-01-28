@@ -7,7 +7,7 @@ import numpy as np
 import h5py as h5
 
 from .base import SignatureArray, ConcatenatedSignatureArray, AbstractSignatureArray, SignaturesMeta,\
-	ReferenceSignatures
+	ReferenceSignatures, SignaturesFileError
 from gambit.kmers import KmerSpec
 from gambit._cython.metric import BOUNDS_DTYPE
 from gambit.util.io import FilePath
@@ -93,11 +93,11 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		self.group = group
 
 		if FMT_VERSION_ATTR not in group.attrs:
-			raise RuntimeError('HDF5 group does not contain a signature set')
+			raise SignaturesFileError('HDF5 group does not contain a signature set', None, 'hdf5')
 
 		self.format_version = group.attrs[FMT_VERSION_ATTR]
 		if self.format_version != CURRENT_FMT_VERSION:
-			raise ValueError(f'Unrecognized format version: {self.format_version}')
+			raise ValueError(f'Unrecognized format version: {self.format_version}', None, 'hdf5')
 
 		self.kmerspec = KmerSpec(group.attrs['kmerspec_k'], group.attrs['kmerspec_prefix'])
 		self.meta = read_metadata(group)
@@ -229,13 +229,33 @@ def load_signatures_hdf5(path: FilePath, **kw) -> HDF5Signatures:
 	\\**kw
 		Additional keyword arguments to :func:`h5py.File`.
 	"""
-	return HDF5Signatures(h5.File(path, **kw))
+	exc = SignaturesFileError(f'{path} does not appear to be a GAMBIT signtures file.', path, 'hdf5')
+
+	# Check for HDF5 magic number
+	# The errors raised by the h5py library are a bit cryptic, so make one with a better message if
+	# not a valid HDF5 file.
+	# This also raises the standard errors if file cannot be read.
+	with open(path, 'rb') as f:
+		header = f.read(8)
+	if header != b'\x89HDF\r\n\x1a\n':
+		raise exc
+
+	h5file = h5.File(path, **kw)
+
+	if FMT_VERSION_ATTR not in h5file.attrs:
+		raise exc
+
+	try:
+		return HDF5Signatures(h5file)
+
+	except SignaturesFileError as exc:
+		# Make sure errors in opening are annotated with the correct file name
+		exc.message = f'Error opening signatures file {path}: {exc.message}'
+		exc.filename = str(path)
+		raise
 
 
-def dump_signatures_hdf5(path: FilePath,
-                         signatures: AbstractSignatureArray,
-                         **kw,
-                         ):
+def dump_signatures_hdf5(path: FilePath, signatures: AbstractSignatureArray, **kw):
 	"""Write k-mer signatures and associated metadata to an HDF5 file.
 
 	Parameters

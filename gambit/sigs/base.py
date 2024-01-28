@@ -397,6 +397,22 @@ class AnnotatedSignatures(ReferenceSignatures):
 		return self.signatures[index]
 
 
+class SignaturesFileError(Exception):
+	"""Indicates an error attempting to open a signatures file."""
+
+	message: str
+	filename: str
+	format: str
+
+	def __init__(self, message: str, filename: Optional[FilePath], format: Optional[str]):
+		self.message = message
+		self.filename = str(filename)
+		self.format = format
+
+	def __str__(self):
+		return self.message
+
+
 def load_signatures(path: FilePath, **kw) -> AbstractSignatureArray:
 	"""Load signatures from file.
 

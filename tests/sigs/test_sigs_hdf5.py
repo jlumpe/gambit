@@ -6,6 +6,7 @@ import numpy as np
 
 from gambit.sigs.hdf5 import read_metadata, write_metadata, load_signatures_hdf5, dump_signatures_hdf5
 from gambit.sigs import SignaturesMeta, SignatureList, AnnotatedSignatures
+from gambit.sigs.base import SignaturesFileError
 from gambit.sigs.test import AbstractSignatureArrayTests
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
@@ -49,6 +50,35 @@ def dump_load(sigs, path, **kw):
 	f = path / 'test.gs'
 	dump_signatures_hdf5(f, sigs, **kw)
 	return load_signatures_hdf5(f)
+
+
+def test_open_not_hdf5(tmp_path):
+	"""Test opening an invalid file."""
+
+	# Not an HDF5 file
+	file = tmp_path / 'not-hdf5.gs'
+	with open(file, 'w') as f:
+		f.write('foo')
+
+	with pytest.raises(SignaturesFileError) as einfo:
+		load_signatures_hdf5(file)
+
+	assert einfo.value.filename == str(file)
+	assert einfo.value.format == 'hdf5'
+
+
+def test_open_invalid(tmp_path):
+	"""Test opening an invalid HDF5 file."""
+
+	file = tmp_path / 'invalid.gs'
+	with h5.File(file, 'w') as f:
+		pass  # Empty
+
+	with pytest.raises(SignaturesFileError) as einfo:
+		load_signatures_hdf5(file)
+
+	assert einfo.value.filename == str(file)
+	assert einfo.value.format == 'hdf5'
 
 
 class TestHDF5Signatures:
