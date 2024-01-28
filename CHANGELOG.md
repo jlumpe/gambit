@@ -1,6 +1,11 @@
 # Changelog
 
 
+## DEV
+
+- Require Python 3.9
+
+
 ## 1.0.1
 
 * Significant documentation updates.
