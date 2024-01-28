@@ -2,6 +2,7 @@
 
 import json
 from typing import Union, IO, Any
+from functools import singledispatchmethod
 
 from attr import attrs, attrib, asdict, has as has_attrs
 from sqlalchemy.orm import Session
@@ -11,7 +12,7 @@ from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome, Genome
 import gambit.util.json as gjson
 from gambit.util.io import FilePath, maybe_open
-from gambit.util.misc import singledispatchmethod, type_singledispatchmethod
+from gambit.util.misc import type_singledispatchmethod
 from gambit.util.typing import is_optional, unwrap_optional
 from .base import asdict_default, BaseJSONResultsExporter
 

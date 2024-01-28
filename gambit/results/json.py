@@ -1,11 +1,12 @@
 """Export results to JSON."""
 
+from functools import singledispatchmethod
+
 from attr import attrs, asdict
 
 from .base import _todict, BaseJSONResultsExporter
 from gambit.query import QueryResultItem, QueryResults, QueryInput
 from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome
-from gambit.util.misc import singledispatchmethod
 
 
 @attrs()

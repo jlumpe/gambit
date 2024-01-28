@@ -73,24 +73,6 @@ def chunk_slices(n: int, size: int) -> Iterator[slice]:
 		start = stop
 
 
-# singledispatchmethod ot available in 3.7
-if sys.version_info[1] >= 8:
-	from functools import singledispatchmethod
-
-else:
-	# Make simple implementation
-	def singledispatchmethod(func):
-		dispatcher = singledispatch(func)
-
-		@wraps(func)
-		def wrapper(self, arg, *rest, **kw):
-			impl = dispatcher.dispatch(type(arg))
-			return impl(self, arg, *rest, **kw)
-
-		wrapper.register = dispatcher.register
-		return wrapper
-
-
 def type_singledispatchmethod(func: Callable):
 	"""
 	Similar to ``singledispatchmethod``, but the first (non-self) argument is expected to be a
