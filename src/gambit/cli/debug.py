@@ -49,12 +49,11 @@ def shell(ctx, use_ipython):
 	Attempts to launch an IPython interactive interpreter if it is installed,
 	otherwise falls back on standard Python REPL.
 	"""
-	from gambit.util.misc import is_importable
-
 	if use_ipython is None:
-		if is_importable('IPython'):
+		try:
+			import IPython
 			use_ipython = True
-		else:
+		except ImportError:
 			click.echo('IPython not available, defaulting to built-in Python REPL.', err=True)
 			use_ipython = False
 

@@ -54,14 +54,6 @@ def test_chunk_slices():
 	assert list(misc.chunk_slices(0, 10)) == []
 
 
-def test_is_importable():
-	"""Test the is_importable() function."""
-	assert misc.is_importable('urllib')
-	assert misc.is_importable('urllib.request')
-	assert not misc.is_importable('aklhaskhdkslkdjahkdf')
-	assert not misc.is_importable('urllib.aklhaskhdkslkdjahkdf')
-
-
 def test_join_list_human():
 	l = ['foo', 'bar', 'baz']
 	assert misc.join_list_human(l[:1]) == 'foo'

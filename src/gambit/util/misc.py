@@ -106,12 +106,6 @@ def type_singledispatchmethod(func: Callable):
 	return wrapper
 
 
-def is_importable(module: str) -> bool:
-	"""Check if the specified module is importable, without actually importing it."""
-	from importlib.util import find_spec
-	return find_spec(module) is not None
-
-
 def join_list_human(strings: Iterable[str], conj: str='and') -> str:
 	"""Join items into a single human-readable string with commas and the given conjunction."""
 	strings = list(strings)
