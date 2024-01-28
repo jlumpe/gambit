@@ -3,9 +3,12 @@
 
 ## 1.0.1
 
+* Significant documentation updates.
+* Better error reporting:
+  * When database files cannot be found (in CLI and API).
+  * On attempting to open an invalid signatures file.
 * Misc
-  * Better error reporting when database files cannot be found (in CLI and API).
-  * Minor documentation updates.
+  * Run tests on Python 3.11 and 3.12.
 
 
 ## 1.0.0
