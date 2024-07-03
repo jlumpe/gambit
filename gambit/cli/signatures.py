@@ -1,5 +1,6 @@
-from typing import Optional, TextIO, List
+from typing import Optional, TextIO
 import sys
+from pathlib import Path
 
 import click
 
@@ -49,8 +50,8 @@ def signatures_group():
 	required=False,
 )
 @click.pass_context
-def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use_db: bool):
-	"""Inspect GAMBIT signature files."""
+def info(ctx: click.Context, file: Path, json: bool, pretty: bool, ids: bool, use_db: bool):
+	"""Inspect GAMBIT signature (.gs) files."""
 
 	common.check_params_group(ctx, ['file', 'use_db'], True, True)
 	common.check_params_group(ctx, ['ids', 'json'], True, False)
@@ -158,7 +159,7 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 def create(ctx: click.Context,
            listfile: Optional[TextIO],
            ldir: Optional[str],
-           files_arg: List[str],
+           files_arg: list[str],
            output: str,
            prefix: Optional[str],
            k: Optional[int],
