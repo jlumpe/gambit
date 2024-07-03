@@ -79,26 +79,50 @@ def info(ctx: click.Context, file: str, json: bool, pretty: bool, ids: bool, use
 		gjson.dump(data, sys.stdout, **kw)
 
 	else:
-		rows1 = [
+		rows = [
 			('Genome Count:', len(sigs)),
 			('k:', sigs.kmerspec.k),
 			('Prefix:', sigs.kmerspec.prefix.decode('ascii')),
 			('File format:', f'HDF5, version {sigs.format_version}'),  # HDF5-specific
 			('Data type:', sigs.dtype),
 		]
-		common.print_table(rows1, colsep='  ')
+		common.print_table(rows, colsep='  ')
 
 		print('Metadata:')
 
-		rows2 = [
+		rows = [
 			('ID:', format_none(sigs.meta.id)),
-			('Name:', format_none(sigs.meta.name)),
 			('Version:', format_none(sigs.meta.version)),
+			('Name:', format_none(sigs.meta.name)),
 			('Description:', format_none(sigs.meta.description)),
 			('Genome ID attribute:', format_none(sigs.meta.id_attr)),
-			('Has extra:', 'yes' if sigs.meta.extra else 'no'),
 		]
-		common.print_table(rows2, colsep='  ', left='  ')
+		common.print_table(rows, colsep='  ', left='  ')
+
+		extra = sigs.meta.extra
+
+		if extra:
+			revision = common.get_revision_info(extra.get('revision'))
+
+			print('Additional metadata:')
+
+			rows = [
+				('Author:', format_none(extra.get('author'))),
+				('Revision:', '<none>' if revision is None else ''),
+			]
+			common.print_table(rows, colsep='  ', left='  ')
+
+			if revision is not None:
+				rows = [
+					('Number:', revision['num']),
+					('Date:', revision['date']),
+					('Author:', revision['author']),
+					('Description:', revision['description']),
+				]
+				common.print_table(rows, colsep='  ', left='    ')
+
+		else:
+			print('No additional metadata')
 
 
 @signatures_group.command(no_args_is_help=True)

@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Sequence, TextIO, Union, Iterable, Tuple, List
+from typing import Optional, Sequence, TextIO, Union, Iterable, Tuple, List, Any
 from pathlib import Path
 from collections import Counter
 
@@ -462,3 +462,39 @@ def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: 
 
 		echo(right)
 		echo('\n')
+
+
+def get_revision_info(revision) -> Optional[dict[str, Any]]:
+	"""Extract revision information from metadata JSON.
+
+	:class:`gambit.sigs.base.SignaturesMeta` and :class:`gambit.db.models.ReferenceGenomeSet`
+	(stored in ``.gs`` and ``.gdb`` files) have an ``extra`` field to store additional metadata
+	in JSON format. There is no prescribed format for this, but the official GAMBIT database files
+	have a "revision" key that is an object with a common set of fields. This function attempts to
+	extract that data, without causing an error if the format is not as expected.
+
+	Parameters
+	----------
+	revision
+		Value under extra metadata's "revision" key, or None.
+
+	Returns
+	-------
+		None if ``revision`` is not a dict, otherwise a dict with ``'num'`` , ``'date'```,
+		``'author'``, and ``'description'`` keys.
+	"""
+	if not isinstance(revision, dict):
+		return None
+
+	info = dict()
+	fields = [('num', int), ('date', str), ('author', str), ('description', str)]
+
+	for name, type_ in fields:
+		if name not in revision:
+			info[name] = '<none>'
+		elif isinstance(revision[name], type_):
+			info[name] = revision[name]
+		else:
+			info[name] = '<invalid>'
+
+	return info

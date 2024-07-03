@@ -3,7 +3,10 @@
 
 ## DEV
 
-- Require Python 3.9
+* CLI
+	* Add additional details to `signatures info` command.
+* Other
+	* Require Python 3.9
 
 
 ## 1.0.1
