@@ -3,10 +3,13 @@
 import sys
 
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Callable, Iterable, TextIO, Mapping, Any, cast, Iterator, ContextManager
+from typing import Optional, Union, Callable, Iterable, TextIO, Mapping, Any, cast, Iterator, \
+	ContextManager, TypeVar
 from warnings import warn
 from contextlib import contextmanager
 
+
+T = TypeVar('T')
 
 #: Type alias for a callable which takes ``total`` and keyword arguments and returns an AbstractProgressMeter
 ProgressFactoryFunc = Callable[[int], 'AbstractProgressMeter']
@@ -214,11 +217,40 @@ def get_progress(arg: ProgressArg, total: int, initial: int = 0, **kw) -> Abstra
 	return config.create(total, initial=initial, **kw)
 
 
-def iter_progress(iterable: Iterable,
+class ProgressIterator(Iterator[T]):
+	itr: Iterator[T]
+	meter: AbstractProgressMeter
+
+	def __init__(self, iterable: Iterable[T], meter: AbstractProgressMeter):
+		self.itr = iter(iterable)
+		self.meter = meter
+		self._first = True
+
+	def __next__(self):
+		if not self._first:
+			self.meter.increment()
+		self._first = False
+
+		try:
+			value = next(self.itr)
+		except StopIteration:
+			self.meter.close()  # Close on reaching end
+			raise
+
+		return value
+
+	def __enter__(self):
+		return self
+
+	def __exit__(self, *args):
+		self.meter.close()
+
+
+def iter_progress(iterable: Iterable[T],
                   progress: ProgressArg = True,
                   total: Optional[int] = None,
                   **kw,
-                  ) -> Iterable:
+                  ) -> ProgressIterator[T]:
 	"""Display a progress meter while iterating over an object.
 
 	The returned iterator object can also be used as a context manager to ensure that the progress
@@ -245,35 +277,6 @@ def iter_progress(iterable: Iterable,
 
 	meter = get_progress(progress, total, **kw)
 	return ProgressIterator(iterable, meter)
-
-
-class ProgressIterator(Iterator):
-	itr: Iterator
-	meter: AbstractProgressMeter
-
-	def __init__(self, iterable: Iterable, meter: AbstractProgressMeter):
-		self.itr = iter(iterable)
-		self.meter = meter
-		self._first = True
-
-	def __next__(self):
-		if not self._first:
-			self.meter.increment()
-		self._first = False
-
-		try:
-			value = next(self.itr)
-		except StopIteration:
-			self.meter.close()  # Close on reaching end
-			raise
-
-		return value
-
-	def __enter__(self):
-		return self
-
-	def __exit__(self, *args):
-		self.meter.close()
 
 
 def capture_progress(config: ProgressConfig) -> tuple[ProgressConfig, list[AbstractProgressMeter]]:
@@ -308,7 +311,7 @@ def check_progress(*,
                    total: Optional[int] = None,
                    allow_decrement: bool = False,
                    check_closed: bool = True,
-                   ) -> ContextManager[ProgressConfig]:
+                   ) -> Iterator[ProgressConfig]:
 	"""Context manager which checks a progress meter is advanced to completion.
 
 	Returned context manager yields a ``ProgressConfig`` instance on enter, tests are run when
