@@ -7,3 +7,4 @@ requires = [
     # lower as the ABI is forward- but not backwards-compatible.
     "oldest-supported-numpy",
 ]
+build-backend = "setuptools.build_meta"
