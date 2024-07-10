@@ -10,7 +10,7 @@ import numpy
 np_include = numpy.get_include()
 extensions = [Extension(
 	'gambit._cython.*',
-	['gambit/_cython/*.pyx'],
+	['src/gambit/_cython/*.pyx'],
 	include_dirs=[np_include],
 	extra_compile_args=['-fopenmp', '-Wno-sign-compare'],
 	extra_link_args=['-fopenmp'],
