@@ -3,7 +3,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 from sqlalchemy import create_engine
-from testdb import TestDB
+
+from .testdb import TestDB
 
 
 @pytest.fixture(scope='session')
