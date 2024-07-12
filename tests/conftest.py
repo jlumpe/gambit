@@ -47,5 +47,4 @@ def testdb(test_data):
 	This cleans things up a bit from the way it was before, which was a bunch of separate fixtures
 	with session scope named "testdb_*".
 	"""
-	root = test_data / 'testdb_210818'
 	return TestDB(test_data / 'testdb_210818')
