@@ -7,7 +7,7 @@ from gambit.seq import SEQ_TYPES, NUCLEOTIDES, revcomp
 from gambit import kmers
 from gambit.kmers import KmerSpec
 import gambit.util.json as gjson
-from gambit.test import convert_seq, make_kmer_seq
+from .common import convert_seq, make_kmer_seq
 
 
 class TestIndices:

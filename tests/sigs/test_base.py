@@ -6,7 +6,7 @@ import numpy as np
 from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_signatures, \
 	AnnotatedSignatures, sigarray_eq, SignaturesMeta
 from gambit.kmers import KmerSpec
-from gambit.test import make_signatures
+from ..common import make_signatures
 from .common import AbstractSignatureArrayTests
 
 

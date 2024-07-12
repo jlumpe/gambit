@@ -5,7 +5,7 @@ import numpy as np
 
 from gambit.kmers import KmerSpec
 from gambit.sigs.calc import calc_signature, ArrayAccumulator, SetAccumulator
-from gambit.test import random_seq
+from ..common import random_seq
 
 
 @pytest.fixture(scope='module', params=[10**4, 10**6])

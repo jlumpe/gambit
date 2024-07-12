@@ -4,7 +4,7 @@ import pytest
 
 from gambit.classify import matching_taxon, find_matches, consensus_taxon, GenomeMatch
 from gambit.db import Taxon, AnnotatedGenome
-from gambit.test import make_lineage
+from .common import make_lineage
 
 
 def test_matching_taxon():

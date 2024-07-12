@@ -8,7 +8,7 @@ from gambit.sigs.hdf5 import read_metadata, write_metadata, load_signatures_hdf5
 from gambit.sigs import SignaturesMeta, SignatureList, AnnotatedSignatures
 from gambit.sigs.base import SignaturesFileError
 from gambit.kmers import KmerSpec
-from gambit.test import make_signatures
+from ..common import make_signatures
 from .common import AbstractSignatureArrayTests
 
 

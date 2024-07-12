@@ -11,7 +11,7 @@ from Bio import Seq, SeqIO
 from gambit.seq import SequenceFile, revcomp
 from gambit.kmers import nkmers, index_to_kmer
 from gambit.util.misc import zip_strict
-from gambit.test import random_seq
+from .common import random_seq
 
 
 # Complements to nucleotide ASCII codes
