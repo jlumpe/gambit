@@ -7,7 +7,7 @@ from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_sig
 	AnnotatedSignatures, sigarray_eq, SignaturesMeta
 from gambit.kmers import KmerSpec
 from gambit.test import make_signatures
-from gambit.sigs.test import AbstractSignatureArrayTests
+from .common import AbstractSignatureArrayTests
 
 
 @pytest.fixture(params=['u8', 'i8', 'u4'])

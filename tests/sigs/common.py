@@ -1,9 +1,9 @@
-"""Utilities for testing signature set types."""
+"""Common code for testing signature set types."""
 
 import pytest
 import numpy as np
 
-from .base import AbstractSignatureArray, sigarray_eq
+from gambit.sigs.base import AbstractSignatureArray, sigarray_eq
 
 
 class AbstractSignatureArrayTests:
