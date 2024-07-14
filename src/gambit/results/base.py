@@ -2,7 +2,7 @@ import json
 from abc import ABC, abstractmethod
 from typing import IO, Union, TextIO
 
-from attr import asdict, attrs, attrib
+from attr import attrs, attrib
 
 from gambit.util.io import FilePath, maybe_open
 import gambit.util.json as gjson
@@ -30,16 +30,6 @@ class AbstractResultsExporter(ABC):
 
 def _todict(obj, attrs):
 	return {a: getattr(obj, a) for a in attrs}
-
-
-def asdict_method(recurse=False, **kw):
-	"""Create a ``to_json`` method which calls :func:`attrs.asdict` with the given options."""
-	def method(self, obj):
-		return asdict(obj, recurse=recurse, **kw)
-	return method
-
-
-asdict_default = asdict_method()
 
 
 @attrs()
