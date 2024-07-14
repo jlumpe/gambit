@@ -1,11 +1,33 @@
 """Utility code that doesn't fit anywhere else."""
 
 import sys
-from typing import Iterator, Tuple, Callable, Iterable
+from typing import Iterator, Callable, Iterable, TypeVar, overload
 from functools import singledispatch, wraps
 
 
-def zip_strict(*iterables: Iterator) -> Iterator[Tuple]:
+T = TypeVar('T')
+T2 = TypeVar('T2')
+T3 = TypeVar('T3')
+T4 = TypeVar('T4')
+
+
+# Type-hinting zip() properly isn't really possible short of adding overloads for all possible #'s
+# of arguments. Just do it for 2-4 here.
+# Source code for https://github.com/python/typeshed/ does basically this.
+
+@overload
+def zip_strict(it1: Iterable[T], it2: Iterable[T2], /) -> Iterator[tuple[T, T2]]:
+	pass  # 2-iterable case
+
+@overload
+def zip_strict(it1: Iterable[T], it2: Iterable[T2], it3: Iterable[T3], /) -> Iterator[tuple[T, T2, T3]]:
+	pass  # 3-argument case
+
+@overload
+def zip_strict(it1: Iterable[T], it2: Iterable[T2], it3: Iterable[T3], it4: Iterable[T4], /) -> Iterator[tuple[T, T2, T3, T4]]:
+	pass  # 4-argument case
+
+def zip_strict(*iterables: Iterable) -> Iterator[tuple]:
 	"""Like the builtin ``zip`` function but raises an error if any argument is exhausted before the others.
 
 	Parameters
@@ -17,6 +39,16 @@ def zip_strict(*iterables: Iterator) -> Iterator[Tuple]:
 	------
 	ValueError
 	"""
+	if sys.version_info >= (3, 10):
+		# Version 3.10+ has strict parameter for builtin zip()
+		return zip(*iterables, strict=True)
+	else:
+		return _zip_strict(*iterables)
+
+
+def _zip_strict(*iterables: Iterable) -> Iterator[tuple]:
+	"""Implementation for Python 3.9."""
+
 	# Builtin zip gives empty output on empty input
 	if not iterables:
 		return
