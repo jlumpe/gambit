@@ -2,28 +2,30 @@
 
 import csv
 import json
-from typing import TextIO
+from typing import TextIO, Any, Iterable, Optional
 from pathlib import Path
 
 import numpy as np
 
 from gambit.util.json import to_json
 from gambit.query import QueryResults
+from gambit.classify import GenomeMatch
 from gambit.util.misc import zip_strict
+from gambit.db.models import AnnotatedGenome, Taxon
 
 
-def cmp_json_attrs(data, obj, attrnames):
+def cmp_json_attrs(data: dict[str, Any], obj, attrnames: Iterable[str]):
 	for attr in attrnames:
 		assert data[attr] == getattr(obj, attr)
 
-def cmp_taxon_json(taxon_data, taxon):
+def cmp_taxon_json(taxon_data: dict[str, Any], taxon: Optional[Taxon]):
 	if taxon is None:
 		assert taxon_data is None
 	else:
 		assert taxon_data is not None
 		cmp_json_attrs(taxon_data, taxon, ['id', 'key', 'name', 'ncbi_id', 'rank', 'distance_threshold'])
 
-def cmp_annnotatedgenome_json(genome_data, genome):
+def cmp_annnotatedgenome_json(genome_data: dict[str, Any], genome: AnnotatedGenome):
 	assert genome_data['id'] == genome.genome_id
 	cmp_json_attrs(
 		genome_data,
@@ -33,7 +35,7 @@ def cmp_annnotatedgenome_json(genome_data, genome):
 	for taxon_data, taxon in zip_strict(genome_data['taxonomy'], genome.taxon.ancestors(True)):
 		cmp_taxon_json(taxon_data, taxon)
 
-def cmp_genomematch_json(match_data, match):
+def cmp_genomematch_json(match_data, match: GenomeMatch):
 	assert np.isclose(match_data['distance'], match.distance)
 	cmp_annnotatedgenome_json(match_data['genome'], match.genome)
 
@@ -105,7 +107,7 @@ def check_json_results(file: TextIO,
 			cmp_genomematch_json(match_data, match)
 
 
-def cmp_csv_taxon(row, taxon, prefix):
+def cmp_csv_taxon(row, taxon: Optional[Taxon], prefix: str):
 
 	if taxon is None:
 		assert row[prefix + '.name'] == ''
