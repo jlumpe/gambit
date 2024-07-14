@@ -4,24 +4,15 @@ import json
 from typing import Union, IO, Any
 from functools import singledispatchmethod
 
-from attr import attrs, attrib, asdict, has as has_attrs
 from sqlalchemy.orm import Session
 
-from gambit.query import QueryResultItem, QueryResults
-from gambit.classify import ClassifierResult, GenomeMatch
+from gambit.query import QueryResults
 from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome, Genome
 import gambit.util.json as gjson
 from gambit.util.io import FilePath, maybe_open
-from gambit.util.misc import type_singledispatchmethod
-from gambit.util.typing import is_optional, unwrap_optional
-from .base import asdict_default, BaseJSONResultsExporter
+from .base import BaseJSONResultsExporter, _todict
 
 
-def _todict(obj, attrs):
-	return {a: getattr(obj, a) for a in attrs}
-
-
-@attrs()
 class ResultsArchiveWriter(BaseJSONResultsExporter):
 	"""Exports query results to "archive" format which captures all stored data.
 
@@ -29,28 +20,11 @@ class ResultsArchiveWriter(BaseJSONResultsExporter):
 	The exported data can be read and converted back into an identical :class:`QueryResults`
 	object using :class:`.ResultsArchiveReader`.
 
-	Attributes
-	----------
-	install_info
-		Add results of :func:`gambit.util.dev.install_info` to the ``QueryResults.extra`` dict.
+	Only the ID attributes of database models are saved, when loading the saved results the models
+	are recreated by database queries.
 	"""
-	install_info: bool = attrib(default=False)
 
 	to_json = singledispatchmethod(BaseJSONResultsExporter.to_json)
-
-	to_json.register(ClassifierResult, asdict_default)
-	to_json.register(GenomeMatch, asdict_default)
-	to_json.register(QueryResultItem, asdict_default)
-
-	@to_json.register(QueryResults)
-	def _queryresults_to_json(self, results):
-		data = asdict(results)
-
-		if self.install_info:
-			from gambit.util.dev import install_info
-			data['extra']['install_info'] = install_info()
-
-		return data
 
 	@to_json.register(ReferenceGenomeSet)
 	def _genomeset_to_json(self, gset: ReferenceGenomeSet):
@@ -78,71 +52,25 @@ class ResultsArchiveReader:
 	def __init__(self, session):
 		self.session = session
 
-	@type_singledispatchmethod
-	def _from_json(self, cls, data, ctx):
-		"""Default implementation."""
-		if is_optional(cls):
-			if data is None:
-				return None
-			else:
-				return self._from_json(unwrap_optional(cls), data, ctx)
+		self._init_converter()
 
-		if has_attrs(cls):
-			return self._attrs_from_json(cls, data, ctx)
-		else:
-			return gjson.from_json(data, cls)
+		# Loading the Taxon and AnnotatedGenome instances from the database requires not just their
+		# ID (key attribute) values but also the ReferenceGenomeSet they belong to. Setting this
+		# attribute to the genome set instance of the results currently being loaded is a somewhat
+		# hacky method of passing this information to the unstructuring hook functions. There isn't
+		# a much better way of doing this without reimplementing a lot of the cattrs machinery.
+		self._current_genomeset = None
 
-	def _attrs_from_json(self, cls, data, ctx, values=None):
-		"""Create an attrs class instance from JSON data.
+	def _init_converter(self):
+		"""Initialize the cattrs converter instance.
 
-		``values`` is a dictionary of already-deserialized attribute values.
+		This is a clone of the converter instance in gambit.util.json, with additional structuring
+		hooks registered to methods on this instance.
 		"""
-		kw = dict()
-
-		for a in cls.__attrs_attrs__:
-			if values is not None and a.name in values:
-				kw[a.name] = values[a.name]
-			else:
-				atype = Any if a.type is None else a.type
-				kw[a.name] = self._from_json(atype, data[a.name], ctx)
-
-		return cls(**kw)
-
-	@_from_json.register(ReferenceGenomeSet)
-	def _genomeset_from_json(self, cls, data, ctx):
-		assert data is not None
-		return self.session.query(ReferenceGenomeSet).filter_by(key=data['key'], version=data['version']).one()
-
-	@_from_json.register(AnnotatedGenome)
-	def _genome_from_json(self, cls, data, ctx):
-		key = data['key']
-		gset_id = ctx['genomeset'].id
-		return self.session.query(AnnotatedGenome)\
-			.join(Genome)\
-			.filter(AnnotatedGenome.genome_set_id == gset_id, Genome.key == key)\
-			.one()
-
-	@_from_json.register(Taxon)
-	def _taxon_from_json(self, cls, data, ctx):
-		key = data['key']
-		gset_id = ctx['genomeset'].id
-		return self.session.query(Taxon).filter_by(genome_set_id=gset_id, key=key).one()
-
-	@_from_json.register(QueryResultItem)
-	def _result_item_from_json(self, cls, data, ctx):
-		values = dict(
-			closest_genomes=[self._from_json(GenomeMatch, genome_data, ctx) for genome_data in data['closest_genomes']],
-		)
-		return self._attrs_from_json(QueryResultItem, data, ctx, values)
-
-	def results_from_json(self, data):
-		genomeset = self._from_json(ReferenceGenomeSet, data['genomeset'], dict())
-
-		# Add genome set to context so the correct AnnotatedGenomes can be loaded.
-		ctx = dict(genomeset=genomeset)
-
-		items = [self._from_json(QueryResultItem, item, ctx) for item in data['items']]
-		return self._attrs_from_json(QueryResults, data, ctx, dict(genomeset=genomeset, items=items))
+		self._converter = gjson.converter.copy()
+		self._converter.register_structure_hook(ReferenceGenomeSet, self._structure_genomeset)
+		self._converter.register_structure_hook(AnnotatedGenome, self._structure_genome)
+		self._converter.register_structure_hook(Taxon, self._structure_taxon)
 
 	def read(self, file_or_path: Union[FilePath, IO]) -> QueryResults:
 		"""Read query results from JSON file.
@@ -156,3 +84,34 @@ class ResultsArchiveReader:
 			data = json.load(f)
 
 		return self.results_from_json(data)
+
+	def results_from_json(self, data: dict[str, Any]) -> QueryResults:
+		"""Recreate results object from loaded JSON data."""
+
+		gset_key = data['genomeset']['key']
+		gset_version = data['genomeset']['version']
+		self._current_genomeset =  self.session.query(ReferenceGenomeSet) \
+			.filter_by(key=gset_key, version=gset_version) \
+			.one()
+
+		try:
+			return self._converter.structure(data, QueryResults)
+
+		finally:
+			self._current_genomeset = None
+
+	def _structure_genomeset(self, data: dict[str, Any], cls=None):
+		return self._current_genomeset
+
+	def _structure_genome(self, data: dict[str, Any], cls=None) -> AnnotatedGenome:
+		key = data['key']
+		gset_id = self._current_genomeset.id
+		return self.session.query(AnnotatedGenome)\
+			.join(Genome)\
+			.filter(AnnotatedGenome.genome_set_id == gset_id, Genome.key == key)\
+			.one()
+
+	def _structure_taxon(self, data: dict[str, Any], cls=None) -> Taxon:
+		key = data['key']
+		gset_id = self._current_genomeset.id
+		return self.session.query(Taxon).filter_by(genome_set_id=gset_id, key=key).one()
