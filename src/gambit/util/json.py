@@ -57,8 +57,7 @@ def dump(obj, f: TextIO, **kw):
 	\\**kw
 		Keyword arguments to :func:`json.dump`.
 	"""
-	data = to_json(obj)
-	json.dump(data, f, **kw)
+	json.dump(obj, f, default=converter.unstructure, **kw)
 
 
 def load(f: TextIO, cls=Any):
@@ -93,7 +92,7 @@ def dumps(obj, **kw) -> str:
 	-------
 	str
 	"""
-	return json.dumps(to_json(obj), **kw)
+	return json.dumps(obj, default=converter.unstructure, **kw)
 
 
 def loads(s: str, cls=Any):
