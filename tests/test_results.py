@@ -1,3 +1,5 @@
+from io import StringIO
+
 import pytest
 
 from gambit.query import QueryResults, QueryResultItem, QueryInput, QueryParams
@@ -5,11 +7,18 @@ from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import ReferenceGenomeSet, Genome
 from gambit.sigs import SignaturesMeta
 from gambit.seq import SequenceFile
-from gambit.results.base import export_to_buffer
 from gambit.results.json import JSONResultsExporter
 from gambit.results.csv import CSVResultsExporter
 from gambit.results.archive import ResultsArchiveReader, ResultsArchiveWriter
 from gambit.results.test import check_json_results, check_csv_results
+
+
+def export_to_buffer(results: QueryResults, exporter) -> StringIO:
+	"""Export query results to a `StringIO` buffer."""
+	buf = StringIO()
+	exporter.export(buf, results)
+	buf.seek(0)
+	return buf
 
 
 @pytest.fixture()

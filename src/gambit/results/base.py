@@ -1,7 +1,6 @@
 import json
 from abc import ABC, abstractmethod
 from typing import IO, Union, TextIO
-from io import StringIO
 
 from attr import asdict, attrs, attrib
 
@@ -27,14 +26,6 @@ class AbstractResultsExporter(ABC):
 		results
 			Results to export.
 		"""
-
-
-def export_to_buffer(results: QueryResults, exporter) -> StringIO:
-	"""Export query results to a `StringIO` buffer."""
-	buf = StringIO()
-	exporter.export(buf, results)
-	buf.seek(0)
-	return buf
 
 
 def _todict(obj, attrs):
