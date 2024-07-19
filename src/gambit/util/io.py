@@ -2,7 +2,7 @@
 
 import os
 from io import TextIOWrapper
-from typing import Union, Optional, IO, BinaryIO, ContextManager, Iterable, TypeVar
+from typing import Union, Optional, IO, TextIO, BinaryIO, ContextManager, Iterable, TypeVar
 from contextlib import nullcontext
 
 #: Alias for types which can represent a file system path
@@ -209,7 +209,7 @@ def maybe_open(file_or_path: Union[FilePath, IO], mode: str = 'r', **open_kw) ->
 		return open(path, mode, **open_kw)
 
 
-def read_lines(file_or_path: Union[FilePath, IO], strip: bool=True, skip_empty: bool=False) -> Iterable[str]:
+def read_lines(file_or_path: Union[FilePath, TextIO], strip: bool=True, skip_empty: bool=False) -> Iterable[str]:
 	"""Iterate over lines in text file.
 
 	Parameters
@@ -233,7 +233,7 @@ def read_lines(file_or_path: Union[FilePath, IO], strip: bool=True, skip_empty: 
 				yield line
 
 
-def write_lines(lines: Iterable, file_or_path: Union[FilePath, IO]):
+def write_lines(lines: Iterable, file_or_path: Union[FilePath, TextIO]):
 	"""Write strings to text file, one per line.
 
 	Parameters

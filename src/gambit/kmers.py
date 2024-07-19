@@ -1,6 +1,6 @@
 """Core functions for searching for and working with k-mers."""
 
-from typing import Dict, Any, Iterator
+from typing import Optional, Any, Iterator
 
 import numpy as np
 from attr import attrs, attrib
@@ -16,7 +16,7 @@ def nkmers(k: int) -> int:
 	return 4 ** k
 
 
-def index_dtype(k: int) -> np.dtype:
+def index_dtype(k: int) -> Optional[np.dtype]:
 	"""Get the smallest unsigned integer dtype that can store k-mer indices for the given ``k``."""
 	if k <= 4:
 		return np.dtype('u1')
@@ -119,7 +119,7 @@ class KmerSpec(Jsonable):
 		return dict(k=int(self.k), prefix=self.prefix_str)
 
 	@classmethod
-	def __from_json__(cls, data: Dict[str, Any]) -> 'KmerSpec':
+	def __from_json__(cls, data: dict[str, Any]) -> 'KmerSpec':
 		return cls(data['k'], data['prefix'])
 
 
