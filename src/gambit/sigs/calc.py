@@ -278,3 +278,48 @@ def calc_file_signatures(kspec: KmerSpec,
 		assert all(sig is not None for sig in sigs)
 
 	return SignatureList(sigs, kspec)
+
+
+def dense_to_sparse(vec: Sequence[bool]) -> KmerSignature:
+	"""Convert k-mer set from dense bit vector to sparse coordinate representation.
+
+	Parameters
+	----------
+	vec
+		Boolean vector indicating which k-mers are present.
+
+	Returns
+	-------
+	numpy.ndarray
+		Sorted array  of coordinates of k-mers present in vector. Data type will be ``numpy.intp``.
+
+	See Also
+	--------
+	.sparse_to_dense
+	"""
+	return np.flatnonzero(vec)
+
+
+def sparse_to_dense(k_or_kspec: Union[int, KmerSpec],  coords: KmerSignature) -> np.ndarray:
+	"""Convert k-mer set from sparse coordinate representation back to dense bit vector.
+
+	Parameters
+	----------
+	k_or_kspec
+		Value of k or a :class:`.KmerSpec` instance.
+	coords
+		Sparse coordinate array.
+
+	Returns
+	-------
+	numpy.ndarray
+		Dense k-mer bit vector.
+
+	See Also
+	--------
+	.dense_to_sparse
+	"""
+	idx_len = k_or_kspec.nkmers if isinstance(k_or_kspec, KmerSpec) else nkmers(k_or_kspec)
+	vec = np.zeros(idx_len, dtype=np.bool_)
+	vec[coords] = 1
+	return vec

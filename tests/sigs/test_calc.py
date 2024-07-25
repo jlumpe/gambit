@@ -7,7 +7,8 @@ import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_signatures
+from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_signatures, \
+	dense_to_sparse, sparse_to_dense
 from gambit.kmers import KmerSpec, index_to_kmer
 from gambit.seq import SEQ_TYPES, revcomp, SequenceFile
 import gambit.util.io as ioutil
@@ -171,3 +172,28 @@ class TestCalcFileSignatures:
 			sigs2 = calc_file_signatures(KSPEC, files, progress=pconf, concurrency=concurrency)
 
 		assert sigarray_eq(sigs, sigs2)
+
+
+def test_dense_sparse_conversion():
+	"""Test conversion between dense and sparse representations of k-mer coordinates."""
+
+	for k in range(1, 10):
+
+		kspec = KmerSpec(k, 'ATGAC')
+
+		# Create dense signature with every 3rd k-mer
+		vec = np.zeros(kspec.nkmers, dtype=bool)
+		vec[np.arange(vec.size) % 3 == 0] = True
+
+		# Convert to sparse
+		sig = dense_to_sparse(vec)
+
+		assert len(sig) == vec.sum()
+		for index in sig:
+			assert vec[index]
+
+		# Check sorted
+		assert np.all(np.diff(sig) > 0)
+
+		# Check converting back
+		assert np.array_equal(vec, sparse_to_dense(kspec, sig))
