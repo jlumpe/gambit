@@ -13,6 +13,17 @@ See below for basic installation and usage instructions, or check out the
 a basic tutorial.
 
 
+## About
+
+Copyright © 2016-2024 Jared Lumpe
+
+GAMBIT has been a personal project of mine for many years. Although there have been numerous
+contributors to the publication, it is not a product of any lab or institution.
+
+GAMBIT is provided as free software under the terms of the [AGPLv3 license](LICENSE).
+It is not covered by any type of software patent.
+
+
 ### Publication
 
 Lumpe J, Gumbleton L, Gorzalski A, Libuit K, Varghese V, et al. (2023) GAMBIT (Genomic Approximation
