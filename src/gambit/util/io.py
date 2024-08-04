@@ -138,14 +138,14 @@ class ClosingIterator(Iterable[T]):
 		method is called.
 	"""
 
-	def __init__(self, iterable, fobj):
+	def __init__(self, iterable: Iterable[T], fobj):
 		self.iterator = iter(iterable)
 		self.fobj = fobj
 
 	def __iter__(self):
 		return self
 
-	def __next__(self):
+	def __next__(self) -> T:
 		try:
 			return next(self.iterator)
 
