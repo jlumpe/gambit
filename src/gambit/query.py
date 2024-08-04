@@ -8,8 +8,7 @@ from attr import attrs, attrib
 import numpy as np
 
 from gambit import __version__ as GAMBIT_VERSION
-from gambit.classify import classify, ClassifierResult, GenomeMatch, compare_classifier_results, \
-	compare_genome_matches
+from gambit.classify import classify, ClassifierResult, GenomeMatch
 from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet, reportable_taxon
 from gambit.seq import SequenceFile
 from gambit.sigs import KmerSignature, SignaturesMeta
@@ -87,25 +86,6 @@ class QueryResultItem:
 	classifier_result: ClassifierResult = attrib()
 	report_taxon: Optional[Taxon] = attrib(default=None)
 	closest_genomes: list[GenomeMatch] = attrib(factory=list)
-
-
-def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool:
-	"""Compare two ``QueryResultItem`` instances for equality.
-
-	Does not compare the value of the ``input`` attributes.
-	"""
-	if item1.report_taxon != item2.report_taxon:
-		return False
-	if not compare_classifier_results(item1.classifier_result, item2.classifier_result):
-		return False
-	if len(item1.closest_genomes) != len(item2.closest_genomes):
-		return False
-
-	for m1, m2 in zip(item1.closest_genomes, item2.closest_genomes):
-		if not compare_genome_matches(m1, m2):
-			return False
-
-	return True
 
 
 @attrs(repr=False)

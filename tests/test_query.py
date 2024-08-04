@@ -2,12 +2,13 @@
 
 import pytest
 
-from gambit.query import QueryInput, query_parse, compare_result_items
+from gambit.query import QueryInput, query_parse
 from gambit.seq import SequenceFile
 from gambit.util.misc import zip_strict
 from gambit import __version__ as GAMBIT_VERSION
 
 from .testdb import TestDB
+from .results import compare_result_items
 
 
 class TestQueryInput:
@@ -41,4 +42,4 @@ def test_query_python(testdb: TestDB, strict: bool):
 
 	for file, item, ref_item in zip_strict(query_files, results.items, ref_results.items):
 		assert item.input.file == file
-		compare_result_items(item, ref_item)
+		assert compare_result_items(item, ref_item)

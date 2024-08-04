@@ -8,10 +8,57 @@ from pathlib import Path
 import numpy as np
 
 from gambit.util.json import to_json
-from gambit.query import QueryResults
-from gambit.classify import GenomeMatch
+from gambit.query import QueryResults, QueryResultItem
+from gambit.classify import GenomeMatch, ClassifierResult
 from gambit.util.misc import zip_strict
 from gambit.db.models import AnnotatedGenome, Taxon
+
+
+def compare_genome_matches(match1: Optional[GenomeMatch], match2: Optional[GenomeMatch]) -> bool:
+	"""Compare two ``GenomeMatch`` instances for equality.
+
+	The values for the ``distance`` attribute are only checked for approximate equality, to support
+	instances where one was loaded from a results archive (saving and loading a float in JSON is
+	lossy).
+
+	Also allows one or both values to be None.
+	"""
+	if match1 is None or match2 is None:
+		return match1 is None and match2 is None
+
+	return match1.genome == match2.genome and \
+	       match1.matched_taxon == match2.matched_taxon and \
+	       np.isclose(match1.distance, match2.distance)
+
+
+def compare_classifier_results(result1: ClassifierResult, result2: ClassifierResult) -> bool:
+	"""Compare two ``ClassifierResult`` instances for equality."""
+	return result1.success == result2.success and \
+	       result1.predicted_taxon == result2.predicted_taxon and \
+	       compare_genome_matches(result1.primary_match, result2.primary_match) and \
+	       compare_genome_matches(result1.closest_match, result2.closest_match) and \
+	       result1.next_taxon == result2.next_taxon and \
+	       set(result1.warnings) == set(result2.warnings) and \
+	       result1.error == result2.error
+
+
+def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool:
+	"""Compare two ``QueryResultItem`` instances for equality.
+
+	Does not compare the value of the ``input`` attributes.
+	"""
+	if item1.report_taxon != item2.report_taxon:
+		return False
+	if not compare_classifier_results(item1.classifier_result, item2.classifier_result):
+		return False
+	if len(item1.closest_genomes) != len(item2.closest_genomes):
+		return False
+
+	for m1, m2 in zip(item1.closest_genomes, item2.closest_genomes):
+		if not compare_genome_matches(m1, m2):
+			return False
+
+	return True
 
 
 def cmp_json_attrs(data: dict[str, Any], obj, attrnames: Iterable[str]):
