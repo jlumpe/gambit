@@ -1,5 +1,3 @@
-# cython: language_level = 3str
-
 cimport numpy as np
 
 ctypedef unsigned char CHAR

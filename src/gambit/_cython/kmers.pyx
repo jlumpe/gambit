@@ -1,4 +1,3 @@
-# cython: language_level = 3str, wraparound = False, boundscheck = False
 
 """Cython module for working with DNA sequences and k-mers."""
 

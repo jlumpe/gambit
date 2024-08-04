@@ -1,10 +1,6 @@
-# cython: language_level = 3str, wraparound = False
-
 """Cython functions for calculating k-mer distance metrics"""
 
-cimport cython
 cimport numpy as np
-
 import numpy as np
 from cython.parallel import prange, parallel
 
@@ -72,8 +68,6 @@ def jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 	return c_jaccarddist(coords1, coords2)
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
 	"""Compute the Jaccard distance between two k-mer sets in ordered coordinate format.
 
@@ -121,8 +115,6 @@ cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
 	return <SCORE_T>(2 * u - N - M) / u
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 def _jaccarddist_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[:] ref_bounds, SCORE_T[:] out):
 	"""Calculate Jaccard distances between a query k-mer set and a collection of reference sets.
 
