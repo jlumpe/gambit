@@ -111,11 +111,11 @@ def dist_cmd(ctx: click.Context,
 	else:
 		if query_sigs is not None and query_sigs.kmerspec != kspec:
 			raise click.ClickException(
-				f'K-mer search parameters from command line options ({fmt_kspec(kspec)}) do not'
+				f'K-mer search parameters from command line options ({fmt_kspec(kspec)}) do not '
 				f'match those of query signatures ({fmt_kspec(query_sigs.kmerspec)}).')
 		if ref_sigs is not None and ref_sigs.kmerspec != kspec:
 			raise click.ClickException(
-				f'K-mer search parameters from command line options ({fmt_kspec(kspec)}) do not'
+				f'K-mer search parameters from command line options ({fmt_kspec(kspec)}) do not '
 				f'match those of reference signatures ({fmt_kspec(ref_sigs.kmerspec)}).')
 
 	prog = 'click' if progress else None
