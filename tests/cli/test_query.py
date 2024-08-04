@@ -69,9 +69,14 @@ def check_results(results_file: Path, out_fmt: str, ref_results: QueryResults):
 	if out_fmt == 'json':
 		with open(results_file) as fh:
 			check_json_results(fh, ref_results, strict=False)
+
 	elif out_fmt == 'csv':
 		with open(results_file) as fh:
 			check_csv_results(fh, ref_results, strict=False)
+
+	elif out_fmt == 'archive':
+		assert results_file.is_file()  # TODO
+
 	else:
 		raise ValueError(f'Invalid out_fmt {out_fmt!r}')
 
@@ -85,6 +90,7 @@ def check_results(results_file: Path, out_fmt: str, ref_results: QueryResults):
 		(20,   False, 'csv',  True,  False),
 		(None, False, 'json', False, True),
 		(20,   True,  'json', False, False),
+		(20,   False, 'archive', False, False),
 	],
 )
 def test_full_query(testdb: TestDB,

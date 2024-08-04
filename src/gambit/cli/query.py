@@ -20,9 +20,9 @@ def get_exporter(outfmt: str):
 		return JSONResultsExporter()
 
 	if outfmt == 'archive':
-		return ResultsArchiveWriter(install_info=True)
+		return ResultsArchiveWriter()
 
-	assert 0
+	raise ValueError(f'Invalid output format: {outfmt!r}')
 
 
 @cli.command(name='query', no_args_is_help=True)
