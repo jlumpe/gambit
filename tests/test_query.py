@@ -42,4 +42,4 @@ def test_query_python(testdb: TestDB, strict: bool):
 
 	for file, item, ref_item in zip_strict(query_files, results.items, ref_results.items):
 		assert item.input.file == file
-		assert compare_result_items(item, ref_item)
+		compare_result_items(item, ref_item)
