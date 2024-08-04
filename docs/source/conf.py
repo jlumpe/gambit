@@ -88,6 +88,11 @@ autodoc_class_signature = 'separated'
 autodoc_member_order = 'groupwise'
 autodoc_typehints = 'description'
 
+autodoc_type_aliases = {
+    'FilePath': 'FilePath',
+    'DNASeq': 'DNASeq',
+}
+
 intersphinx_mapping = {
 	'python': ('https://docs.python.org/3', None),
 	'numpy': ('https://numpy.org/doc/stable/', None),

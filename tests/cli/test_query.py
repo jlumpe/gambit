@@ -21,9 +21,9 @@ from .common import invoke_cli
 
 def make_args(testdb: TestDB, *,
 			  positional_files: Optional[Iterable[SequenceFile]] = None,
-			  list_file: Optional[FilePath] = None,
+			  list_file: Optional['FilePath'] = None,
 			  sig_file: bool = False,
-			  output: Optional[FilePath] = None,
+			  output: Optional['FilePath'] = None,
 			  outfmt: Optional[str] = None,
 			  strict: bool=False,
 			  ) -> list[str]:

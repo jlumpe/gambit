@@ -218,7 +218,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		return cls(group)
 
 
-def load_signatures_hdf5(path: FilePath, **kw) -> HDF5Signatures:
+def load_signatures_hdf5(path: 'FilePath', **kw) -> HDF5Signatures:
 	"""Open HDF5 signature file.
 
 	Parameters
@@ -254,7 +254,7 @@ def load_signatures_hdf5(path: FilePath, **kw) -> HDF5Signatures:
 		raise
 
 
-def dump_signatures_hdf5(path: FilePath, signatures: AbstractSignatureArray, **kw):
+def dump_signatures_hdf5(path: 'FilePath', signatures: AbstractSignatureArray, **kw):
 	"""Write k-mer signatures and associated metadata to an HDF5 file.
 
 	Parameters

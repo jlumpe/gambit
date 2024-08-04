@@ -3,13 +3,20 @@
 Note that all code in this package operates on DNA sequences as sequences of
 bytes containing ascii-encoded nucleotide codes.
 
+
 .. data:: NUCLEOTIDES
 
 	``bytes`` corresponding to the four DNA nucleotides. Ascii-encoded upper
 	case letters ``ACGT``. Note that the order, while arbitrary, is important
 	in this variable as it defines how unique indices are assigned to k-mer
 	sequences.
+
+.. class:: DNASeq
+
+	Type alias for DNA sequence types accepted for k-mer search / signature calculation
+	(``str``, ``bytes``, ``bytearray``, or :class:`Bio.Seq.Seq`).
 """
+
 from pathlib import Path
 from typing import Union, Optional, IO, Iterable
 from os import PathLike
@@ -17,6 +24,7 @@ from os import PathLike
 from Bio import SeqIO
 from Bio.Seq import Seq
 from attr import attrs, attrib
+from typing_extensions import TypeAlias
 
 from gambit._cython.kmers import revcomp
 from gambit.util.io import FilePath
@@ -29,14 +37,12 @@ NUCLEOTIDES = b'ACGT'
 
 SEQ_TYPES = (str, bytes, bytearray, Seq)
 
-#: Union of DNA sequence types accepted for k-mer search / signature calculation.
-DNASeq = Union[SEQ_TYPES]
-
-#: Sequence types accepted directly by native (Cython) code.
-DNASeqBytes = Union[bytes, bytearray]
+DNASeq: TypeAlias = Union[SEQ_TYPES]
+# Type alias for sequence types accepted directly by native (Cython) code.
+DNASeqBytes: TypeAlias = Union[bytes, bytearray]
 
 
-def seq_to_bytes(seq: DNASeq) -> DNASeqBytes:
+def seq_to_bytes(seq: 'DNASeq') -> 'DNASeqBytes':
 	"""Convert generic DNA sequence to byte string representation.
 
 	This is for passing sequence data to Cython functions.
@@ -52,7 +58,7 @@ def seq_to_bytes(seq: DNASeq) -> DNASeqBytes:
 	raise TypeError(f'Expected sequence type, got {type(seq)}')
 
 
-def validate_dna_seq_bytes(seq : bytes):
+def validate_dna_seq_bytes(seq: DNASeqBytes):
 	"""Check that a sequence contains only valid nucleotide codes (upper case).
 
 	Parameters
@@ -171,7 +177,7 @@ class SequenceFile(PathLike):
 
 	@classmethod
 	def from_paths(cls,
-	               paths: Iterable[FilePath],
+	               paths: Iterable['FilePath'],
 	               format: str,
 	               compression: Optional[str] = None,
 	               ) -> list['SequenceFile']:

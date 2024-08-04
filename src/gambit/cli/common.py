@@ -282,7 +282,7 @@ def strip_seq_file_ext(filename: str) -> str:
 	return filename
 
 
-def get_file_id(path: FilePath, strip_dir: bool = True, strip_ext: bool = True) -> str:
+def get_file_id(path: 'FilePath', strip_dir: bool = True, strip_ext: bool = True) -> str:
 	"""Get sequence file ID derived from file path.
 
 	Parameters

@@ -37,7 +37,7 @@ class JsonString(TypeDecorator):
 		return None if value is None else gjson.loads(value)
 
 
-def file_sessionmaker(path: FilePath, readonly: bool = True, cls: type = None, **kw) -> sessionmaker:
+def file_sessionmaker(path: 'FilePath', readonly: bool = True, cls: type = None, **kw) -> sessionmaker:
 	"""Get an SQLAlchemy ``sessionmaker`` for an sqlite database file.
 
 	Parameters

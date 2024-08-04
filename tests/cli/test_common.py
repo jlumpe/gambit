@@ -99,7 +99,7 @@ def test_strip_seq_file_ext():
 class TestGetSequenceFiles:
 	"""Test the get_sequence_files() function."""
 
-	def check_ids(self, ids: Iterable[str], paths: Iterable[FilePath], strip_dir: bool, strip_ext: bool):
+	def check_ids(self, ids: Iterable[str], paths: Iterable['FilePath'], strip_dir: bool, strip_ext: bool):
 		for id_, path in zip_strict(ids, paths):
 			if strip_dir:
 				expected = Path(path).name

@@ -38,7 +38,7 @@ class DatabaseLoadError(Exception):
 		self.signatures_file = signatures_file
 
 
-def load_genomeset(db_file: FilePath) -> tuple[Session, ReferenceGenomeSet]:
+def load_genomeset(db_file: 'FilePath') -> tuple[Session, ReferenceGenomeSet]:
 	"""Get the only :class:`gambit.db.models.ReferenceGenomeSet` from a genomes database file."""
 	session = file_sessionmaker(db_file)()
 	gset = only_genomeset(session)
@@ -211,7 +211,7 @@ class ReferenceDatabase:
 			raise ValueError(f'{missing} of {n} genomes not matched to signature IDs. Is the id_attr attribute of the signatures metadata correct?')
 
 	@classmethod
-	def locate_files(cls, path: FilePath) -> tuple[Path, Path]:
+	def locate_files(cls, path: 'FilePath') -> tuple[Path, Path]:
 		"""Locate an SQLite genome database file and HDF5 signatures file in a directory.
 
 		Files are located by extension, ``.gdb`` or ``.db`` for SQLite file and ``.gs`` or ``.h5``
@@ -258,14 +258,14 @@ class ReferenceDatabase:
 		return genomes_file, signatures_file
 
 	@classmethod
-	def load(cls, genomes_file: FilePath, signatures_file: FilePath) -> 'ReferenceDatabase':
+	def load(cls, genomes_file: 'FilePath', signatures_file: 'FilePath') -> 'ReferenceDatabase':
 		"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
 		session, gset = load_genomeset(genomes_file)
 		sigs = load_signatures(signatures_file)
 		return cls(gset, sigs)
 
 	@classmethod
-	def load_from_dir(cls, path: FilePath) -> 'ReferenceDatabase':
+	def load_from_dir(cls, path: 'FilePath') -> 'ReferenceDatabase':
 		"""
 		Load complete database given directory containing SQLite genomes database file and HDF5
 		signatures file.

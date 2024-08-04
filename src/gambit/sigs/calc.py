@@ -127,7 +127,7 @@ def default_accumulator(k: int) -> KmerAccumulator:
 	return SetAccumulator(k) if k > 11 else ArrayAccumulator(k)
 
 
-def accumulate_kmers(accumulator: KmerAccumulator, kmerspec: KmerSpec, seq: DNASeq):
+def accumulate_kmers(accumulator: KmerAccumulator, kmerspec: KmerSpec, seq: 'DNASeq'):
 	"""Find k-mer matches in sequence and add their indices to an accumulator."""
 	for match in find_kmers(kmerspec, seq):
 		try:
@@ -138,7 +138,7 @@ def accumulate_kmers(accumulator: KmerAccumulator, kmerspec: KmerSpec, seq: DNAS
 
 
 def calc_signature(kmerspec: KmerSpec,
-                   seqs: Union[DNASeq, Iterable[DNASeq]],
+                   seqs: Union['DNASeq', Iterable['DNASeq']],
                    *,
                    accumulator: Optional[KmerAccumulator] = None,
                    ) -> KmerSignature:

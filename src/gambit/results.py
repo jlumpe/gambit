@@ -22,7 +22,7 @@ class AbstractResultsExporter(ABC):
 	"""
 
 	@abstractmethod
-	def export(self, file_or_path: Union[FilePath, IO], results: QueryResults):
+	def export(self, file_or_path: Union['FilePath', IO], results: QueryResults):
 		"""Write query results to file.
 
 		Parameters
@@ -55,7 +55,7 @@ class BaseJSONResultsExporter(AbstractResultsExporter):
 		"""Convert object to JSON-compatible format (need not work recursively)."""
 		return gjson.to_json(obj)
 
-	def export(self, file_or_path: Union[FilePath, TextIO], results: QueryResults):
+	def export(self, file_or_path: Union['FilePath', TextIO], results: QueryResults):
 		opts = dict(indent=4, sort_keys=True) if self.pretty else dict()
 		with maybe_open(file_or_path, 'w') as f:
 			json.dump(results, f, default=self.to_json, **opts)
@@ -112,7 +112,7 @@ class CSVResultsExporter(AbstractResultsExporter):
 		"""Get row values for single result item."""
 		return [getattr_nested(item, attrs, pass_none=True) for _, attrs in self.COLUMNS]
 
-	def export(self, file_or_path: Union[FilePath, TextIO], results: QueryResults):
+	def export(self, file_or_path: Union['FilePath', TextIO], results: QueryResults):
 		with maybe_open(file_or_path, 'w') as f:
 			writer = csv.writer(f, **self.format_opts)
 
@@ -229,7 +229,7 @@ class ResultsArchiveReader:
 		self._converter.register_structure_hook(AnnotatedGenome, self._structure_genome)
 		self._converter.register_structure_hook(Taxon, self._structure_taxon)
 
-	def read(self, file_or_path: Union[FilePath, IO]) -> QueryResults:
+	def read(self, file_or_path: Union['FilePath', IO]) -> QueryResults:
 		"""Read query results from JSON file.
 
 		Parameters

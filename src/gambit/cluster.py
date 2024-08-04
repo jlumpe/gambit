@@ -119,7 +119,7 @@ def check_tree_matches_linkage(tree: Tree, link: np.ndarray, labels, atol=1e-5):
 	assert root_i == nleaves * 2 - 2
 
 
-def dump_dmat_csv(file: Union[FilePath, TextIO],
+def dump_dmat_csv(file: Union['FilePath', TextIO],
                   dmat: np.ndarray,
                   row_ids: Sequence,
                   col_ids: Sequence,
@@ -136,7 +136,7 @@ def dump_dmat_csv(file: Union[FilePath, TextIO],
 			writer.writerow([str(row_id), *values_str])
 
 
-def load_dmat_csv(file: Union[FilePath, TextIO]) -> tuple[np.ndarray, list[str], list[str]]:
+def load_dmat_csv(file: Union['FilePath', TextIO]) -> tuple[np.ndarray, list[str], list[str]]:
 	"""Load distance matrix from CSV file.
 
 	Returns

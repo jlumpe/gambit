@@ -1,12 +1,20 @@
-"""Utility code for reading/writing data files."""
+"""Utility code for reading/writing data files.
+
+
+.. class:: FilePath
+
+	Alias for types which can represent a file system path (``str`` or :class:`os.PathLike`).
+"""
 
 import os
 from io import TextIOWrapper
 from typing import Union, Optional, IO, TextIO, BinaryIO, ContextManager, Iterable, TypeVar
 from contextlib import nullcontext
 
-#: Alias for types which can represent a file system path
-FilePath = Union[str, os.PathLike]
+from typing_extensions import TypeAlias
+
+
+FilePath: TypeAlias = Union[str, os.PathLike]
 
 T = TypeVar('T')
 
@@ -69,7 +77,7 @@ def guess_compression(fobj: BinaryIO) -> Optional[str]:
 
 
 def open_compressed(compression: Optional[str],
-                    path: FilePath,
+                    path: 'FilePath',
                     mode: str = 'rt',
                     **kwargs,
                     ) -> IO:
@@ -172,7 +180,7 @@ class ClosingIterator(Iterable[T]):
 		self.close()
 
 
-def maybe_open(file_or_path: Union[FilePath, IO], mode: str = 'r', **open_kw) -> ContextManager[IO]:
+def maybe_open(file_or_path: Union['FilePath', IO], mode: str = 'r', **open_kw) -> ContextManager[IO]:
 	"""Open a file given a file path as an argument, but pass existing file objects though.
 
 	Intended to be used by API functions that take either type as an argument. If a file path is
@@ -208,7 +216,7 @@ def maybe_open(file_or_path: Union[FilePath, IO], mode: str = 'r', **open_kw) ->
 		return open(path, mode, **open_kw)
 
 
-def read_lines(file_or_path: Union[FilePath, TextIO], strip: bool=True, skip_empty: bool=False) -> Iterable[str]:
+def read_lines(file_or_path: Union['FilePath', TextIO], strip: bool=True, skip_empty: bool=False) -> Iterable[str]:
 	"""Iterate over lines in text file.
 
 	Parameters
@@ -232,7 +240,7 @@ def read_lines(file_or_path: Union[FilePath, TextIO], strip: bool=True, skip_emp
 				yield line
 
 
-def write_lines(lines: Iterable, file_or_path: Union[FilePath, TextIO]):
+def write_lines(lines: Iterable, file_or_path: Union['FilePath', TextIO]):
 	"""Write strings to text file, one per line.
 
 	Parameters

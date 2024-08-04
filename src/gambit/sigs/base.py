@@ -409,7 +409,7 @@ class SignaturesFileError(Exception):
 	filename: str
 	format: str
 
-	def __init__(self, message: str, filename: Optional[FilePath], format: Optional[str]):
+	def __init__(self, message: str, filename: Optional['FilePath'], format: Optional[str]):
 		self.message = message
 		self.filename = str(filename)
 		self.format = format
@@ -418,7 +418,7 @@ class SignaturesFileError(Exception):
 		return self.message
 
 
-def load_signatures(path: FilePath, **kw) -> AbstractSignatureArray:
+def load_signatures(path: 'FilePath', **kw) -> AbstractSignatureArray:
 	"""Load signatures from file.
 
 	Currently the only format used to store signatures is the one in :mod:`gambit.sigs.hdf5`, but
@@ -435,7 +435,7 @@ def load_signatures(path: FilePath, **kw) -> AbstractSignatureArray:
 	return load_signatures_hdf5(path, **kw)
 
 
-def dump_signatures(path: FilePath,
+def dump_signatures(path: 'FilePath',
                     signatures: AbstractSignatureArray,
                     format: str = 'hdf5',
                     **kw,
