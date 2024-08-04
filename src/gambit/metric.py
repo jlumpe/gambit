@@ -49,7 +49,7 @@ def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
 	return 1. if union == 0 else intersection / union
 
 
-def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: np.ndarray = None) -> np.ndarray:
+def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: Optional[np.ndarray] = None) -> np.ndarray:
 	"""
 	Calculate Jaccard distances between a query k-mer signature and a list of reference signatures.
 

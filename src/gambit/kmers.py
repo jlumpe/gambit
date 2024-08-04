@@ -129,7 +129,7 @@ DEFAULT_KMERSPEC = KmerSpec(11, 'ATGAC')
 
 @attrs(slots=True)
 class KmerMatch:
-	"""Represents a
+	"""Represents the location of a k-mer prefix found within a DNA sequence.
 
 	Attributes
 	----------
