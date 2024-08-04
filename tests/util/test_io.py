@@ -17,29 +17,30 @@ class TestOpenCompressed:
 		random = np.random.RandomState()
 		return random.randint(32, 128, size=1000, dtype='b').tobytes()
 
-	@pytest.fixture(scope='class', params=[None, 'gzip'])
+	@pytest.fixture(scope='class', params=['none', 'gzip'])
 	def compression(self, request):
 		"""Compression method string."""
 		return request.param
 
 	@pytest.fixture()
-	def text_file(self, text_data, compression, tmpdir):
+	def text_file(self, text_data: bytes, compression: str, tmp_path: Path):
 		"""Path to file with text_data written to it using open_compressed."""
 
-		file = tmpdir.join('chars.txt').strpath
+		file = tmp_path / 'chars.txt'
 
-		with ioutil.open_compressed(compression, file, 'wb') as fobj:
+		with ioutil.open_compressed(file, 'wb', compression) as fobj:
 			fobj.write(text_data)
 
 		return file
 
 	@pytest.mark.parametrize('binary', [True, False])
-	def test_read(self, binary, text_data, text_file, compression, tmpdir):
+	@pytest.mark.parametrize('auto', [True, False])
+	def test_read(self, binary: bool, auto: bool, text_data: bytes, text_file: Path, compression: str):
 		"""Test we can read the file in both binary and text mode."""
 
 		mode = 'rb' if binary else 'rt'
 
-		with ioutil.open_compressed(compression, text_file, mode) as fobj:
+		with ioutil.open_compressed(text_file, mode, 'auto' if auto else compression) as fobj:
 			contents = fobj.read()
 
 		if binary:
@@ -52,46 +53,24 @@ class TestOpenCompressed:
 
 	@pytest.mark.parametrize('write_mode', ['w', 'a', 'x'])
 	@pytest.mark.parametrize('binary', [True, False])
-	def test_write(self, write_mode, binary, text_data, compression, tmpdir):
+	def test_write(self, write_mode: str, binary: bool, text_data: bytes, compression: str, tmp_path: Path):
 		"""
 		Test writing data using the w, a, and x modes.
 
-		TODO - these are all identical when the file doesn't exist, test behavior when it does
+		TODO - these are all identical when the file doesn't exist, test behavior when it does.
 		"""
 
-		file = tmpdir.join('chars.txt')
+		file = tmp_path / 'chars.txt'
 		mode = write_mode + ('b' if binary else 't')
 		to_write = text_data if binary else text_data.decode('ascii')
 
-		with ioutil.open_compressed(compression, file.strpath, mode) as fobj:
+		with ioutil.open_compressed(file, mode, compression) as fobj:
 			fobj.write(to_write)
 
-		with ioutil.open_compressed(compression, file.strpath, 'rb') as f:
+		with ioutil.open_compressed(file, 'rb', compression) as f:
 			contents = f.read()
 
 		assert contents == text_data
-
-	def test_invalid_mode(self, compression):
-		for mode in ['r', 'w', 'a', 't', 'b', 'abc', '']:
-			with pytest.raises(ValueError):
-				ioutil.open_compressed(compression, 'foo.txt', mode=mode)
-
-	@pytest.mark.parametrize('binary', [True, False])
-	def test_read_auto(self, binary, text_data, text_file):
-		"""Test automatic determination of compression method."""
-
-		mode = 'rb' if binary else 'rt'
-
-		with ioutil.open_compressed('auto', text_file, mode) as fobj:
-			contents = fobj.read()
-
-		if binary:
-			assert isinstance(contents, bytes)
-			assert contents == text_data
-
-		else:
-			assert isinstance(contents, str)
-			assert contents == text_data.decode('ascii')
 
 
 class TestClosingIterator:

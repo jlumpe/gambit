@@ -8,7 +8,7 @@
 
 import os
 from io import TextIOWrapper
-from typing import Union, Optional, IO, TextIO, BinaryIO, ContextManager, Iterable, TypeVar
+from typing import Union, IO, TextIO, BinaryIO, ContextManager, Iterable, TypeVar
 from contextlib import nullcontext
 
 from typing_extensions import TypeAlias
@@ -18,26 +18,8 @@ FilePath: TypeAlias = Union[str, os.PathLike]
 
 T = TypeVar('T')
 
-COMPRESSED_OPENERS = {None: open}
 
-
-def _compressed_opener(compression):
-	"""Decorator to register opener functions for compression types."""
-	def decorator(func):
-		COMPRESSED_OPENERS[compression] = func
-		return func
-	return decorator
-
-
-@_compressed_opener('gzip')
-def _open_gzip(path, mode, **kwargs):
-	"""Opener for gzip-compressed files."""
-	import gzip
-	return gzip.open(path, mode=mode, **kwargs)
-
-
-@_compressed_opener('auto')
-def _open_auto(path, mode, **kwargs):
+def _open_auto(path: FilePath, mode: str, **kwargs):
 	"""Open file for reading with compression determined automatically."""
 
 	if mode[0] != 'r':
@@ -49,13 +31,13 @@ def _open_auto(path, mode, **kwargs):
 		compression = guess_compression(file)
 		file.seek(0)
 
-		if compression is None:
+		if compression == 'none':
 			binary = file
 		elif compression == 'gzip':
 			import gzip
 			binary = gzip.GzipFile(fileobj=file, mode='rb')
 		else:
-			assert 0
+			assert False, f'Unexpected compression type: {compression!r}'
 
 		return TextIOWrapper(binary, **kwargs) if mode[1] == 't' else binary
 
@@ -63,7 +45,7 @@ def _open_auto(path, mode, **kwargs):
 		file.close()
 
 
-def guess_compression(fobj: BinaryIO) -> Optional[str]:
+def guess_compression(fobj: BinaryIO) -> str:
 	"""Guess the compression mode of an readable file-like object in binary mode.
 
 	Assumes the current position is at the beginning of the file.
@@ -73,25 +55,25 @@ def guess_compression(fobj: BinaryIO) -> Optional[str]:
 	if magic == b'\x1f\x8b':
 		return 'gzip'
 	else:
-		return None
+		return 'none'
 
 
-def open_compressed(compression: Optional[str],
-                    path: 'FilePath',
+def open_compressed(path: 'FilePath',
                     mode: str = 'rt',
+                    compression: str = 'auto',
                     **kwargs,
                     ) -> IO:
 	"""Open a file with compression method specified by a string.
 
 	Parameters
 	----------
-	compression : str
-		Compression method. None is no compression.
 	path
 		Path of file to open. May be string or path-like object.
 	mode : str
 		Mode to open file in - similar to :func:`open`. Must be exactly two characters, the first
 		in ``rwax`` and the second in``tb``.
+	compression : str
+		Compression method. Allowed values are ``'none'``, ``'gzip'``, or ``'auto'``.
 	\\**kwargs
 		Additional text-specific keyword arguments identical to the following :func:`open`
 		arguments: ``encoding``, ``errors``, and ``newlines``.
@@ -101,19 +83,28 @@ def open_compressed(compression: Optional[str],
 	IO
 		Open file object.
 	"""
+
+	# Check mode
 	if not(len(mode) == 2 and mode[0] in 'rwax' and mode[1] in 'tb'):
 		msg = f'Invalid mode {mode!r}'
 		if mode in 'rwax':
 			msg += ' (must specify either binary or text mode)'
 		raise ValueError(msg)
 
-	try:
-		opener = COMPRESSED_OPENERS[compression]
+	path = os.fsdecode(path)
 
-	except KeyError:
+	if compression == 'none':
+		return open(path, mode, **kwargs)
+
+	elif compression == 'gzip':
+		import gzip
+		return gzip.open(path, mode, **kwargs)
+
+	elif compression == 'auto':
+		return _open_auto(path, mode, **kwargs)
+
+	else:
 		raise ValueError(f'Unknown compression type {compression!r}') from None
-
-	return opener(os.fsdecode(path), mode=mode, **kwargs)
 
 
 class ClosingIterator(Iterable[T]):

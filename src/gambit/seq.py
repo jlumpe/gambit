@@ -135,7 +135,8 @@ class SequenceFile(PathLike):
 		IO
 			Stream to file in given mode.
 		"""
-		return open_compressed(self.compression, self.path, mode, **kwargs)
+		compression = 'none' if self.compression is None else self.compression
+		return open_compressed(self.path, mode, compression, **kwargs)
 
 	def parse(self, **kwargs) -> ClosingIterator[SeqIO.SeqRecord]:
 		"""Open the file and lazily parse its contents.
