@@ -2,19 +2,21 @@
 
 from warnings import warn
 from datetime import datetime
-from typing import Sequence, Optional, Union, Any
+from typing import Sequence, Optional, Any
+from pathlib import Path
 
 from attr import attrs, attrib
+from attr.converters import optional as optional_converter
 import numpy as np
 
 from gambit import __version__ as GAMBIT_VERSION
 from gambit.classify import classify, ClassifierResult, GenomeMatch
 from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet, reportable_taxon
 from gambit.seq import SequenceFile
-from gambit.sigs import KmerSignature, SignaturesMeta
+from gambit.sigs.base import KmerSignature, SignaturesMeta, ReferenceSignatures
 from gambit.metric import jaccarddist_matrix
-from gambit.util.misc import zip_strict
 from gambit.util.progress import progress_config, iter_progress
+from gambit.util.misc import zip_strict
 
 
 @attrs()
@@ -37,43 +39,13 @@ class QueryParams:
 
 
 @attrs()
-class QueryInput:
-	"""Information on a query genome.
-
-	Attributes
-	----------
-	label
-		Some unique label for the input, probably the file name.
-	file
-		Source file (optional).
-	"""
-	label: str = attrib()
-	file: Optional[SequenceFile] = attrib(default=None, repr=False)
-
-	@classmethod
-	def convert(cls, x: Union['QueryInput', SequenceFile, str]) -> 'QueryInput':
-		"""Convenience function to convert flexible argument types into QueryInput.
-
-		Accepts single string label, ``SequenceFile`` (uses file path for label), or existing
-		``QueryInput`` instance (returned unchanged).
-		"""
-		if isinstance(x, QueryInput):
-			return x
-		if isinstance(x, str):
-			return QueryInput(x)
-		if isinstance(x, SequenceFile):
-			return QueryInput(str(x.path), x)
-		raise TypeError(f'Cannot convert {type(x)} instance to QueryInput')
-
-
-@attrs()
 class QueryResultItem:
 	"""Result for a single query sequence.
 
 	Attributes
 	----------
-	input
-		Information on input genome.
+	label
+		Unique label describing query.
 	classifier_result
 		Result of running classifier.
 	report_taxon
@@ -81,11 +53,14 @@ class QueryResultItem:
 	closest_genomes
 		List of closest reference genomes to query. Length determined by
 		:attr:`.QueryParams.report_closest`.
+	file
+		Path to file containing query genome (optional).
 	"""
-	input: QueryInput = attrib()
+	label: str = attrib()
 	classifier_result: ClassifierResult = attrib()
 	report_taxon: Optional[Taxon] = attrib(default=None)
 	closest_genomes: list[GenomeMatch] = attrib(factory=list)
+	file: Optional[Path] = attrib(default=None, converter=optional_converter(Path))
 
 
 @attrs(repr=False)
@@ -122,7 +97,7 @@ def query(db: ReferenceDatabase,
           queries: Sequence[KmerSignature],
           params: Optional[QueryParams] = None,
           *,
-          inputs: Optional[Sequence[Union[QueryInput, SequenceFile, str]]] = None,
+          labels: Optional[Sequence[str]] = None,
           progress = None,
           **kw,
           ) -> QueryResults:
@@ -137,10 +112,10 @@ def query(db: ReferenceDatabase,
 	params
 		``QueryParams`` instance defining parameter values. If None take values from additional
 		keyword arguments or use defaults.
-	inputs
-		Description for each input, converted to :class:`.QueryInput` in results
-		object. Only used for reporting, does not any other aspect of results. Items can be
-		``QueryInput``, ``SequenceFile`` or ``str``.
+	labels
+		Optional list of string labels for each query. Only used for reporting (sets ``label``
+		attribute of :class:`QueryResultItem` in results object), does not any other aspect of
+		results.
 	progress
 		Report progress for distance matrix calculation and classification. See
 		:func:`gambit.util.progress.get_progress` for description of allowed values.
@@ -152,18 +127,22 @@ def query(db: ReferenceDatabase,
 	elif kw:
 		warn('Additional keyword arguments ignored if "params" argument is not None.')
 
-	queries = list(queries)
 	pconf = progress_config(progress)
 
 	if len(queries) == 0:
 		raise ValueError('Must supply at least one query.')
 
-	if inputs is not None:
-		inputs = list(map(QueryInput.convert, inputs))
-		if len(inputs) != len(queries):
-			raise ValueError('Number of inputs does not match number of queries.')
+	# Labels
+	if labels is not None:
+		if len(labels) != len(queries):
+			raise ValueError('Number of labels does not match number of queries.')
+
+	elif isinstance(queries, ReferenceSignatures):
+		# Get default labels from queries of ReferenceSignatures object
+		labels = list(map(str, queries.ids))
+
 	else:
-		inputs = [QueryInput(str(i + 1)) for i in range(len(queries))]
+		labels = [str(i + 1) for i in range(len(queries))]
 
 	# Calculate distances
 	# (This will only be about 200kB per row/query [50k float32's] so having the whole thing in
@@ -177,8 +156,11 @@ def query(db: ReferenceDatabase,
 	)
 
 	# Classify inputs and create result items
-	with iter_progress(inputs, pconf, desc='Classifying') as inputs_iter:
-		items = [get_result_item(db, params, dmat[i, :], input) for i, input in enumerate(inputs_iter)]
+	with iter_progress(labels, pconf, desc='Classifying') as labels_iter:
+		items = [
+			get_result_item(db, params, dmat[i, :], label)
+			for i, label in enumerate(labels_iter)
+		]
 
 	return QueryResults(
 		items=items,
@@ -188,7 +170,7 @@ def query(db: ReferenceDatabase,
 	)
 
 
-def get_result_item(db:ReferenceDatabase, params: QueryParams, dists: np.ndarray, input: QueryInput) -> QueryResultItem:
+def get_result_item(db: ReferenceDatabase, params: QueryParams, dists: np.ndarray, label: str) -> QueryResultItem:
 	"""Perform classification and create result item object for single query input.
 
 	Parameters
@@ -196,14 +178,14 @@ def get_result_item(db:ReferenceDatabase, params: QueryParams, dists: np.ndarray
 	db
 	params
 	dists
-		Distances from query to reference genomes.
-	input
+		1D array of distances from query to all reference genomes.
+	label
 	"""
 	clsresult = classify(db.genomes, dists, strict=params.classify_strict)
 	closest = [GenomeMatch(db.genomes[i], dists[i]) for i in np.argsort(dists)[:params.report_closest]]
 
 	return QueryResultItem(
-		input=input,
+		label=label,
 		classifier_result=clsresult,
 		report_taxon=reportable_taxon(clsresult.predicted_taxon),
 		closest_genomes=closest,
@@ -214,7 +196,7 @@ def query_parse(db: ReferenceDatabase,
                 files: Sequence[SequenceFile],
                 params: Optional[QueryParams] = None,
                 *,
-                file_labels: Optional[Sequence[str]] = None,
+                labels: Optional[Sequence[str]] = None,
                 parse_kw: Optional[dict[str, Any]] = None,
                 **kw,
                 ) -> QueryResults:
@@ -229,7 +211,7 @@ def query_parse(db: ReferenceDatabase,
 	params
 		``QueryParams`` instance defining parameter values. If None take values from additional
 		keyword arguments or use defaults.
-	file_labels
+	labels
 		Custom labels to use for each file in returned results object. If None use file names.
 	parse_kw
 		Keyword parameters to pass to :func:`gambit.sigs.calc.calc_file_signatures`.
@@ -243,11 +225,18 @@ def query_parse(db: ReferenceDatabase,
 		parse_kw = dict()
 	parse_kw.setdefault('progress', pconf.update(desc='Parsing input'))
 
-	if file_labels is None:
-		inputs = files
+	if labels is None:
+		labels = [str(file.path) for file in files]
 	else:
-		inputs = [QueryInput(label, file) for label, file in zip_strict(file_labels, files)]
+		if len(labels) != len(files):
+			raise ValueError('Number of labels does not match number of files')
 
 	query_sigs = calc_file_signatures(db.signatures.kmerspec, files, **parse_kw)
 
-	return query(db, query_sigs, params, inputs=inputs, progress=pconf, **kw)
+	results = query(db, query_sigs, params, labels=labels, progress=pconf, **kw)
+
+	# Assign file attribute of QueryResultItem's
+	for item, file in zip_strict(results.items, files):
+		item.file = file.path
+
+	return results

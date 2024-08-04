@@ -2,28 +2,12 @@
 
 import pytest
 
-from gambit.query import QueryInput, QueryResults, query, query_parse
-from gambit.seq import SequenceFile
+from gambit.query import QueryResults, query, query_parse
 from gambit.util.misc import zip_strict
 from gambit import __version__ as GAMBIT_VERSION
 
 from .testdb import TestDB
 from .results import compare_result_items, check_results
-
-
-class TestQueryInput:
-	"""Test QueryInput class."""
-
-	def test_convert(self):
-		file = SequenceFile('path/to/file.fa', 'fasta')
-		qi = QueryInput('foo', file)
-
-		assert QueryInput.convert(qi) is qi
-		assert QueryInput.convert('foo') == QueryInput('foo', None)
-		assert QueryInput.convert(file) == QueryInput(str(file.path), file)
-
-		with pytest.raises(TypeError):
-			QueryInput.convert(3.4)
 
 
 @pytest.mark.parametrize('strict', [False, True])
@@ -55,8 +39,8 @@ class TestQuery:
 		self.check_results(results, ref_results)
 
 		for sigid, item in zip_strict(query_sigs.ids, results.items):
-			assert item.input.file is None
-			# assert item.input.label == sigid
+			assert item.file is None
+			assert item.label == sigid
 
 	def test_query_parse(self, testdb: TestDB, strict: bool):
 		"""Test the query_parse() function."""
@@ -69,5 +53,5 @@ class TestQuery:
 		self.check_results(results, ref_results)
 
 		for file, item in zip_strict(query_files, results.items):
-			assert item.input.file == file
-			assert item.input.label == str(file.path)
+			assert item.file == file.path
+			assert item.label == str(file.path)
