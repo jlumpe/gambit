@@ -39,12 +39,6 @@ gambit.sigs.calc
 .. automodule:: gambit.sigs.calc
 
 
-gambit.sigs.convert
--------------------------
-
-.. automodule:: gambit.sigs.convert
-
-
 gambit.sigs.hdf5
 ----------------------
 
