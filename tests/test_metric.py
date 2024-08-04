@@ -6,9 +6,9 @@ import pytest
 import numpy as np
 
 from gambit.metric import jaccard, jaccarddist, jaccard_bits, jaccard_generic, jaccarddist_array, \
-	jaccarddist_matrix, jaccarddist_pairwise, num_pairs, SCORE_DTYPE, BOUNDS_DTYPE
+	jaccarddist_matrix, jaccarddist_pairwise, num_pairs, SCORE_DTYPE
 from gambit.sigs.calc import sparse_to_dense
-from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_signatures
+from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_signatures, BOUNDS_DTYPE
 from gambit.kmers import KmerSpec
 from gambit.util.progress import check_progress
 from .common import make_signatures

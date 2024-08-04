@@ -5,11 +5,16 @@ from typing import Iterable, Sequence, Optional
 
 import numpy as np
 
-from gambit._cython.metric import BOUNDS_DTYPE, SCORE_DTYPE, jaccard, jaccarddist, \
-	_jaccarddist_parallel
-from gambit.sigs.base import KmerSignature, SignatureArray, AbstractSignatureArray, SignatureList
+from gambit._cython.metric import jaccard, jaccarddist, _jaccarddist_parallel
+from gambit.sigs.base import KmerSignature, SignatureArray, AbstractSignatureArray, SignatureList, \
+	BOUNDS_DTYPE
 from gambit.util.misc import chunk_slices
 from gambit.util.progress import get_progress
+
+
+#: Numpy dtype for output of Cython Jaccard distance calculation code
+# Equivalent to SCORE_T in types.pxd
+SCORE_DTYPE = np.dtype(np.float32)
 
 
 def jaccard_generic(set1: Iterable, set2: Iterable) -> float:

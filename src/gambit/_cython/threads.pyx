@@ -1,9 +1,10 @@
 """OpenMP stuff."""
 
 from cython import parallel
+import array
 
-import numpy as np
-cimport numpy as np
+cimport cython
+from cpython cimport array
 cimport openmp
 
 
@@ -25,18 +26,35 @@ def omp_get_max_threads():
 	return openmp.omp_get_max_threads()
 
 
-def get_thread_ids(int num_threads):
-	"""Run a multithreaded loop and get the thread ID running in each iteration."""
+@cython.boundscheck(True)
+def get_thread_ids(int n):
+	"""Run a multithreaded loop and get the thread ID running in each iteration.
+
+	Used to check that Cython code parallelization is working correctly. Result should contain
+	integers from 0 to ``num_threads``, repeated up to length ``n``.
+
+	Parameters
+	----------
+	n: int
+		Size of loop. Make this at least as large as the expected number of threads.
+
+	Returns
+	-------
+	array.array
+		Array of size ``n`` containing the thread ID running in each loop iteration.
+	"""
 
 	cdef:
-		np.ndarray[np.intp_t, ndim=1] thread_ids
-		np.intp_t thread_id = -1
+		array.array thread_ids_arr = array.array('i')
+		int[:] thread_ids
 		int i
 
-	thread_ids = np.full(num_threads, -1, dtype=np.intp)
+	for i in range(n):
+		thread_ids_arr.append(-1)
 
-	for i in parallel.prange(num_threads, nogil=True, schedule='static', chunksize=1):
-		thread_id = parallel.threadid()
-		thread_ids[i] = thread_id
+	thread_ids = thread_ids_arr
+
+	for i in parallel.prange(n, nogil=True, schedule='static', chunksize=1):
+		thread_ids[i] = parallel.threadid()
 
 	return thread_ids

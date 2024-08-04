@@ -14,7 +14,7 @@ def kmer_to_index(const CHAR[:] kmer):
 	Convert k-mer byte string to its integer index.
 	"""
 	cdef:
-		np.uint64_t idx
+		uint64_t idx
 		bint exc = False
 
 	if kmer.shape[0] > 32:
@@ -28,9 +28,9 @@ def kmer_to_index(const CHAR[:] kmer):
 	return idx
 
 
-cdef np.uint64_t c_kmer_to_index(const CHAR[:] kmer, bint *exc) nogil:
+cdef uint64_t c_kmer_to_index(const CHAR[:] kmer, bint *exc) nogil:
 	cdef:
-		np.uint64_t idx = 0
+		uint64_t idx = 0
 		int i, k = kmer.shape[0]
 		CHAR nuc
 
@@ -61,7 +61,7 @@ def kmer_to_index_rc(const CHAR[:] kmer):
 	Get the integer index of the reverse complement of a k-mer byte string.
 	"""
 	cdef:
-		np.uint64_t idx
+		uint64_t idx
 		bint exc = False
 
 	if kmer.shape[0] > 32:
@@ -75,9 +75,9 @@ def kmer_to_index_rc(const CHAR[:] kmer):
 	return idx
 
 
-cdef np.uint64_t c_kmer_to_index_rc(const CHAR[:] kmer, bint *exc) nogil:
+cdef uint64_t c_kmer_to_index_rc(const CHAR[:] kmer, bint *exc) nogil:
 	cdef:
-		np.uint64_t idx = 0
+		uint64_t idx = 0
 		int i, k = kmer.shape[0]
 		CHAR nuc
 
@@ -112,7 +112,7 @@ def index_to_kmer(index, int k):
 	return bytes(buf)
 
 
-cdef void c_index_to_kmer(np.uint64_t index, CHAR[:] out) nogil:
+cdef void c_index_to_kmer(uint64_t index, CHAR[:] out) nogil:
 	"""Convert k-mer index to sequence."""
 	cdef:
 		int k = out.shape[0]

@@ -1,28 +1,29 @@
 """Shared typedefs."""
 
-cimport numpy as np
+from libc.stdint cimport int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, intptr_t
 
 
 # Type for similarity scores
-ctypedef np.float32_t SCORE_T
+ctypedef float SCORE_T
 
 # Type for bounds on c_jaccard_coords_col
-ctypedef np.intp_t BOUNDS_T
+# This should be equal to Numpy's intp dtype
+ctypedef intptr_t BOUNDS_T
 
 # Fused type for storing k-mer coordinates/indices
 ctypedef fused COORDS_T:
-	np.int16_t
-	np.uint16_t
-	np.int32_t
-	np.uint32_t
-	np.int64_t
-	np.uint64_t
+	int16_t
+	uint16_t
+	int32_t
+	uint32_t
+	int64_t
+	uint64_t
 
 # Copy of COORDS_T, used when two arguments have types in this set but may be different than each other.
 ctypedef fused COORDS_T_2:
-	np.int16_t
-	np.uint16_t
-	np.int32_t
-	np.uint32_t
-	np.int64_t
-	np.uint64_t
+	int16_t
+	uint16_t
+	int32_t
+	uint32_t
+	int64_t
+	uint64_t

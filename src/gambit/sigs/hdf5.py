@@ -7,9 +7,8 @@ import numpy as np
 import h5py as h5
 
 from .base import SignatureArray, ConcatenatedSignatureArray, AbstractSignatureArray, SignaturesMeta,\
-	ReferenceSignatures, SignaturesFileError
+	ReferenceSignatures, SignaturesFileError, BOUNDS_DTYPE
 from gambit.kmers import KmerSpec
-from gambit._cython.metric import BOUNDS_DTYPE
 from gambit.util.io import FilePath
 
 

@@ -5,7 +5,6 @@ import numpy as np
 from attr import attrs, attrib
 
 from gambit.kmers import KmerSpec
-from gambit._cython.metric import BOUNDS_DTYPE
 from gambit.util.indexing import AdvancedIndexingMixin
 from gambit.util.io import FilePath
 
@@ -13,6 +12,12 @@ from gambit.util.io import FilePath
 #: Type for k-mer signatures (k-mer sets in sparse coordinate format)
 KmerSignature = NewType('KmerSignature', np.ndarray)
 # TODO - use nptyping package to specify dimensions and data type?
+
+
+#: Preferred Numpy dtype for :attr:`.ConcatenatedSignatureArray.bounds`. Can be used in parallelized
+#: Cython metric calculation code without conversion.
+# Equivalent to BOUNDS_T in types.pxd
+BOUNDS_DTYPE = np.dtype(np.intp)
 
 
 def sigarray_eq(a1: Sequence[KmerSignature], a2: Sequence[KmerSignature]) -> bool:

@@ -1,13 +1,6 @@
 """Cython functions for calculating k-mer distance metrics"""
 
-cimport numpy as np
-import numpy as np
 from cython.parallel import prange, parallel
-
-
-# Numpy dtypes equivalent to SCORE_T and BOUNDS_T
-SCORE_DTYPE = np.dtype(np.float32)
-BOUNDS_DTYPE = np.dtype(np.intp)
 
 
 def jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
@@ -76,15 +69,15 @@ cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
 
 	cdef:
 		# Lengths of the two arrays
-		np.intp_t N = coords1.shape[0]
-		np.intp_t M = coords2.shape[0]
+		intptr_t N = coords1.shape[0]
+		intptr_t M = coords2.shape[0]
 
 		# Index and value of items in each array as we are iterating
-		np.intp_t i = 0, j = 0
+		intptr_t i = 0, j = 0
 		COORDS_T a
 		COORDS_T_2 b
 
-		np.intp_t u = 0  # Size of union
+		intptr_t u = 0  # Size of union
 
 	# Iterate through both arrays simultaneously, advance index for the array
 	# with the smaller value. Advance both if they are equal. Increment the
@@ -136,7 +129,7 @@ def _jaccarddist_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[
 	out : numpy.ndarray
 		Pre-allocated array to write distances to.
 	"""
-	cdef np.intp_t N = ref_bounds.shape[0] - 1
+	cdef intptr_t N = ref_bounds.shape[0] - 1
 	cdef BOUNDS_T begin, end
 	cdef int i
 
