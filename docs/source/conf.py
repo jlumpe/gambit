@@ -50,6 +50,15 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# When debugging broken cross references using nitpick mode (-n option), ignore these errors.
+# This mostly relates to external libraries that have not been linked to using intersphinx.
+nitpick_ignore_regex = [
+	('py:.*', r'click\..*'),
+	('py:.*', r'sqlalchemy\..*'),
+	('py:.*', r'h5py\..*'),
+	('py:.*', r'scipy\..*'),
+]
+
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -76,5 +85,11 @@ autodoc_default_options = {
 autodoc_class_signature = 'separated'
 autodoc_member_order = 'groupwise'
 autodoc_typehints = 'description'
+
+intersphinx_mapping = {
+	'python': ('https://docs.python.org/3', None),
+	'numpy': ('https://numpy.org/doc/stable/', None),
+	'Bio': ('https://biopython.org/docs/latest/', None),
+}
 
 todo_include_todos = True
