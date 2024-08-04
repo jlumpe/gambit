@@ -12,10 +12,12 @@ class AdvancedIndexingMixin:
 	bounds checking, and converting negative indices.
 
 	The following methods must be implemented by subtypes:
+
 	* :meth:`_getitem_int`
 	* :meth:`_getitem_int_array`
 
 	The following methods may optionally be overridden, but default to calling :meth:`_getitem_int_array`:
+
 	* :meth:`_getitem_slice`
 	* :meth:`_getitem_bool_array`
 	"""
