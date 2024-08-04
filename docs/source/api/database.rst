@@ -32,9 +32,3 @@ gambit.db.sqla
    .. autoclass:: ReadOnlySession
       :exclude-members: __init__, __new__
       :no-members:
-
-
-gambit.db.migrate
------------------
-
-.. automodule:: gambit.db.migrate
