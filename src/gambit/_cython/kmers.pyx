@@ -1,19 +1,38 @@
+"""Cython module for working with DNA sequences and k-mers.
 
-"""Cython module for working with DNA sequences and k-mers."""
+Note: each of the 4 Python functions here have a C counterpart that does the actual work. The Python
+version is just a wrapper that does any needed conversion, allocates buffers, and raises exceptions
+if needed. The separation currently isn't necessary as the C functions aren't used anywhere else
+outside the wrappers, but they may be in the future. Handling exceptions in the Python wrappers only
+allows the C functions to be declared with nogil.
+"""
 
 
-cpdef np.uint64_t kmer_to_index(const CHAR[:] kmer) nogil except? 0:
-	"""kmer_to_index(kmer)
+def kmer_to_index(const CHAR[:] kmer):
+	"""kmer_to_index(kmer: bytes) -> int
 
 	Convert k-mer byte string to its integer index.
 	"""
 	cdef:
+		np.uint64_t idx
+		bint exc = False
+
+	if kmer.shape[0] > 32:
+		raise ValueError('k must be <= 32')
+
+	idx = c_kmer_to_index(kmer, &exc)
+
+	if exc:
+		raise ValueError('Invalid character in k-mer')
+
+	return idx
+
+
+cdef np.uint64_t c_kmer_to_index(const CHAR[:] kmer, bint *exc) nogil:
+	cdef:
 		np.uint64_t idx = 0
 		int i, k = kmer.shape[0]
 		CHAR nuc
-
-	if k > 32:
-		raise ValueError('k must be <= 32')
 
 	for i in range(k):
 		nuc = kmer[i]
@@ -30,23 +49,37 @@ cpdef np.uint64_t kmer_to_index(const CHAR[:] kmer) nogil except? 0:
 		elif nuc == 'T':
 			idx += 3
 		else:
-			raise ValueError(nuc)
+			exc[0] = True
+			return 0
 
 	return idx
 
 
-cpdef np.uint64_t kmer_to_index_rc(const CHAR[:] kmer) nogil except? 0:
-	"""kmer_to_index_rc(kmer)
+def kmer_to_index_rc(const CHAR[:] kmer):
+	"""kmer_to_index_rc(kmer: bytes) -> int
 
 	Get the integer index of the reverse complement of a k-mer byte string.
 	"""
 	cdef:
+		np.uint64_t idx
+		bint exc = False
+
+	if kmer.shape[0] > 32:
+		raise ValueError('k must be <= 32')
+
+	idx = c_kmer_to_index_rc(kmer, &exc)
+
+	if exc:
+		raise ValueError('Invalid character in k-mer')
+
+	return idx
+
+
+cdef np.uint64_t c_kmer_to_index_rc(const CHAR[:] kmer, bint *exc) nogil:
+	cdef:
 		np.uint64_t idx = 0
 		int i, k = kmer.shape[0]
 		CHAR nuc
-
-	if k > 32:
-		raise ValueError('k must be <= 32')
 
 	for i in range(k):
 		nuc = kmer[k - i - 1]
@@ -63,7 +96,8 @@ cpdef np.uint64_t kmer_to_index_rc(const CHAR[:] kmer) nogil except? 0:
 		elif nuc == 'T':
 			idx += 0
 		else:
-			raise ValueError(nuc)
+			exc[0] = True
+			return 0
 
 	return idx
 
