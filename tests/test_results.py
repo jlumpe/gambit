@@ -7,9 +7,7 @@ from gambit.classify import ClassifierResult, GenomeMatch
 from gambit.db import ReferenceGenomeSet, Genome
 from gambit.sigs import SignaturesMeta
 from gambit.seq import SequenceFile
-from gambit.results.json import JSONResultsExporter
-from gambit.results.csv import CSVResultsExporter
-from gambit.results.archive import ResultsArchiveReader, ResultsArchiveWriter
+from gambit.results import JSONResultsExporter, CSVResultsExporter, ResultsArchiveReader, ResultsArchiveWriter
 from .results import check_json_results, check_csv_results
 
 

@@ -15,7 +15,7 @@ from gambit.seq import SequenceFile
 from gambit.kmers import KmerSpec
 from gambit.sigs import load_signatures, AnnotatedSignatures
 from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
-from gambit.results.archive import ResultsArchiveReader
+from gambit.results import ResultsArchiveReader
 from gambit.query import QueryResults
 
 

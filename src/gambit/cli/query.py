@@ -8,20 +8,18 @@ from .root import cli
 from gambit.query import QueryParams, QueryInput, query, query_parse
 from gambit.util.progress import progress_config
 from gambit.sigs import load_signatures
+from gambit.results import CSVResultsExporter, JSONResultsExporter, ResultsArchiveWriter
 from gambit._cython.threads import omp_set_num_threads
 
 
 def get_exporter(outfmt: str):
 	if outfmt == 'csv':
-		from gambit.results.csv import CSVResultsExporter
 		return CSVResultsExporter()
 
 	if outfmt == 'json':
-		from gambit.results.json import JSONResultsExporter
 		return JSONResultsExporter()
 
 	if outfmt == 'archive':
-		from gambit.results.archive import ResultsArchiveWriter
 		return ResultsArchiveWriter(install_info=True)
 
 	assert 0
