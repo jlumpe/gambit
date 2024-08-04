@@ -208,7 +208,7 @@ def calc_file_signature(kspec: KmerSpec,
 	.calc_file_signatures
 	"""
 	with seqfile.parse() as records:
-		return calc_signature(kspec, (record.seq for record in records))
+		return calc_signature(kspec, (record.seq for record in records), accumulator=accumulator)
 
 
 def calc_file_signatures(kspec: KmerSpec,
