@@ -2,7 +2,7 @@
 requires = [
     "setuptools",
     "wheel",
-    "Cython ~= 0.27",
+    "Cython >= 3.0",
     # If the Numpy version is different at runtime than build time, the build version should be
     # lower as the ABI is forward- but not backwards-compatible.
     "oldest-supported-numpy",
