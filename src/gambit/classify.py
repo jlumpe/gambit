@@ -285,7 +285,7 @@ def classify(ref_genomes: Sequence[AnnotatedGenome],
 	# Warn of inconsistent matches
 	if others:
 		msg = f'Query matched {len(others)} inconsistent taxa: '
-		msg += ', '.join(other.short_repr() for other in others)
+		msg += ', '.join(sorted(other.short_repr() for other in others))
 		msg += '. Reporting lowest common ancestor of this set.'
 		result.warnings.append(msg)
 

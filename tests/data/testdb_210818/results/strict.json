@@ -6339,7 +6339,7 @@
                 },
                 "success": true,
                 "warnings": [
-                    "Query matched 2 inconsistent taxa: 8:A2_B2, 7:A2_B1. Reporting lowest common ancestor of this set."
+                    "Query matched 2 inconsistent taxa: 7:A2_B1, 8:A2_B2. Reporting lowest common ancestor of this set."
                 ]
             },
             "closest_genomes": [
