@@ -10,7 +10,7 @@ from gambit.seq import SequenceFile
 from gambit.results.json import JSONResultsExporter
 from gambit.results.csv import CSVResultsExporter
 from gambit.results.archive import ResultsArchiveReader, ResultsArchiveWriter
-from gambit.results.test import check_json_results, check_csv_results
+from .results import check_json_results, check_csv_results
 
 
 def export_to_buffer(results: QueryResults, exporter) -> StringIO:
