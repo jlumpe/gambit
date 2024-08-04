@@ -53,7 +53,7 @@ def invoke_cli(args: Sequence, runner: Optional[CliRunner]=None, success: Option
 	result = runner.invoke(cli, args, **kw)
 
 	if success is True:
-		assert result.exit_code == 0
+		assert result.exit_code == 0, result.stderr
 	if success is False:
 		assert result.exit_code != 0
 
