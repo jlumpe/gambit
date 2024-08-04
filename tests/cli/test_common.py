@@ -8,13 +8,13 @@ import click
 import numpy as np
 
 from gambit.cli import cli, common
-from gambit.cli.test import default_runner, allow_no_args
 from gambit.db import ReferenceDatabase
 from gambit.seq import SequenceFile
 from gambit.util.misc import zip_strict
 from gambit.util.io import write_lines, FilePath
 
 from ..testdb import TestDB
+from .common import default_runner, allow_no_args
 
 
 class TestCLIContext:

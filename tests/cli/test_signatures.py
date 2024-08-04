@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 import numpy as np
 
-from gambit.cli.test import invoke_cli
 import gambit.util.json as gjson
 from gambit.sigs import SignaturesMeta, load_signatures
 from gambit.util.io import write_lines
@@ -14,6 +13,7 @@ from gambit.cli.common import strip_seq_file_ext
 from gambit.kmers import DEFAULT_KMERSPEC
 
 from ..testdb import TestDB
+from .common import invoke_cli
 
 
 class TestInfoCommand:

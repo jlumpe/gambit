@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-from gambit.cli.test import invoke_cli
 from gambit.seq import SequenceFile
 from gambit.query import QueryInput, QueryResults
 from gambit.util.misc import zip_strict
@@ -17,6 +16,7 @@ from gambit.cli.common import strip_seq_file_ext
 
 from ..testdb import TestDB
 from ..results import check_json_results, check_csv_results
+from .common import invoke_cli
 
 
 def make_args(testdb: TestDB, *,

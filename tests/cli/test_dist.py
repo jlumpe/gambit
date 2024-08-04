@@ -10,7 +10,6 @@ import numpy as np
 from gambit.kmers import KmerSpec
 from gambit.metric import jaccarddist_matrix
 from gambit.sigs import SignatureList, dump_signatures
-from gambit.cli.test import invoke_cli
 from gambit.util.io import write_lines
 from gambit.cluster import load_dmat_csv
 import gambit.util.json as gjson
@@ -19,6 +18,7 @@ from gambit.seq import SequenceFile
 from gambit.cli.common import strip_seq_file_ext
 
 from ..testdb import TestDB
+from .common import invoke_cli
 
 
 def get_query_files(testdb: TestDB, n: Optional[int] = None, gz: bool = False) -> list[SequenceFile]:

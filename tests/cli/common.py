@@ -6,7 +6,7 @@ from contextlib import contextmanager
 import click
 from click.testing import CliRunner, Result
 
-from .root import cli
+from gambit.cli.root import cli
 
 
 DEFAULT_ENV = dict(
