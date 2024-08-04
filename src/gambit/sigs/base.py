@@ -320,7 +320,7 @@ class SignaturesMeta:
 	name
 		Short human-readable name.
 	id_attr
-		Name of ``Genome`` attribute the IDs correspond to (see :data:`gambit.db.models.GENOME_ID_ATTRS`).
+		Name of ``Genome`` attribute the IDs correspond to (see :attr:`~gambit.db.models.Genome.ID_ATTRS`).
 		Optional, but signature set cannot be used as a reference for queries without it.
 	description
 		Human-readable description.

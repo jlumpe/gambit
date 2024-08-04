@@ -78,8 +78,7 @@ def open_compressed(compression: Optional[str],
 	Parameters
 	----------
 	compression : str
-		Compression method. None is no compression. Keys of :data:`COMPRESSED_OPENERS` are the
-		allowed values.
+		Compression method. None is no compression.
 	path
 		Path of file to open. May be string or path-like object.
 	mode : str

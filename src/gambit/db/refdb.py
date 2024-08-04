@@ -85,7 +85,7 @@ def _map_ids_to_genomes(genomeset: ReferenceGenomeSet, id_attr: Union[str, Instr
 
 
 def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Sequence, strict: bool = True) -> list[Optional[AnnotatedGenome]]:
-	"""Match a :class:`ReferenceGenomeSet`'s genomes to a set of ID values.
+	"""Match a ``ReferenceGenomeSet``'s genomes to a set of ID values.
 
 	This is primarily used to match genomes to signatures based on the ID values stored in a
 	signature file. It is expected that the signature file may contain signatures for more genomes
@@ -97,7 +97,7 @@ def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Seque
 	id_attr
 		ID attribute of :class:`gambit.db.models.Genome` to use for lookup. Can be used as the
 		attribute itself (e.g. ``Genome.refseq_acc``) or just the name (``'refsec_acc'``).
-		See :data:`.GENOME_IDS` for the set of allowed values.
+		See :attr:`~gambit.db.models.Genome.ID_ATTRS` for the set of allowed values.
 	ids
 		Sequence of ID values (strings or integers, matching type of attribute).
 	strict
@@ -127,7 +127,7 @@ def genomes_by_id_subset(genomeset: ReferenceGenomeSet,
                          id_attr: GenomeAttr,
                          ids: Sequence,
                          ) -> tuple[list[AnnotatedGenome], list[int]]:
-	"""Match a :class:`ReferenceGenomeSet`'s genomes to a set of ID values, allowing missing genomes.
+	"""Match a ``ReferenceGenomeSet``'s genomes to a set of ID values, allowing missing genomes.
 
 	This calls :func:`.genomes_by_id` with ``strict=False`` and filters any ``None`` values from the
 	output. The filtered list is returned along with the indices of all values in ``ids`` which were
@@ -143,7 +143,7 @@ def genomes_by_id_subset(genomeset: ReferenceGenomeSet,
 	id_attr
 		ID attribute of :class:`gambit.db.models.Genome` to use for lookup. Can be used as the
 		attribute itself (e.g. ``Genome.refseq_acc``) or just the name (``'refsec_acc'``).
-		See :data:`.GENOME_IDS` for the set of allowed values.
+		See :attr:`~gambit.db.models.Genome.ID_ATTRS` for the set of allowed values.
 	ids
 		Sequence of ID values (strings or integers, matching type of attribute).
 	"""
@@ -173,8 +173,8 @@ class ReferenceDatabase:
 	signatures
 		K-mer signatures for each genome. A subtype of ``ReferenceSignatures``, so contains metadata
 		on signatures as well as the signatures themselves. Type may represent signatures stored on
-		disk (e.g. :class:`HDF5Signatures`) instead of in memory. OK to contain additional
-		signatures not corresponding to any genome in ``genomes``.
+		disk (e.g. :class:`~gambit.sigs.hdf5.HDF5Signatures`) instead of in memory. OK to contain
+		additional signatures not corresponding to any genome in ``genomes``.
 	sig_indices
 		Index of signature in ``signatures`` corresponding to each genome in ``genomes``.
 		In sorted order to improve performance when iterating over them (improve locality if in
@@ -224,6 +224,7 @@ class ReferenceDatabase:
 
 		Returns
 		-------
+		tuple[pathlib.Path, pathlib.Path]
 			Paths to genomes database file and signatures file.
 
 		Raises
@@ -269,7 +270,7 @@ class ReferenceDatabase:
 		Load complete database given directory containing SQLite genomes database file and HDF5
 		signatures file.
 
-		See :func:`.locate_db_files` for how these files are located within the directory.
+		See :meth:`.locate_files` for how these files are located within the directory.
 
 		Raises
 		------

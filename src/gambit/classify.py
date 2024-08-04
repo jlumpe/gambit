@@ -40,7 +40,7 @@ def find_matches(itr: Iterable[tuple[AnnotatedGenome, float]]) -> dict[Taxon, li
 
 	Returns
 	-------
-	Dict[Taxon, List[Int]]
+	dict[Taxon, list[int]]
 		Mapping from taxa to indices of genomes matched to them.
 	"""
 	matches = dict()
@@ -75,7 +75,7 @@ def consensus_taxon(taxa: Iterable[Taxon]) -> tuple[Optional[Taxon], set[Taxon]]
 
 	Returns
 	-------
-	Tuple[Optional[Taxon], Set[Taxon]]
+	tuple[Optional[Taxon], set[Taxon]]
 		Consensus taxon along with the set of any taxa in the argument which are descended from it.
 	"""
 	taxa = list(taxa)

@@ -63,7 +63,7 @@ class Genome(Base):
 		String column (optional, unique). RefSeq accession number for this genome, if any.
 	extra : Optional[dict]
 		JSON column (optional). Additional arbitrary metadata.
-	annotations : Collection[.AnnotatedGenome]
+	annotations : Collection[AnnotatedGenome]
 		One-to-many relationship to :class:`.AnnotatedGenome`.
 	"""
 
@@ -99,8 +99,8 @@ class ReferenceGenomeSet(Base):
 	database which can be used for queries consists of a genome set plus a set of k-mer signatures
 	for those genomes (stored separately).
 
-	Membership of :class:`.Genome`s in the set is determined by the presence of an associated
-	:class:`.AnnotatedGenomes` object, which also holds additional annotation data for the genome.
+	Membership of :class:`.Genome`\\ s in the set is determined by the presence of an associated
+	:class:`.AnnotatedGenome` object, which also holds additional annotation data for the genome.
 	The genome set also includes a set of associated :class:`.Taxon` entries, which form a taxonomy
 	tree under which all its genomes are categorized.
 
@@ -125,13 +125,13 @@ class ReferenceGenomeSet(Base):
 		Text column. Optional description.
 	extra : Optional[dict]
 		JSON column. Additional arbitrary data.
-	genomes : Collection[.AnnotatedGenome]
+	genomes : Collection[AnnotatedGenome]
 		Many-to-many relationship with :class:`.AnnotatedGenome`, annotated versions of genomes in
 		this set.
-	base_genomes : Collection[.Genome]
+	base_genomes : Collection[Genome]
 		Unannotated :class:`Genome`\\ s in this set. Association proxy to the ``genome``
-		relationship of members of :attr:`genome`.
-	taxa : Collection[.Taxon]
+		relationship of members of :attr:`genomes`.
+	taxa : Collection[Taxon]
 		One-to-many relationship to :class:`.Taxon`. The taxa that form the classification system
 		for this genome set.
 	"""
@@ -184,14 +184,14 @@ class AnnotatedGenome(Base):
 	organism : str
 		String column. Single string describing the organism. May be "Genus species [strain]" but
 		could contain more specific information. Intended to be human-readable and shouldn't have
-		any semantic meaning for the application (in contrast to the :attr:`taxa` relationship).
+		any semantic meaning for the application (in contrast to the :attr:`taxon` relationship).
 	taxon_id : int
 		Integer column. ID of the :class:`Taxon` this genome is classified as.
-	genome : .Genome
+	genome : Genome
 		Many-to-one relationship to :class:`.Genome`.
-	genome_set : .ReferenceGenomeSet
+	genome_set : ReferenceGenomeSet
 		Many-to-one relationship to :class:`.ReferenceGenomeSet`.
-	taxon : .Taxon
+	taxon : Taxon
 		Many-to-one relationship to :class:`.Taxon`. The primary taxon this genome is classified as
 		under the associated ``ReferenceGenomeSet``. Should be the most specific and "regular"
 		(ideally defined on NCBI) taxon this genome belongs to.
@@ -259,7 +259,7 @@ class Taxon(Base):
 		Float column (optional). Query genomes within this distance of one of the taxon's reference
 		genomes will be classified as that taxon. If NULL the taxon is just used establish the tree
 		structure and is not used directly in classification.
-	report : Bool
+	report : bool
 		Boolean column. Whether to report this taxon directly as a match when producing a
 		human-readable query result. Some custom taxa might need to be "hidden" from the user,
 		in which case the value should be false. The application should then ascend the taxon's
@@ -273,13 +273,13 @@ class Taxon(Base):
 	ncbi_id : Optional[int]
 		Integer column (optional). ID of the entry in the NCBI taxonomy database this taxon
 		corresponds to, if any.
-	parent : Optional[.Taxon]
+	parent : Optional[Taxon]
 		Many-to-one relationship with :class:`.Taxon`, the parent of this taxon (if any).
-	children : Collection[.Taxon]
+	children : Collection[Taxon]
 		One-to-many relationship with :class:`.Taxon`, the children of this taxon.
-	genome_set : .ReferenceGenomeSet
+	genome_set : ReferenceGenomeSet
 		Many-to-one relationship to :class:`.ReferenceGenomeSet`.
-	genomes : Collection[.AnnotatedGenome]
+	genomes : Collection[AnnotatedGenome]
 		One-to-many relationship with :class:`.AnnotatedGenome`, genomes which are assigned to this
 		taxon.
 	"""
@@ -421,7 +421,7 @@ class Taxon(Base):
 
 		Returns
 		-------
-		List[.Taxon]
+		list[Taxon]
 			Common ancestors from top to bottom (same order as :meth:`lineage`. Will be empty if
 		"""
 		ancestors = None

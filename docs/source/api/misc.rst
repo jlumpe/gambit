@@ -30,6 +30,10 @@ gambit.util.indexing
 --------------------
 
 .. automodule:: gambit.util.indexing
+    :exclude-members: AdvancedIndexingMixin
+
+    .. autoclass:: AdvancedIndexingMixin
+        :private-members: _check_index, _getitem_int, _getitem_slice, _getitem_int_array, _getitem_bool_array
 
 
 gambit.util.progress

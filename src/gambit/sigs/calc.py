@@ -16,7 +16,7 @@ from gambit.util.progress import iter_progress, get_progress
 class KmerAccumulator(MutableSet[int]):
 	"""Base class for data structures which track k-mers as they are found in sequences.
 
-	Implements the ``MutableSet`` interface for k-mer indices. Indices are added via :meth:`add` or
+	Implements the ``MutableSet`` interface for k-mer indices. Indices are added via the ``add`` or
 	:meth:`add_kmer` methods, when finished a sparse k-mer signature can be obtained from
 	:meth:`signature`.
 	"""
@@ -184,9 +184,6 @@ def calc_file_signature(kspec: KmerSpec,
                         ) -> KmerSignature:
 	"""Open a sequence file on disk and calculate its k-mer signature.
 
-	This works identically to :func:`.calc_signature_parse` but takes a :class:`.SequenceFile` as
-	input instead of a data stream.
-
 	Parameters
 	----------
 	kspec
@@ -199,8 +196,7 @@ def calc_file_signature(kspec: KmerSpec,
 	Returns
 	-------
 	numpy.ndarray
-		K-mer signature in sparse coordinate format (dtype will match
-		:func:`gambit.kmers.dense_to_sparse`).
+		K-mer signature in sparse coordinate format (dtype will match :func:`.dense_to_sparse`).
 
 	See Also
 	--------

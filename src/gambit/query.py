@@ -158,7 +158,7 @@ def query(db: ReferenceDatabase,
 		``QueryParams`` instance defining parameter values. If None take values from additional
 		keyword arguments or use defaults.
 	inputs
-		Description for each input, converted to :class:`gambit.query.result.QueryInput` in results
+		Description for each input, converted to :class:`.QueryInput` in results
 		object. Only used for reporting, does not any other aspect of results. Items can be
 		``QueryInput``, ``SequenceFile`` or ``str``.
 	progress

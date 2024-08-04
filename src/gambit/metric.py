@@ -209,7 +209,7 @@ def jaccarddist_matrix(queries: Sequence[KmerSignature],
 
 	Performance is greatly improved if ``refs`` is a type that yields instances of
 	``SignatureArray`` when indexed with a slice object (``SignatureArray`` or
-	``HDF5Signatures``), see :meth:`.jaccarddist_array`. There is no such dependence on the type of
+	``HDF5Signatures``), see :func:`.jaccarddist_array`. There is no such dependence on the type of
 	``queries``, which can be a simple list.
 
 	Parameters
@@ -230,7 +230,7 @@ def jaccarddist_matrix(queries: Sequence[KmerSignature],
 
 	Returns
 	-------
-	np.ndarray
+	numpy.ndarray
 		Matrix of distances between query signatures in rows and reference signatures in columns.
 
 	See Also
@@ -283,7 +283,7 @@ def jaccarddist_pairwise(sigs: Sequence[KmerSignature],
 	"""
 	Calculate all pairwise Jaccard distances for a list of signatures.
 
-	This should be roughly twice as fast as calling :func:`.jaccarddist_flat` with the same array
+	This should be roughly twice as fast as calling :func:`.jaccarddist_matrix` with the same array
 	for the first and second arguments, because each pairwise distance is computed once instead of
 	twice.
 
@@ -308,7 +308,7 @@ def jaccarddist_pairwise(sigs: Sequence[KmerSignature],
 
 	Returns
 	-------
-	np.ndarray
+	numpy.ndarray
 		Pairwise distances in matrix (if ``flat=False``) or condensed (``flat=True``) format.
 
 	See Also

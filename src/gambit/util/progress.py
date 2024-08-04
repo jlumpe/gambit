@@ -83,7 +83,7 @@ class AbstractProgressMeter(ABC):
 		total
 			Total number of iterations to completion.
 		initial
-			Initial value of :attr:`n`.
+			Initial value of ``n``.
 		desc
 			Description to display to the user.
 		file
@@ -191,7 +191,7 @@ def get_progress(arg: ProgressArg, total: int, initial: int = 0, **kw) -> Abstra
 	Accepts the following types/values for the argument:
 
 	- :class:`.ProgressConfig`
-	- ``None`` - uses :class:`.NullProgressBar`.
+	- ``None`` - uses :class:`.NullProgressMeter`.
 	- ``True`` - uses class returned by :func:`.default_progress_cls`.
 	- ``False`` - same as ``None``.
 	- ``str`` key - Looks up progress bar class/factory function in :data:`.REGISTRY`.
@@ -237,7 +237,7 @@ def iter_progress(iterable: Iterable,
 
 	Returns
 	-------
-	.ProgressIterator
+	ProgressIterator
 		Iterator over values in ``iterable`` which advances a progress meter.
 	"""
 	if total is None:
@@ -412,7 +412,13 @@ class TestProgressMeter(AbstractProgressMeter):
 class TqdmProgressMeter(AbstractProgressMeter):
 	"""Wrapper around a progress meter from the ``tqdm`` library."""
 
-	def __init__(self, pbar: 'tqdm.std.tqdm'):
+	def __init__(self, pbar):
+		"""
+		Parameters
+		----------
+		pbar
+			``tqdm.std.tqdm`` instance to wrap.
+		"""
 		self.pbar = pbar
 
 	@property

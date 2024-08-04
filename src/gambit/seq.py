@@ -149,7 +149,7 @@ class SequenceFile(PathLike):
 		Returns
 		-------
 		gambit.util.io.ClosingIterator
-			Iterator yielding :class:`Bio.SeqIO.SeqRecord` instances for each sequence in the file.
+			Iterator yielding :class:`Bio.SeqRecord.SeqRecord` instances for each sequence in the file.
 		"""
 
 		fobj = self.open('rt', **kwargs)

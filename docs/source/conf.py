@@ -57,6 +57,8 @@ nitpick_ignore_regex = [
 	('py:.*', r'sqlalchemy\..*'),
 	('py:.*', r'h5py\..*'),
 	('py:.*', r'scipy\..*'),
+	# TypeVar
+	('py:.*', r'(.*\.)?T\d?'),
 ]
 
 

@@ -80,7 +80,7 @@ class CSVResultsExporter(AbstractResultsExporter):
 	Attributes
 	----------
 	format_opts
-		Dialect and other formatting arguments passed to :func:`csv.write`.
+		Dialect and other formatting arguments passed to :func:`csv.writer`.
 	"""
 	format_opts: dict[str, Any]
 
@@ -174,8 +174,8 @@ class ResultsArchiveWriter(BaseJSONResultsExporter):
 	"""Exports query results to "archive" format which captures all stored data.
 
 	This format is not intended to be read by users of the application.
-	The exported data can be read and converted back into an identical :class:`QueryResults`
-	object using :class:`.ResultsArchiveReader`.
+	The exported data can be read and converted back into an identical
+	:class:`~gambit.query.QueryResults` object using :class:`.ResultsArchiveReader`.
 
 	Only the ID attributes of database models are saved, when loading the saved results the models
 	are recreated by database queries.
