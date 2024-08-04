@@ -1,6 +1,7 @@
 """Tests for gambit.search module."""
 
-from io import StringIO
+from typing import Optional
+from pathlib import Path
 
 import pytest
 import numpy as np
@@ -12,7 +13,7 @@ from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_sign
 from gambit.kmers import KmerSpec, index_to_kmer
 from gambit.seq import SEQ_TYPES, revcomp, SequenceFile
 import gambit.util.io as ioutil
-from gambit.sigs import sigarray_eq
+from gambit.sigs import sigarray_eq, KmerSignature
 from gambit.util.progress import check_progress
 from ..common import fill_bytearray, make_kmer_seq, make_kmer_seqs, convert_seq
 
@@ -111,6 +112,9 @@ class TestCalcSignature:
 			assert all(kmer in expected for kmer in found)
 
 
+RecordSets = list[tuple[list[SeqIO.SeqRecord], KmerSignature]]
+
+
 class TestCalcFileSignatures:
 
 	@pytest.fixture(scope='class')
@@ -133,30 +137,26 @@ class TestCalcFileSignatures:
 
 		return items
 
-	@pytest.fixture(scope='class', params=['fasta'])
-	def format(self, request):
-		return request.param
-
 	@pytest.fixture(scope='class', params=[None, 'gzip'])
 	def compression(self, request):
 		return request.param
 
 	@pytest.fixture()
-	def files(self, record_sets, tmp_path, format, compression):
+	def files(self, record_sets: RecordSets, tmp_path: Path, compression: Optional[str]):
 
 		files = []
 
 		for i, (records, sig) in enumerate(record_sets):
-			file = SequenceFile(tmp_path / f'{i + 1}.fasta', format, compression)
+			file = SequenceFile(tmp_path / f'{i + 1}.fasta', 'fasta', compression)
 
 			with file.open('wt') as f:
-				SeqIO.write(records, f, format)
+				SeqIO.write(records, f, 'fasta')
 
 			files.append(file)
 
 		return files
 
-	def test_calc_file_signature(self, record_sets, files):
+	def test_calc_file_signature(self, record_sets: RecordSets, files: list[SequenceFile]):
 		"""Test the calc_file_signature function."""
 
 		for file, (records, sig) in zip(files, record_sets):
@@ -164,7 +164,7 @@ class TestCalcFileSignatures:
 			assert np.array_equal(result, sig)
 
 	@pytest.mark.parametrize('concurrency', [None, 'threads', 'processes'])
-	def test_calc_file_signatures(self, record_sets, files, concurrency):
+	def test_calc_file_signatures(self, record_sets: RecordSets, files: list[SequenceFile], concurrency: Optional[str]):
 		"""Test the calc_file_signatures function."""
 		sigs = [sig for records, sig in record_sets]
 
