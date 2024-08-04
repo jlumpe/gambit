@@ -4,60 +4,12 @@ from cython.parallel import prange, parallel
 
 
 def jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
-	"""Compute the Jaccard index between two k-mer sets in sparse coordinate format.
-
-	Arguments are Numpy arrays containing k-mer indices in sorted order. Data types must be 16, 32,
-	or 64-bit signed or unsigned integers, but do not need to match.
-
-	This is by far the most efficient way to calculate the metric (this is a native function) and
-	should be used wherever possible.
-
-	Parameters
-	----------
-	coords1 : numpy.ndarray
-		K-mer set in sparse coordinate format.
-	coords2 : numpy.ndarray
-		K-mer set in sparse coordinate format.
-
-	Returns
-	-------
-	numpy.float32
-		Jaccard index between the two sets, a real number between 0 and 1.
-
-	See Also
-	--------
-	.jaccarddist
-	"""
+	"""Compute the Jaccard index between two k-mer sets in sparse coordinate format."""
 	return 1 - c_jaccarddist(coords1, coords2)
 
 
 def jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
-	"""Compute the Jaccard distance between two k-mer sets in sparse coordinate format.
-
-	The Jaccard distance is equal to one minus the Jaccard index.
-
-	Arguments are Numpy arrays containing k-mer indices in sorted order. Data types must be 16, 32,
-	or 64-bit signed or unsigned integers, but do not need to match.
-
-	This is by far the most efficient way to calculate the metric (this is a native function) and
-	should be used wherever possible.
-
-	Parameters
-	----------
-	coords1 : numpy.ndarray
-		K-mer set in sparse coordinate format.
-	coords2 : numpy.ndarray
-		K-mer set in sparse coordinate format.
-
-	Returns
-	-------
-	numpy.float32
-		Jaccard distance between the two sets, a real number between 0 and 1.
-
-	See Also
-	--------
-	.jaccard
-	"""
+	"""Compute the Jaccard distance between two k-mer sets in sparse coordinate format."""
 	return c_jaccarddist(coords1, coords2)
 
 

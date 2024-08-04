@@ -5,7 +5,7 @@ from typing import Iterable, Sequence, Optional
 
 import numpy as np
 
-from gambit._cython.metric import jaccard, jaccarddist, _jaccarddist_parallel
+import gambit._cython.metric as _cmetric
 from gambit.sigs.base import KmerSignature, SignatureArray, AbstractSignatureArray, SignatureList, \
 	BOUNDS_DTYPE
 from gambit.util.misc import chunk_slices
@@ -15,6 +15,91 @@ from gambit.util.progress import get_progress
 #: Numpy dtype for output of Cython Jaccard distance calculation code
 # Equivalent to SCORE_T in types.pxd
 SCORE_DTYPE = np.dtype(np.float32)
+
+
+_COORDS_UNSIGNED_DTYPES = [np.dtype(f'u{s}') for s in [2, 4, 8]]
+_COORDS_SIGNED_DTYPES = [np.dtype(f'i{s}') for s in [2, 4, 8]]
+
+
+def _cast_sigs_array(arr: np.ndarray) -> np.ndarray:
+	"""Convert signature array to proper data type for Cython metric code.
+
+	Cython code accepts k-mer coordinate arrays in 16, 32, or 64-bit unsigned data types, these are
+	returned as-is. Equivalent signed data types can safely be casted (as the values should all be
+	non-negative), for these a view into the array with unsigned data type is returned (no coyping).
+	All other data types result in a ValueError.
+	"""
+
+	dt = arr.dtype
+	if dt in _COORDS_UNSIGNED_DTYPES:
+		return arr
+	if dt in _COORDS_SIGNED_DTYPES:
+		new_dt = np.dtype(f'u{dt.itemsize}')
+		return arr.view(new_dt)
+	raise ValueError(f'Invalid dtype for k-mer coordinate array: {dt.str}')
+
+
+def jaccard(coords1: np.ndarray, coords2: np.ndarray) -> np.float32:
+	"""Compute the Jaccard index between two k-mer sets in sparse coordinate format.
+
+	Arguments are Numpy arrays containing k-mer indices in sorted order. Data types must be 16, 32,
+	or 64-bit signed or unsigned integers, but do not need to match.
+
+	This is by far the most efficient way to calculate the metric (this is a native function) and
+	should be used wherever possible.
+
+	Parameters
+	----------
+	coords1
+		K-mer set in sparse coordinate format.
+	coords2
+		K-mer set in sparse coordinate format.
+
+	Returns
+	-------
+	numpy.float32
+		Jaccard index between the two sets, a real number between 0 and 1.
+
+	See Also
+	--------
+	.jaccarddist
+	"""
+	coords1 = _cast_sigs_array(coords1)
+	coords2 = _cast_sigs_array(coords2)
+	return _cmetric.jaccard(coords1, coords2)
+
+
+def jaccarddist(coords1: np.ndarray, coords2: np.ndarray):
+	"""Compute the Jaccard distance between two k-mer sets in sparse coordinate format.
+
+	The Jaccard distance is equal to one minus the Jaccard index.
+
+	Arguments are Numpy arrays containing k-mer indices in sorted order. Data types must be 16, 32,
+	or 64-bit signed or unsigned integers, but do not need to match.
+
+	This is by far the most efficient way to calculate the metric (this is a native function) and
+	should be used wherever possible.
+
+	Parameters
+	----------
+	coords1
+		K-mer set in sparse coordinate format.
+	coords2
+		K-mer set in sparse coordinate format.
+
+	Returns
+	-------
+	numpy.float32
+		Jaccard distance between the two sets, a real number between 0 and 1.
+
+	See Also
+	--------
+	.jaccard
+	"""
+	coords1 = _cast_sigs_array(coords1)
+	coords2 = _cast_sigs_array(coords2)
+	return _cmetric.jaccarddist(coords1, coords2)
+
 
 
 def jaccard_generic(set1: Iterable, set2: Iterable) -> float:
@@ -84,6 +169,8 @@ def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: 
 	.jaccarddist
 	.jaccarddist_matrix
 	"""
+	query = _cast_sigs_array(query)
+
 	if out is None:
 		out = np.empty(len(refs), SCORE_DTYPE)
 	elif out.shape != (len(refs),):
@@ -92,14 +179,15 @@ def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: 
 		raise ValueError(f'Output array dtype must be {SCORE_DTYPE}, got {out.dtype}')
 
 	if isinstance(refs, SignatureArray):
-		values = refs.values
+		values = _cast_sigs_array(refs.values)
 		bounds = refs.bounds.astype(BOUNDS_DTYPE, copy=False)
 
-		_jaccarddist_parallel(query, values, bounds, out)
+		_cmetric._jaccarddist_parallel(query, values, bounds, out)
 
 	else:
 		for i, ref in enumerate(refs):
-			out[i] = jaccarddist(query, ref)
+			ref = _cast_sigs_array(ref)
+			out[i] = _cmetric.jaccarddist(query, ref)
 
 	return out
 
