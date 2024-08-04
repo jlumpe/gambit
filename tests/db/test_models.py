@@ -3,11 +3,15 @@
 Uses the included testdb_210818 database.
 """
 
+from typing import Iterable, Optional
+
 import pytest
 from sqlalchemy.orm import sessionmaker
 
 from gambit.db import models
 from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon
+
+from ..testdb import TestDB
 
 
 # Some arbitrary JSON data
@@ -85,7 +89,7 @@ class TestGenome:
 class TestReferenceGenomeSet:
 	"""Test ReferenceGenomeSet model."""
 
-	def test_root_taxa(self, testdb):
+	def test_root_taxa(self, testdb: TestDB):
 		session = testdb.Session()
 		gset = session.query(ReferenceGenomeSet).one()
 		assert {taxon.name for taxon in gset.root_taxa()} == {'A1', 'A2', 'A3'}
@@ -104,7 +108,7 @@ class TestReferenceGenomeSet:
 class TestAnnotatedGenome:
 	"""Test AnnotatedGEnome model."""
 
-	def test_hybrid_props(self, testdb):
+	def test_hybrid_props(self, testdb: TestDB):
 		session = testdb.Session()
 
 		hybrid_attrs = [
@@ -124,7 +128,7 @@ class TestAnnotatedGenome:
 class TestTaxon:
 	"""Test Taxon model."""
 
-	def test_tree(self, testdb):
+	def test_tree(self, testdb: TestDB):
 		"""Test tree structure."""
 		session = testdb.Session()
 		gset = session.query(ReferenceGenomeSet).one()
@@ -163,7 +167,7 @@ class TestTaxon:
 			# Check leaves
 			assert set(taxon.leaves()) == {d for d in subtree_set if d.isleaf()}
 
-	def check_traversal(self, iterator, postorder, expected):
+	def check_traversal(self, iterator: Iterable[Taxon], postorder: bool, expected: set[Taxon]):
 		seen = set()
 
 		for taxon in iterator:
@@ -176,7 +180,7 @@ class TestTaxon:
 
 		assert seen == expected
 
-	def test_genome_membership(self, testdb):
+	def test_genome_membership(self, testdb: TestDB):
 		"""Test the subtree_genomes() and has_genome() methods."""
 		session = testdb.Session()
 
@@ -212,7 +216,7 @@ class TestTaxon:
 		)
 		check_json_col(empty_db_session, taxon, 'extra')
 
-	def taxon_by_name(self, session, name):
+	def taxon_by_name(self, session, name: str):
 		return session.query(Taxon).filter_by(name=name).one()
 
 	def test_common_ancestry(self, testdb):
@@ -220,7 +224,7 @@ class TestTaxon:
 
 		session = testdb.Session()
 
-		def check(names, expected_names):
+		def check(names: list[str], expected_names: list[str]):
 			taxa = [self.taxon_by_name(session, name) for name in names]
 			ca = Taxon.common_ancestors(taxa)
 			lca = Taxon.lca(taxa)
@@ -246,12 +250,12 @@ class TestTaxon:
 		check(['A1', 'A2'], [])
 		check(['A1_B1', 'A1_B2', 'A2_B1'], [])
 
-	def test_ancestor_of_rank(self, testdb):
+	def test_ancestor_of_rank(self, testdb: TestDB):
 		"""Test ancestor_of_rank() method."""
 
 		session = testdb.Session()
 
-		def check(name, rank, expected):
+		def check(name: str, rank: str, expected: Optional[str]):
 			taxon = self.taxon_by_name(session, name)
 			ancestor = taxon.ancestor_of_rank(rank)
 			assert (ancestor is None) == (expected is None)
@@ -271,7 +275,7 @@ class TestTaxon:
 		check('A1_B1_C1', 'strain', 'A1_B1_C1')
 		check('A1_B1_C1', 'foo', None)
 
-	def test_lineage_ranks(self, testdb):
+	def test_lineage_ranks(self, testdb: TestDB):
 		"""Test lineage() method with argument."""
 
 		session = testdb.Session()

@@ -102,21 +102,21 @@ def results(session):
 	)
 
 
-def test_json(results):
+def test_json(results: QueryResults):
 	"""Test JSONResultsExporter."""
 	exporter = JSONResultsExporter()
 	buf = export_to_buffer(results, exporter)
 	check_json_results(buf, results, strict=True)
 
 
-def test_csv(results):
+def test_csv(results: QueryResults):
 	"""Test CSVResultsExporter."""
 	exporter = CSVResultsExporter()
 	buf = export_to_buffer(results, exporter)
 	check_csv_results(buf, results, strict=True)
 
 
-def test_results_archive(session, results):
+def test_results_archive(session, results: QueryResults):
 	"""Test ResultArchiveWriter/Reader."""
 	writer = ResultsArchiveWriter()
 	buf = export_to_buffer(results, writer)

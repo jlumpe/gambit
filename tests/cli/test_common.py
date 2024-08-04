@@ -1,6 +1,7 @@
 """Test code in gambit.cli.common."""
 
 from pathlib import Path
+from typing import Iterable
 
 import pytest
 import click
@@ -11,7 +12,9 @@ from gambit.cli.test import default_runner, allow_no_args
 from gambit.db import ReferenceDatabase
 from gambit.seq import SequenceFile
 from gambit.util.misc import zip_strict
-from gambit.util.io import write_lines
+from gambit.util.io import write_lines, FilePath
+
+from ..testdb import TestDB
 
 
 class TestCLIContext:
@@ -44,7 +47,7 @@ class TestCLIContext:
 			ctx.require_signatures()
 
 	@pytest.mark.parametrize('method', ['option', 'envvar'])
-	def test_with_db(self, method, testdb):
+	def test_with_db(self, method: str, testdb: TestDB):
 		"""Test with database given through the --db argument or environment variable."""
 		dbpath = testdb.paths.root
 
@@ -96,7 +99,7 @@ def test_strip_seq_file_ext():
 class TestGetSequenceFiles:
 	"""Test the get_sequence_files() function."""
 
-	def check_ids(self, ids, paths, strip_dir, strip_ext):
+	def check_ids(self, ids: Iterable[str], paths: Iterable[FilePath], strip_dir: bool, strip_ext: bool):
 		for id_, path in zip_strict(ids, paths):
 			if strip_dir:
 				expected = Path(path).name
@@ -114,7 +117,7 @@ class TestGetSequenceFiles:
 			assert file.format == 'fasta'
 			assert file.compression == 'auto'
 
-	def test_explicit(self, strip_dir, strip_ext):
+	def test_explicit(self, strip_dir: bool, strip_ext: bool):
 		"""Test given explicit paths from CLI argument."""
 		paths = [f'path/to/{i + 1}.fasta' for i in range(10)]
 		ids, files = common.get_sequence_files(paths, None, None, strip_dir=strip_dir, strip_ext=strip_ext)
@@ -126,7 +129,7 @@ class TestGetSequenceFiles:
 		('path/to/genomes', False),  # Relative to other directory
 		('foo/baz', True),           # Absolute paths in file, ignore wd
 	])
-	def test_listfile(self, wd, absolute, tmpdir, strip_dir, strip_ext):
+	def test_listfile(self, wd: str, absolute: bool, tmpdir: Path, strip_dir: bool, strip_ext: bool):
 		"""Test reading file paths from list file."""
 		wd = Path(wd)
 		list_paths = [f'{i + 1}.fasta' for i in range(10)]

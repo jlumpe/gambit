@@ -1,12 +1,15 @@
 """Test gambit.db.refdb."""
 
 import random
+from pathlib import Path
 
 import pytest
 from sqlalchemy.orm import sessionmaker
 
 from gambit.db import refdb
 from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon, ReferenceDatabase, DatabaseLoadError
+
+from ..testdb import TestDB
 
 
 GENOME_ID_ATTRS = {attr: getattr(Genome, attr) for attr in Genome.ID_ATTRS}
@@ -126,7 +129,7 @@ class TestGenomeIDMapping:
 class TestReferenceDatabase:
 	"""Test the ReferenceDatabase class."""
 
-	def test_locate_files(self, tmp_path):
+	def test_locate_files(self, tmp_path: Path):
 		genomes = tmp_path / 'test.gdb'
 		genomes2 = tmp_path / 'test2.gdb'
 		signatures = tmp_path / 'test.gs'
@@ -158,10 +161,10 @@ class TestReferenceDatabase:
 		signatures.touch()
 		assert ReferenceDatabase.locate_files(tmp_path) == (genomes, signatures)
 
-	def test_load(self, testdb):
+	def test_load(self, testdb: TestDB):
 		db = ReferenceDatabase.load(testdb.paths.ref_genomes, testdb.paths.ref_signatures)
 		check_loaded_db(db)
 
-	def test_load_db_from_dir(self, testdb):
+	def test_load_db_from_dir(self, testdb: TestDB):
 		db = ReferenceDatabase.load_from_dir(testdb.paths.root)
 		check_loaded_db(db)

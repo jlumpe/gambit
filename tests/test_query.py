@@ -7,6 +7,8 @@ from gambit.seq import SequenceFile
 from gambit.util.misc import zip_strict
 from gambit import __version__ as GAMBIT_VERSION
 
+from .testdb import TestDB
+
 
 class TestQueryInput:
 	"""Test QueryInput class."""
@@ -24,7 +26,7 @@ class TestQueryInput:
 
 
 @pytest.mark.parametrize('strict', [False, True])
-def test_query_python(testdb, strict):
+def test_query_python(testdb: TestDB, strict: bool):
 	"""Run a full query using the Python API."""
 	ref_results = testdb.get_query_results(strict)
 	params = ref_results.params

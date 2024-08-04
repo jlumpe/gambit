@@ -325,7 +325,7 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
 
 	Returns
 	-------
-	Tuple[Optional[List[str]], Optional[List[SequenceFile]]]
+	tuple[Optional[list[str]], Optional[list[SequenceFile]]]
 		``(ids, files)`` tuple. ``ids`` is a list of string IDs that can be used to label output.
 		If the ``explicit`` and ``listfile`` arguments are None/empty both components of the tuple
 		will be None as well.

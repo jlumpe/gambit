@@ -160,7 +160,7 @@ class TestCreateCommand:
 		out = check_output(ids)
 		assert out.meta == metadata
 
-	def test_kspec_from_refdb(self, make_args, testdb):
+	def test_kspec_from_refdb(self, make_args, testdb: TestDB):
 		"""Test with KmerSpec taken from reference database."""
 		args = make_args(
 			['-d', '--dump-params'],
@@ -171,7 +171,7 @@ class TestCreateCommand:
 		params = json.loads(result.stdout)
 		assert params['kmerspec'] == gjson.to_json(testdb.kmerspec)
 
-	def test_default_kspec(self, make_args, testdb):
+	def test_default_kspec(self, make_args, testdb: TestDB):
 		"""Test with default KmerSpec."""
 		args = make_args(
 			['--dump-params'],
@@ -181,7 +181,7 @@ class TestCreateCommand:
 		params = json.loads(result.stdout)
 		assert params['kmerspec'] == gjson.to_json(DEFAULT_KMERSPEC)
 
-	def test_invalid(self, testdb, make_args):
+	def test_invalid(self, testdb: TestDB, make_args):
 		"""Test with invalid parameter combinations."""
 
 		# No genomes
@@ -206,7 +206,7 @@ class TestCreateCommand:
 		args = make_args(['-d'], with_kspec=False)
 		invoke_cli(args, success=False)
 
-	def test_ids_wrong_len(self, testdb, make_args, tmp_path):
+	def test_ids_wrong_len(self, testdb: TestDB, make_args, tmp_path: Path):
 		"""Test where number of IDs does not match query files."""
 
 		ids = [f'seq-{i}' for i in range(len(testdb.query_genomes) - 1)]

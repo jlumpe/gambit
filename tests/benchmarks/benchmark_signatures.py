@@ -25,7 +25,7 @@ def prefix_len(request):
 
 
 @pytest.fixture()
-def kspec(k, prefix_len):
+def kspec(k: int, prefix_len: int):
 	prefix ='ATGACCT'[:prefix_len]
 	return KmerSpec(k, prefix)
 
@@ -38,6 +38,6 @@ def accumulator(request):
 	return request.param
 
 
-def benchmark_calc_signature(seq, kspec, benchmark, accumulator):
+def benchmark_calc_signature(seq: bytes, kspec: KmerSpec, benchmark, accumulator):
 	acc = accumulator(kspec.k)
 	benchmark(calc_signature, kspec, seq, accumulator=acc)

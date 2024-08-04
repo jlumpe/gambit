@@ -1,6 +1,6 @@
 """Helper functions for tests."""
 
-from typing import Optional, Tuple, Union, List, Sequence
+from typing import Optional, Union, Sequence
 
 import numpy as np
 
@@ -123,7 +123,7 @@ def make_kmer_seq(kspec: KmerSpec,
                   seqlen: int,
                   kmer_interval: int,
                   n_interval: Optional[int] = None,
-                  ) -> Tuple[bytes, KmerSignature]:
+                  ) -> tuple[bytes, KmerSignature]:
 	"""Create a DNA sequence with a known k-mer signature.
 
 	The sequence consists of a background of N's with a k-mer match every ``kmer_interval``
@@ -187,7 +187,7 @@ def make_kmer_seqs(kspec: KmerSpec,
                    seqlen: int,
                    kmer_interval: int,
                    n_interval: Optional[int] = None,
-                   ) -> Tuple[List[bytes], KmerSignature]:
+                   ) -> tuple[list[bytes], KmerSignature]:
 	"""Create a set of DNA sequences with known combined signature."""
 
 	seqs = []
@@ -208,7 +208,7 @@ def make_kmer_seqs(kspec: KmerSpec,
 	return seqs, dense_to_sparse(vec)
 
 
-def make_lineage(thresholds: Sequence[float]) -> List[Taxon]:
+def make_lineage(thresholds: Sequence[float]) -> list[Taxon]:
 	"""Create a linage of taxa that have the given distance thresholds.
 
 	Parameters
