@@ -11,7 +11,7 @@ bytes containing ascii-encoded nucleotide codes.
 	sequences.
 """
 from pathlib import Path
-from typing import Union, Optional, IO, Iterable, List
+from typing import Union, Optional, IO, Iterable
 from os import PathLike
 
 from Bio import SeqIO
@@ -174,7 +174,7 @@ class SequenceFile(PathLike):
 	               paths: Iterable[FilePath],
 	               format: str,
 	               compression: Optional[str] = None,
-	               ) -> List['SequenceFile']:
+	               ) -> list['SequenceFile']:
 		"""
 		Create many instances at once from a collection of paths and a single
 		format and compression type.

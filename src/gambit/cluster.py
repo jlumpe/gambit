@@ -1,6 +1,6 @@
 """Distance matrices and basic clustering/trees."""
 
-from typing import Union, Optional, Sequence, TextIO, Tuple, List
+from typing import Union, Optional, Sequence, TextIO
 import csv
 
 import numpy as np
@@ -136,7 +136,7 @@ def dump_dmat_csv(file: Union[FilePath, TextIO],
 			writer.writerow([str(row_id), *values_str])
 
 
-def load_dmat_csv(file: Union[FilePath, TextIO]) -> Tuple[np.ndarray, List[str], List[str]]:
+def load_dmat_csv(file: Union[FilePath, TextIO]) -> tuple[np.ndarray, list[str], list[str]]:
 	"""Load distance matrix from CSV file.
 
 	Returns

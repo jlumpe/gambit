@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Tuple, Sequence, Union, List, Dict, Optional, Any
+from typing import Sequence, Union, Optional, Any
 
 from sqlalchemy.orm import object_session, Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -38,7 +38,7 @@ class DatabaseLoadError(Exception):
 		self.signatures_file = signatures_file
 
 
-def load_genomeset(db_file: FilePath) -> Tuple[Session, ReferenceGenomeSet]:
+def load_genomeset(db_file: FilePath) -> tuple[Session, ReferenceGenomeSet]:
 	"""Get the only :class:`gambit.db.models.ReferenceGenomeSet` from a genomes database file."""
 	session = file_sessionmaker(db_file)()
 	gset = only_genomeset(session)
@@ -78,13 +78,13 @@ def _check_genomes_have_ids(genomeset: ReferenceGenomeSet, id_attr: Instrumented
 		raise RuntimeError(f'{c} genomes missing value for ID attribute {id_attr.key}')
 
 
-def _map_ids_to_genomes(genomeset: ReferenceGenomeSet, id_attr: Union[str, InstrumentedAttribute]) -> Dict[AnnotatedGenome, Any]:
+def _map_ids_to_genomes(genomeset: ReferenceGenomeSet, id_attr: Union[str, InstrumentedAttribute]) -> dict[AnnotatedGenome, Any]:
 	"""Get dict mapping ID values to AnnotatedGenome."""
 	q = genomeset.genomes.join(AnnotatedGenome.genome).add_columns(id_attr)
 	return {id_: g for g, id_ in q}
 
 
-def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Sequence, strict: bool = True) -> List[Optional[AnnotatedGenome]]:
+def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Sequence, strict: bool = True) -> list[Optional[AnnotatedGenome]]:
 	"""Match a :class:`ReferenceGenomeSet`'s genomes to a set of ID values.
 
 	This is primarily used to match genomes to signatures based on the ID values stored in a
@@ -105,7 +105,7 @@ def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Seque
 
 	Returns
 	-------
-	List[Optional[AnnotatedGenome]]
+	list[Optional[AnnotatedGenome]]
 		List of genomes of same length as ``ids``. If ``strict=False`` and a genome cannot be found
 		for a given ID the list will contain ``None`` at the corresponding position.
 
@@ -126,7 +126,7 @@ def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Seque
 def genomes_by_id_subset(genomeset: ReferenceGenomeSet,
                          id_attr: GenomeAttr,
                          ids: Sequence,
-                         ) -> Tuple[List[AnnotatedGenome], List[int]]:
+                         ) -> tuple[list[AnnotatedGenome], list[int]]:
 	"""Match a :class:`ReferenceGenomeSet`'s genomes to a set of ID values, allowing missing genomes.
 
 	This calls :func:`.genomes_by_id` with ``strict=False`` and filters any ``None`` values from the
@@ -146,10 +146,6 @@ def genomes_by_id_subset(genomeset: ReferenceGenomeSet,
 		See :data:`.GENOME_IDS` for the set of allowed values.
 	ids
 		Sequence of ID values (strings or integers, matching type of attribute).
-
-	Returns
-	-------
-	Tuple[List[AnnotatedGenome], List[int]]
 	"""
 	genomes = genomes_by_id(genomeset, id_attr, ids, strict=False)
 	genomes_out = []
@@ -215,7 +211,7 @@ class ReferenceDatabase:
 			raise ValueError(f'{missing} of {n} genomes not matched to signature IDs. Is the id_attr attribute of the signatures metadata correct?')
 
 	@classmethod
-	def locate_files(cls, path: FilePath) -> Tuple[Path, Path]:
+	def locate_files(cls, path: FilePath) -> tuple[Path, Path]:
 		"""Locate an SQLite genome database file and HDF5 signatures file in a directory.
 
 		Files are located by extension, ``.gdb`` or ``.db`` for SQLite file and ``.gs`` or ``.h5``

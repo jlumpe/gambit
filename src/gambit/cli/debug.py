@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any, Optional
 
 import click
 
@@ -21,7 +21,7 @@ def debug_group():
 	pass
 
 
-def make_shell_ns(ctx) -> Dict[str, Any]:
+def make_shell_ns(ctx) -> dict[str, Any]:
 	"""Make the user namespace for the shell command."""
 	from importlib import import_module
 
@@ -43,7 +43,7 @@ def make_shell_ns(ctx) -> Dict[str, Any]:
 	help='Use IPython instead of built-in Python REPL.',
 )
 @click.pass_context
-def shell(ctx, use_ipython):
+def shell(ctx, use_ipython: Optional[bool]):
 	"""Start an interactive shell with application data and modules imported.
 
 	Attempts to launch an IPython interactive interpreter if it is installed,

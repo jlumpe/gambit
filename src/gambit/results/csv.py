@@ -1,7 +1,7 @@
 """Export query results to CSV."""
 
 import csv
-from typing import Dict, Any, List, Union, Iterable, TextIO
+from typing import Any, Union, Iterable, TextIO
 
 from .base import AbstractResultsExporter
 from gambit.query import QueryResultItem, QueryResults
@@ -29,7 +29,7 @@ class CSVResultsExporter(AbstractResultsExporter):
 	format_opts
 		Dialect and other formatting arguments passed to :func:`csv.write`.
 	"""
-	format_opts: Dict[str, Any]
+	format_opts: dict[str, Any]
 
 	COLUMNS = [
 		('query', 'input.label'),
@@ -51,11 +51,11 @@ class CSVResultsExporter(AbstractResultsExporter):
 			format_opts.setdefault('quoting', csv.QUOTE_MINIMAL)
 		self.format_opts = format_opts
 
-	def get_header(self) -> List[str]:
+	def get_header(self) -> list[str]:
 		"""Get values for header row."""
 		return [name for name, _ in self.COLUMNS]
 
-	def get_row(self, item: QueryResultItem) -> List:
+	def get_row(self, item: QueryResultItem) -> list:
 		"""Get row values for single result item."""
 		return [getattr_nested(item, attrs, pass_none=True) for _, attrs in self.COLUMNS]
 

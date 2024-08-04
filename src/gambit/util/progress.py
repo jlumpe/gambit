@@ -3,8 +3,7 @@
 import sys
 
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Callable, Iterable, TextIO, Dict, Mapping, Any, cast, List, \
-	Tuple, Iterator, ContextManager
+from typing import Optional, Union, Callable, Iterable, TextIO, Mapping, Any, cast, Iterator, ContextManager
 from warnings import warn
 from contextlib import contextmanager
 
@@ -119,9 +118,9 @@ class ProgressConfig:
 		Keyword arguments to pass to callable.
 	"""
 	callable: ProgressFactoryFunc
-	kw: Dict[str, Any]
+	kw: dict[str, Any]
 
-	def __init__(self, callable: ProgressFactoryFunc, kw: Dict[str, Any]):
+	def __init__(self, callable: ProgressFactoryFunc, kw: dict[str, Any]):
 		self.callable = callable
 		self.kw = kw
 
@@ -277,7 +276,7 @@ class ProgressIterator(Iterator):
 		self.meter.close()
 
 
-def capture_progress(config: ProgressConfig) -> Tuple[ProgressConfig, List[AbstractProgressMeter]]:
+def capture_progress(config: ProgressConfig) -> tuple[ProgressConfig, list[AbstractProgressMeter]]:
 	"""
 	Creates a ``ProgressConfig`` which captures references to the progress meter instances created
 	with it.

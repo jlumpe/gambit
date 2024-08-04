@@ -1,6 +1,6 @@
 """Tools for testing CLI."""
 
-from typing import Optional, ContextManager, Sequence
+from typing import Optional, Sequence, Any, Iterable, Iterator
 from contextlib import contextmanager
 
 import click
@@ -14,7 +14,7 @@ DEFAULT_ENV = dict(
 )
 
 
-def pop_kwargs(d, keys):
+def pop_kwargs(d: dict[str, Any], keys: Iterable[str]) -> dict[str, Any]:
 	out = dict()
 	for k in keys:
 		try:
@@ -32,6 +32,7 @@ def default_runner(**kw) -> CliRunner:
 	kw.setdefault('mix_stderr', False)
 	kw.setdefault('env', DEFAULT_ENV)
 	return CliRunner(**kw)
+
 
 def invoke_cli(args: Sequence, runner: Optional[CliRunner]=None, success: Optional[bool]=True, **kw) -> Result:
 	"""Invoke CLI in test context, using different defaults than base Click method.
@@ -61,7 +62,7 @@ def invoke_cli(args: Sequence, runner: Optional[CliRunner]=None, success: Option
 
 
 @contextmanager
-def allow_no_args(command: click.Command) -> ContextManager[click.Command]:
+def allow_no_args(command: click.Command) -> Iterator[click.Command]:
 	"""Context manager which patches a command to allow calling with no arguments.
 
 	Group commands will print help and exit if called without a subcommand, this will also happen
@@ -77,4 +78,3 @@ def allow_no_args(command: click.Command) -> ContextManager[click.Command]:
 
 	finally:
 		command.no_args_is_help = old_naih
-

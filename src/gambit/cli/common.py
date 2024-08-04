@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Sequence, TextIO, Union, Iterable, Tuple, List, Any
+from typing import Optional, Sequence, TextIO, Union, Iterable, Any
 from pathlib import Path
 from collections import Counter
 
@@ -305,7 +305,7 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
                        listfile_dir: Optional[str]=None,
                        strip_dir: bool = True,
                        strip_ext: bool = True,
-                       ) -> Union[Tuple[List[str], List[SequenceFile]], Tuple[None, None]]:
+                       ) -> Union[tuple[list[str], list[SequenceFile]], tuple[None, None]]:
 	"""Get list of sequence file paths and IDs from several types of CLI arguments.
 
 	Does not check for conflict between ``explicit`` and ``listfile``.
@@ -348,7 +348,7 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
 	return ids, files
 
 
-def warn_duplicate_file_ids(ids: List[str], template: str):
+def warn_duplicate_file_ids(ids: list[str], template: str):
 	"""Print a warning message if duplicate file IDs are present.
 
 	Parameters
@@ -370,7 +370,7 @@ def warn_duplicate_file_ids(ids: List[str], template: str):
 # Click introspection
 ################################################################################
 
-def params_by_name(cmd: click.Command, names: Optional[Iterable[str]]=None):
+def params_by_name(cmd: click.Command, names: Optional[Iterable[str]] = None):
 	"""Get parameters of click command by name.
 
 	Parameters

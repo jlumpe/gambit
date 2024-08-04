@@ -1,6 +1,7 @@
 """Tests for the "signatures" command group."""
 
 import json
+from pathlib import Path
 
 import pytest
 import numpy as np
@@ -12,6 +13,8 @@ from gambit.util.io import write_lines
 from gambit.cli.common import strip_seq_file_ext
 from gambit.kmers import DEFAULT_KMERSPEC
 
+from ..testdb import TestDB
+
 
 class TestInfoCommand:
 
@@ -20,18 +23,18 @@ class TestInfoCommand:
 		return request.param
 
 	@pytest.fixture()
-	def base_args(self, testdb, use_db):
+	def base_args(self, testdb: TestDB, use_db: bool):
 		if use_db:
 			return [f'--db={testdb.paths.root}', 'signatures', 'info', '-d']
 		else:
 			return ['signatures', 'info', str(testdb.paths.ref_signatures)]
 
-	def test_standard(self, base_args):
+	def test_standard(self, base_args: list[str]):
 		result = invoke_cli(base_args)
 
 		# TODO: check
 
-	def test_json(self, base_args, testdb):
+	def test_json(self, base_args: list[str], testdb: TestDB):
 		args = [*base_args, '--json']
 		result = invoke_cli(args)
 
@@ -40,13 +43,13 @@ class TestInfoCommand:
 		assert data['kmerspec'] == gjson.to_json(testdb.ref_signatures.kmerspec)
 		assert data['metadata'] == gjson.to_json(testdb.ref_signatures.meta)
 
-	def test_ids(self, base_args, testdb):
+	def test_ids(self, base_args: list[str], testdb: TestDB):
 		args = [*base_args, '-i']
 		result = invoke_cli(args)
 
 		assert np.array_equal(result.stdout.splitlines(), testdb.ref_signatures.ids)
 
-	def test_invalid(self, testdb):
+	def test_invalid(self, testdb: TestDB):
 		args = [
 			f'--db={testdb.paths.root}',
 			'signatures',
@@ -60,16 +63,16 @@ class TestInfoCommand:
 class TestCreateCommand:
 
 	@pytest.fixture(params=[False])
-	def infiles(self, request, testdb):
+	def infiles(self, request, testdb: TestDB):
 		"""Input files. Parameter is whether or not they are gzipped."""
 		return [f.path for f in testdb.get_query_files(request.param)]
 
 	@pytest.fixture()
-	def outfile(self, tmp_path):
+	def outfile(self, tmp_path: Path):
 		return tmp_path / 'signatures.gs'
 
 	@pytest.fixture(name='make_args')
-	def make_args_factory(self, outfile, testdb, infiles, tmp_path):
+	def make_args_factory(self, outfile: Path, testdb: TestDB, infiles: list[Path], tmp_path: Path):
 
 		def make_args(opts=(), root_args=(), with_kspec=True, positional_files=True, list_file=False):
 			args = list(root_args)
@@ -96,11 +99,11 @@ class TestCreateCommand:
 		return make_args
 
 	@pytest.fixture()
-	def default_ids(self, infiles):
+	def default_ids(self, infiles: list[Path]):
 		return [strip_seq_file_ext(file.name) for file in infiles]
 
 	@pytest.fixture(name='check_output')
-	def check_output_factory(self, outfile, testdb, infiles, default_ids):
+	def check_output_factory(self, outfile: Path, testdb: TestDB, infiles: list[Path], default_ids: list[str]):
 
 		def check_output(expected_ids=default_ids):
 			out = load_signatures(outfile)
@@ -118,7 +121,7 @@ class TestCreateCommand:
 		invoke_cli(args)
 		check_output()
 
-	def test_list_file(self, make_args, infiles, default_ids):
+	def test_list_file(self, make_args, infiles: list[Path], default_ids: list[str]):
 		"""Test getting genome list from file."""
 
 		args = make_args(['--dump-params'], positional_files=False, list_file=True)
@@ -127,7 +130,7 @@ class TestCreateCommand:
 		assert params['files'] == list(map(str, infiles))
 		assert params['ids'] == default_ids
 
-	def test_with_metadata(self, testdb, make_args, check_output, tmp_path):
+	def test_with_metadata(self, testdb: TestDB, make_args, check_output, tmp_path: Path):
 		"""Test with ids and metadata JSON added."""
 		# Metadata file
 		metadata = SignaturesMeta(

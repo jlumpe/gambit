@@ -1,5 +1,5 @@
 import sys
-from typing import Optional, TextIO, List
+from typing import Optional, TextIO
 
 import click
 from Bio import Phylo
@@ -31,7 +31,7 @@ from gambit.cluster import hclust, linkage_to_bio_tree
 def tree_cmd(ctx: click.Context,
              listfile: Optional[TextIO],
              ldir: Optional[str],
-             files_arg: List[str],
+             files_arg: list[str],
              sigfile: Optional[str],
              k: Optional[int],
              prefix: Optional[str],

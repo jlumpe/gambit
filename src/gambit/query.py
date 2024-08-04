@@ -2,7 +2,7 @@
 
 from warnings import warn
 from datetime import datetime
-from typing import Sequence, Optional, Union, List, Dict, Any
+from typing import Sequence, Optional, Union, Any
 
 from attr import attrs, attrib
 import numpy as np
@@ -86,7 +86,7 @@ class QueryResultItem:
 	input: QueryInput = attrib()
 	classifier_result: ClassifierResult = attrib()
 	report_taxon: Optional[Taxon] = attrib(default=None)
-	closest_genomes: List[GenomeMatch] = attrib(factory=list)
+	closest_genomes: list[GenomeMatch] = attrib(factory=list)
 
 
 def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool:
@@ -129,13 +129,13 @@ class QueryResults:
 	extra
 		JSON-able dict containing additional arbitrary metadata.
 	"""
-	items: List[QueryResultItem] = attrib()
+	items: list[QueryResultItem] = attrib()
 	params: Optional[QueryParams] = attrib(default=None)
 	genomeset: Optional[ReferenceGenomeSet] = attrib(default=None)
 	signaturesmeta: Optional[SignaturesMeta] = attrib(default=None)
 	gambit_version: str = attrib(default=GAMBIT_VERSION)
 	timestamp: datetime = attrib(factory=datetime.now)
-	extra: Dict[str, Any] = attrib(factory=dict)
+	extra: dict[str, Any] = attrib(factory=dict)
 
 
 def query(db: ReferenceDatabase,
@@ -235,7 +235,7 @@ def query_parse(db: ReferenceDatabase,
                 params: Optional[QueryParams] = None,
                 *,
                 file_labels: Optional[Sequence[str]] = None,
-                parse_kw: Optional[Dict[str, Any]] = None,
+                parse_kw: Optional[dict[str, Any]] = None,
                 **kw,
                 ) -> QueryResults:
 	"""Query a database with signatures derived by parsing a set of genome sequence files.

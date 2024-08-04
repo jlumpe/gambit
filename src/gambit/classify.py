@@ -1,6 +1,6 @@
 """Classify queries based on distance to reference sequences."""
 
-from typing import Optional, Tuple, Iterable, Dict, List, Set, Sequence
+from typing import Optional, Iterable, Sequence
 
 from attr import attrs, attrib
 import numpy as np
@@ -30,7 +30,7 @@ def matching_taxon(taxon: Taxon, d: float) -> Optional[Taxon]:
 	return None
 
 
-def find_matches(itr: Iterable[Tuple[AnnotatedGenome, float]]) -> Dict[Taxon, List[int]]:
+def find_matches(itr: Iterable[tuple[AnnotatedGenome, float]]) -> dict[Taxon, list[int]]:
 	"""Find taxonomy matches given distances from a query to a set of reference genomes.
 
 	Parameters
@@ -53,7 +53,7 @@ def find_matches(itr: Iterable[Tuple[AnnotatedGenome, float]]) -> Dict[Taxon, Li
 	return matches
 
 
-def consensus_taxon(taxa: Iterable[Taxon]) -> Tuple[Optional[Taxon], Set[Taxon]]:
+def consensus_taxon(taxa: Iterable[Taxon]) -> tuple[Optional[Taxon], set[Taxon]]:
 	"""Take a set of taxa matching a query and find a single consensus taxon for classification.
 
 	If a query matches a given taxon, it is expected that there may be matches to some of that
@@ -210,7 +210,7 @@ class ClassifierResult:
 	primary_match: Optional[GenomeMatch] = attrib()
 	closest_match: GenomeMatch = attrib()
 	next_taxon: Optional[Taxon] = attrib()
-	warnings: List[str] = attrib(factory=list, repr=False)
+	warnings: list[str] = attrib(factory=list, repr=False)
 	error: Optional[str] = attrib(default=None, repr=False)
 
 	@next_taxon.default

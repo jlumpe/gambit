@@ -1,5 +1,5 @@
 import sys
-from typing import TextIO, Optional, List
+from typing import TextIO, Optional
 
 import click
 
@@ -59,7 +59,7 @@ def get_exporter(outfmt: str):
 def query_cmd(ctx: click.Context,
               listfile: Optional[TextIO],
               ldir: Optional[str],
-              files_arg: List[str],
+              files_arg: list[str],
               sigfile: Optional[str],
               output: TextIO,
               outfmt: str,

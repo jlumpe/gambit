@@ -1,6 +1,6 @@
 """SQLAlchemy models for storing reference genomes and taxonomy information."""
 
-from typing import List, Any, Optional, Iterable, Collection, Callable
+from typing import Any, Optional, Iterable, Collection, Callable
 
 import sqlalchemy as sa
 from sqlalchemy import Column, Integer, String, Boolean, Float
@@ -325,7 +325,7 @@ class Taxon(Base):
 				return ancestor
 		return None
 
-	def lineage(self, ranks: Optional[Iterable[str]] = None) -> List[Optional['Taxon']]:
+	def lineage(self, ranks: Optional[Iterable[str]] = None) -> list[Optional['Taxon']]:
 		"""Get a last of this taxon's ancestors.
 
 		With an argument, gets ancestors with the given ranks. Without, gets a sorted list of the
@@ -416,7 +416,7 @@ class Taxon(Base):
 		return self in genome.taxon.ancestors(True)
 
 	@classmethod
-	def common_ancestors(cls, taxa: Iterable['Taxon']) -> List['Taxon']:
+	def common_ancestors(cls, taxa: Iterable['Taxon']) -> list['Taxon']:
 		"""Get list of common ancestors of a set of taxa.
 
 		Returns
@@ -454,7 +454,7 @@ class Taxon(Base):
 		return [] if ancestors is None else ancestors
 
 	@classmethod
-	def lca(cls, taxa: Iterable['Taxon']) -> List['Taxon']:
+	def lca(cls, taxa: Iterable['Taxon']) -> Optional['Taxon']:
 		"""Find the Least Common Ancestor of a set of taxa.
 
 		Returns None if `taxa` is empty or its members do not all lie in the same tree.
@@ -463,10 +463,10 @@ class Taxon(Base):
 		return ancestors[-1] if ancestors else None
 
 	def print_tree(self,
-	               f: Callable[['Taxon'], str] = None,
+	               f: Optional[Callable[['Taxon'], str]] = None,
 	               *,
 	               indent: str = '  ',
-	               sort_key: Callable[['Taxon'], Any] = None,
+	               sort_key: Optional[Callable[['Taxon'], Any]] = None,
 	               ):
 		"""Print the taxon's subtree for debugging.
 

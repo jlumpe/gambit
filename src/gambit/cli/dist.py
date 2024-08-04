@@ -1,5 +1,5 @@
 import sys
-from typing import Optional, TextIO, List
+from typing import Optional, TextIO
 
 import click
 
@@ -41,11 +41,11 @@ def dist_cmd(ctx: click.Context,
              k: Optional[int],
              prefix: Optional[str],
              output: str,
-             q: List[str],
+             q: list[str],
              ql: Optional[TextIO],
              qdir: Optional[str],
              qs: Optional[str],
-             r: List[str],
+             r: list[str],
              rl: Optional[TextIO],
              rdir: Optional[str],
              rs: Optional[str],
