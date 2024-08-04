@@ -6,7 +6,6 @@ import numpy as np
 from gambit.kmers import KmerSpec, kmer_to_index, nkmers
 from gambit.seq import revcomp
 from gambit.sigs.calc import dense_to_sparse
-from gambit.util.progress import get_progress
 from . import common
 
 
