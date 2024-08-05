@@ -4,7 +4,7 @@ import sys
 
 from abc import ABC, abstractmethod
 from typing import Optional, Union, Callable, Iterable, TextIO, Mapping, Any, cast, Iterator, \
-	ContextManager, TypeVar
+	TypeVar
 from warnings import warn
 from contextlib import contextmanager
 

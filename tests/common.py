@@ -208,7 +208,7 @@ def make_kmer_seqs(kspec: KmerSpec,
 	return seqs, dense_to_sparse(vec)
 
 
-def make_lineage(thresholds: Sequence[float]) -> list[Taxon]:
+def make_lineage(thresholds: Sequence[Optional[float]]) -> list[Taxon]:
 	"""Create a linage of taxa that have the given distance thresholds.
 
 	Parameters

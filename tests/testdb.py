@@ -17,6 +17,7 @@ from gambit.sigs import load_signatures, AnnotatedSignatures
 from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
 from gambit.results import ResultsArchiveReader
 from gambit.query import QueryResults
+from gambit.util.io import FilePath
 
 
 T = TypeVar('T')
@@ -100,7 +101,7 @@ class TestDB:
 	# Prevent pytest interpreting as containing test methods
 	__test__ = False
 
-	def __init__(self, root):
+	def __init__(self, root: FilePath):
 		root = Path(root)
 		self.paths = TestDBPaths(
 			root=root,
