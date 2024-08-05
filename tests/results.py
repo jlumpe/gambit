@@ -72,7 +72,7 @@ def check_result_item(item: QueryResultItem, params: QueryParams, warnings: bool
 			if predicted not in nt.ancestors():
 				if warnings:
 					warn(
-						f'[Query {item.input.label}]: '
+						f'[Query {item.label}]: '
 						f'next taxon {nt.name} not a descendant of predicted taxon {predicted.name}'
 					)
 
@@ -199,22 +199,19 @@ def check_json_results(file: TextIO,
 
 	for item, item_data in zip(results.items, data['items']):
 
-		# Compare data['query'] <-> item.input
+		# Compare data['query'] <-> item.label / item.file
 		query = item_data['query']
-		assert query['name'] == item.input.label
+		assert query['name'] == item.label
 
-		if item.input.file is None:
+		if item.file is None:
 			assert query['path'] is None
-			assert query['format'] is None
 
 		else:
-			assert query['format'] == item.input.file.format
-
 			# Check path matches exactly if strict mode, otherwise just file name
 			if strict:
-				assert query['path'] == str(item.input.file.path)
+				assert query['path'] == str(item.file)
 			else:
-				assert Path(query['path']).name == item.input.file.path.name
+				assert Path(query['path']).name == item.file.name
 
 		# Predicted/next taxon
 		cmp_taxon_json(item_data['predicted_taxon'], item.report_taxon)
@@ -269,7 +266,7 @@ def check_csv_results(file: TextIO, results: QueryResults, strict: bool = False)
 	assert len(rows) == len(results.items)
 
 	for item, row in zip(results.items, rows):
-		assert row['query'] == item.input.label
+		assert row['query'] == item.label
 
 		cmp_csv_taxon(row, item.report_taxon, 'predicted')
 		cmp_csv_taxon(row, item.classifier_result.next_taxon, 'next')

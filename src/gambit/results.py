@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from gambit.util.io import FilePath, maybe_open
 import gambit.util.json as gjson
-from gambit.query import QueryResults, QueryResultItem, QueryInput
+from gambit.query import QueryResults, QueryResultItem
 from gambit.db import ReferenceGenomeSet, Taxon, AnnotatedGenome, Genome
 
 
@@ -84,8 +84,9 @@ class CSVResultsExporter(AbstractResultsExporter):
 	"""
 	format_opts: dict[str, Any]
 
+	# Pairs of column name and QueryResultItem attribute
 	COLUMNS = [
-		('query', 'input.label'),
+		('query', 'label'),
 		('predicted.name', 'report_taxon.name'),
 		('predicted.rank', 'report_taxon.rank'),
 		('predicted.ncbi_id', 'report_taxon.ncbi_id'),
@@ -140,18 +141,13 @@ class JSONResultsExporter(BaseJSONResultsExporter):
 	@to_json.register(QueryResultItem)
 	def _item_to_json(self, item: QueryResultItem):
 		return dict(
-			query=item.input,
+			query=dict(
+				name=item.label,
+				path=item.file,
+			),
 			predicted_taxon=item.report_taxon,
 			next_taxon=item.classifier_result.next_taxon,
 			closest_genomes=item.closest_genomes,
-		)
-
-	@to_json.register(QueryInput)
-	def _input_to_json(self, input: QueryInput):
-		return dict(
-			name=input.label,
-			path=None if input.file is None else input.file.path,
-			format=None if input.file is None else input.file.format,
 		)
 
 	@to_json.register(ReferenceGenomeSet)
