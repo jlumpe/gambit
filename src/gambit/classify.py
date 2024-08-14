@@ -132,7 +132,7 @@ class GenomeMatch:
 		Reference genome matched to.
 	distance
 		Distance between query and reference genome.
-	matching_taxon
+	matched_taxon
 		Taxon prediction based off of this match alone. Will always be ``genome.taxon`` or one of
 		its ancestors.
 	"""
