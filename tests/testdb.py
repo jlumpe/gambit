@@ -61,13 +61,21 @@ def lazy(f: Callable[[Any], T]) -> LazyAttribute[T]:
 @dataclass
 class TestDBPaths:
 	root: Path
+	# Reference genomes .gdb file
 	ref_genomes: Path
+	# Reference genomes .gs file
 	ref_signatures: Path
+	# Reference genomes .csv
 	refs_table: Path
+	# Directory containing reference genome FASTA files
 	ref_genomes_dir: Path
+	# queries.csv
 	queries_table: Path
+	# Directory containing query genome FASTA files
 	query_genomes_dir: Path
+	# Query genomes .gs file
 	query_signatures: Path
+	# Directory containing QueryResults exports in archive format.
 	results: Path
 
 
