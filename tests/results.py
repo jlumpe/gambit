@@ -1,17 +1,80 @@
-"""Funcs for testing exported data."""
+"""Helper code for tests related to the QueryResults class or exported result data."""
 
 import csv
 import json
 from typing import TextIO, Any, Iterable, Optional
 from pathlib import Path
+from warnings import warn
 
 import numpy as np
 
 from gambit.util.json import to_json
-from gambit.query import QueryResults, QueryResultItem
+from gambit.query import QueryResults, QueryResultItem, QueryParams
 from gambit.classify import GenomeMatch, ClassifierResult
 from gambit.util.misc import zip_strict
-from gambit.db.models import AnnotatedGenome, Taxon
+from gambit.db.models import AnnotatedGenome, Taxon, reportable_taxon
+
+
+def check_results(results: QueryResults, warnings: bool = True):
+	"""Check invariants on query results object."""
+
+	assert results.params is not None
+
+	for item in results.items:
+		check_result_item(item, results.params, warnings=warnings)
+
+
+def check_result_item(item: QueryResultItem, params: QueryParams, warnings: bool = True):
+	"""Check invariants on successful query result item."""
+
+	clsresult = item.classifier_result
+	predicted = clsresult.predicted_taxon
+
+	# No errors
+	assert clsresult.success
+	assert clsresult.error is None
+
+	# Predicted taxon
+	if predicted is not None:
+		assert clsresult.primary_match is not None
+
+		if not params.classify_strict:
+			assert clsresult.primary_match == clsresult.closest_match
+			assert predicted is clsresult.primary_match.matched_taxon
+
+		assert item.report_taxon is reportable_taxon(predicted)
+
+	else:
+		assert clsresult.primary_match is None
+		assert item.report_taxon is None
+
+	# Closest matches
+	assert len(item.closest_genomes) == params.report_closest
+	assert item.closest_genomes[0] == clsresult.closest_match
+
+	# Check closest_genomes is sorted by distance
+	for i in range(1, params.report_closest):
+		assert item.closest_genomes[i].distance >= item.closest_genomes[i-1].distance
+
+	# Next taxon
+	nt = clsresult.next_taxon
+	if nt is None:
+		# Predicted should be most specific possible
+		assert clsresult.closest_match.matched_taxon == clsresult.closest_match.genome.taxon
+
+	else:
+		assert nt.distance_threshold is not None
+		assert nt.distance_threshold < clsresult.closest_match.distance
+
+		# This should hold true as long as the primary match is the closest match, just warn if
+		# it fails.
+		if predicted is not None:
+			if predicted not in nt.ancestors():
+				if warnings:
+					warn(
+						f'[Query {item.input.label}]: '
+						f'next taxon {nt.name} not a descendant of predicted taxon {predicted.name}'
+					)
 
 
 def compare_genome_matches(match1: Optional[GenomeMatch], match2: Optional[GenomeMatch]):
@@ -32,7 +95,7 @@ def compare_genome_matches(match1: Optional[GenomeMatch], match2: Optional[Genom
 	assert np.isclose(match1.distance, match2.distance)
 
 
-def compare_classifier_results(result1: ClassifierResult, result2: ClassifierResult) -> bool:
+def compare_classifier_results(result1: ClassifierResult, result2: ClassifierResult):
 	"""Assert two ``ClassifierResult`` instances are equal."""
 	assert result1.success == result2.success
 	assert result1.predicted_taxon == result2.predicted_taxon
@@ -43,7 +106,7 @@ def compare_classifier_results(result1: ClassifierResult, result2: ClassifierRes
 	assert result1.error == result2.error
 
 
-def compare_result_items(item1: QueryResultItem, item2: QueryResultItem) -> bool:
+def compare_result_items(item1: QueryResultItem, item2: QueryResultItem):
 	"""Assert two ``QueryResultItem`` instances are equal.
 
 	Does not compare the value of the ``input`` attributes.

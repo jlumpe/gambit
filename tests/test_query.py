@@ -8,7 +8,7 @@ from gambit.util.misc import zip_strict
 from gambit import __version__ as GAMBIT_VERSION
 
 from .testdb import TestDB
-from .results import compare_result_items
+from .results import compare_result_items, check_results
 
 
 class TestQueryInput:
@@ -32,10 +32,14 @@ class TestQuery:
 
 	def check_results(self, results: QueryResults, ref_results: QueryResults):
 
+		# Check general invariants of QueryResults object
+		check_results(results, warnings=False)  # One of the queries is designed to generate a warning
+		assert results.gambit_version == GAMBIT_VERSION
+
+		# Check matches reference results
 		assert results.params == ref_results.params
 		assert results.genomeset == ref_results.genomeset
 		assert results.signaturesmeta == ref_results.signaturesmeta
-		assert results.gambit_version == GAMBIT_VERSION
 
 		for item, ref_item in zip_strict(results.items, ref_results.items):
 			compare_result_items(item, ref_item)
