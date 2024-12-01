@@ -5,7 +5,6 @@ import click
 
 from . import common
 from .root import cli
-from gambit.seq import SequenceFile
 from gambit.sigs import load_signatures
 from gambit.sigs.calc import calc_file_signatures
 from gambit.metric import jaccarddist_matrix, jaccarddist_pairwise
@@ -137,9 +136,8 @@ def dist_cmd(ctx: click.Context,
 
 	# Calculate signatures if needed
 	if query_sigs is None:
-		query_sigfiles = SequenceFile.from_paths(query_files, 'fasta', 'auto')
 		query_pconf = progress_config(prog, desc='Calculating query genome signatures') if len(query_files) > 1 else None
-		query_sigs = calc_file_signatures(kspec, query_sigfiles, progress=query_pconf, max_workers=cores)
+		query_sigs = calc_file_signatures(kspec, query_files, progress=query_pconf, max_workers=cores)
 
 	# Calculate distances
 	dist_pconf = progress_config(prog, desc='Calculating distances')
@@ -151,9 +149,8 @@ def dist_cmd(ctx: click.Context,
 
 	else:
 		if ref_sigs is None:
-			ref_sigfiles = SequenceFile.from_paths(ref_files, 'fasta', 'auto')
 			ref_pconf = progress_config('click', desc='Calculating reference genome signatures') if len(ref_files) > 1 else None
-			ref_sigs = calc_file_signatures(kspec, ref_sigfiles, progress=ref_pconf)
+			ref_sigs = calc_file_signatures(kspec, ref_files, progress=ref_pconf)
 
 		dmat = jaccarddist_matrix(query_sigs, ref_sigs, progress=dist_pconf)
 

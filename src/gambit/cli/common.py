@@ -13,7 +13,7 @@ from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset, Databa
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath, read_lines
 from gambit.util.misc import join_list_human
-from gambit.seq import validate_dna_seq_bytes, SequenceFile
+from gambit.seq import validate_dna_seq_bytes
 
 
 class CLIContext:
@@ -305,7 +305,7 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
                        listfile_dir: Optional[str]=None,
                        strip_dir: bool = True,
                        strip_ext: bool = True,
-                       ) -> Union[tuple[list[str], list[SequenceFile]], tuple[None, None]]:
+                       ) -> Union[tuple[list[str], list[Path]], tuple[None, None]]:
 	"""Get list of sequence file paths and IDs from several types of CLI arguments.
 
 	Does not check for conflict between ``explicit`` and ``listfile``.
@@ -325,25 +325,24 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
 
 	Returns
 	-------
-	tuple[Optional[list[str]], Optional[list[SequenceFile]]]
+	tuple[Optional[list[str]], Optional[list[Path]]]
 		``(ids, files)`` tuple. ``ids`` is a list of string IDs that can be used to label output.
 		If the ``explicit`` and ``listfile`` arguments are None/empty both components of the tuple
 		will be None as well.
 	"""
 	if explicit:
-		paths = list(map(Path, explicit))
-		paths_str = list(map(str, paths))
+		files = list(map(Path, explicit))
+		files_str = list(map(str, files))
 
 	elif listfile is not None:
 		lines = list(read_lines(listfile, skip_empty=True))
-		paths = [Path(listfile_dir) / line for line in lines]
-		paths_str = lines
+		files = [Path(listfile_dir) / line for line in lines]
+		files_str = lines
 
 	else:
 		return None, None
 
-	files = SequenceFile.from_paths(paths, 'fasta', 'auto')
-	ids = [get_file_id(f, strip_dir, strip_ext) for f in paths_str]
+	ids = [get_file_id(f, strip_dir, strip_ext) for f in files_str]
 
 	return ids, files
 

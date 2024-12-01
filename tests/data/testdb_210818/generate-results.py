@@ -10,10 +10,10 @@ This script should be re-run whenever the expected results change.
 import sys
 from pathlib import Path
 
-from gambit.seq import SequenceFile
 from gambit.query import QueryParams, QueryResults, query_parse
 from gambit.results import ResultsArchiveWriter
 from gambit.util.misc import zip_strict
+from gambit.util.io import FilePath
 
 
 THISDIR = Path(__file__).parent
@@ -30,7 +30,7 @@ PARAMS = {
 }
 
 
-def check_results(queries: list[TestQueryGenome], query_files: list[SequenceFile], results: QueryResults):
+def check_results(queries: list[TestQueryGenome], query_files: list[FilePath], results: QueryResults):
 	"""Check query results object against queries.csv table before exporting."""
 
 	strict = results.params.classify_strict
@@ -40,7 +40,7 @@ def check_results(queries: list[TestQueryGenome], query_files: list[SequenceFile
 		clsresult = item.classifier_result
 		predicted = clsresult.predicted_taxon
 
-		assert item.file == query_file.path
+		assert item.file == Path(query_file)
 
 		# Check if warnings expected (only if in strict mode)
 		assert bool(clsresult.warnings) == (strict and query['warnings'])

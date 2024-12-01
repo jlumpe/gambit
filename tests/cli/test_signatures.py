@@ -65,7 +65,7 @@ class TestCreateCommand:
 	@pytest.fixture(params=[False])
 	def infiles(self, request, testdb: TestDB):
 		"""Input files. Parameter is whether or not they are gzipped."""
-		return [f.path for f in testdb.get_query_files(request.param)]
+		return testdb.get_query_files(request.param)
 
 	@pytest.fixture()
 	def outfile(self, tmp_path: Path):

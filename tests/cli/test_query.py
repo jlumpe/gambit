@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-from gambit.seq import SequenceFile
 from gambit.query import QueryResults
 from gambit.util.misc import zip_strict
 from gambit.util.io import write_lines, FilePath
@@ -20,7 +19,7 @@ from .common import invoke_cli
 
 
 def make_args(testdb: TestDB, *,
-              positional_files: Optional[Iterable[SequenceFile]] = None,
+              positional_files: Optional[Iterable[FilePath]] = None,
               list_file: Optional['FilePath'] = None,
               sig_file: bool = False,
               output: Optional['FilePath'] = None,
@@ -116,7 +115,7 @@ def test_full_query(testdb: TestDB,
                     ):
 	"""Run a full query using the command line interface."""
 
-	query_files = [sigfile.path for sigfile in testdb.get_query_files(gzipped)[:nqueries]]
+	query_files = testdb.get_query_files(gzipped)[:nqueries]
 	labels = [strip_seq_file_ext(file.name) for file in query_files]
 	ref_results: QueryResults = make_ref_results(testdb, labels, strict, query_files, nqueries=nqueries)
 

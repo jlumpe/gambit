@@ -9,7 +9,8 @@ import numpy as np
 
 from .base import KmerSignature, SignatureList
 from gambit.kmers import KmerSpec, find_kmers, kmer_to_index, nkmers, index_dtype
-from gambit.seq import SEQ_TYPES, DNASeq, SequenceFile
+from gambit.seq import SEQ_TYPES, DNASeq, parse_seqs
+from gambit.util.io import FilePath
 from gambit.util.progress import iter_progress, get_progress
 
 
@@ -178,7 +179,7 @@ def calc_signature(kmerspec: KmerSpec,
 
 
 def calc_file_signature(kspec: KmerSpec,
-                        seqfile: SequenceFile,
+                        seqfile: FilePath,
                         *,
                         accumulator: Optional[KmerAccumulator] = None,
                         ) -> KmerSignature:
@@ -203,12 +204,12 @@ def calc_file_signature(kspec: KmerSpec,
 	.calc_signature
 	.calc_file_signatures
 	"""
-	with seqfile.parse() as records:
+	with parse_seqs(seqfile) as records:
 		return calc_signature(kspec, (record.seq for record in records), accumulator=accumulator)
 
 
 def calc_file_signatures(kspec: KmerSpec,
-                         files: Sequence[SequenceFile],
+                         files: Sequence[FilePath],
                          progress=None,
                          concurrency: Optional[str] = 'processes',
                          max_workers: Optional[int] = None,

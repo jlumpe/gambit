@@ -6,7 +6,6 @@ from Bio import Phylo
 
 from . import common
 from .root import cli
-from gambit.seq import SequenceFile
 from gambit.sigs import load_signatures
 from gambit.sigs.calc import calc_file_signatures
 from gambit.metric import jaccarddist_pairwise
@@ -58,8 +57,7 @@ def tree_cmd(ctx: click.Context,
 		common.warn_duplicate_file_ids(labels, 'Warning: the following file IDs are present more than once: {ids}')
 
 		kspec = common.kspec_from_params(k, prefix, default=True)
-		sigfiles = SequenceFile.from_paths(genome_files, 'fasta', 'auto')
-		sigs = calc_file_signatures(kspec, sigfiles, progress=pconf.update(desc='Calculating signatures'), max_workers=cores)
+		sigs = calc_file_signatures(kspec, genome_files, progress=pconf.update(desc='Calculating signatures'), max_workers=cores)
 
 	# Calculate distances
 	dmat = jaccarddist_pairwise(sigs, progress=pconf.update(desc='Calculating distances'))

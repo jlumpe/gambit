@@ -9,7 +9,6 @@ import numpy as np
 
 from gambit.cli import cli, common
 from gambit.db import ReferenceDatabase
-from gambit.seq import SequenceFile
 from gambit.util.misc import zip_strict
 from gambit.util.io import write_lines, FilePath
 
@@ -110,12 +109,10 @@ class TestGetSequenceFiles:
 
 			assert id_ == expected
 
-	def check_files(self, files, paths):
-		for file, path in zip_strict(files, paths):
-			assert isinstance(file, SequenceFile)
-			assert file.path == Path(path)
-			assert file.format == 'fasta'
-			assert file.compression == 'auto'
+	def check_files(self, files, expected):
+		for file, ex in zip_strict(files, expected):
+			assert isinstance(file, Path)
+			assert file == Path(ex)
 
 	def test_explicit(self, strip_dir: bool, strip_ext: bool):
 		"""Test given explicit paths from CLI argument."""

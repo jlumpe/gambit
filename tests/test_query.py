@@ -53,5 +53,5 @@ class TestQuery:
 		self.check_results(results, ref_results)
 
 		for file, item in zip_strict(query_files, results.items):
-			assert item.file == file.path
-			assert item.label == str(file.path)
+			assert item.file == file
+			assert item.label == str(file)

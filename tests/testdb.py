@@ -11,7 +11,6 @@ import gzip
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from gambit.seq import SequenceFile
 from gambit.kmers import KmerSpec
 from gambit.sigs import load_signatures, AnnotatedSignatures
 from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
@@ -195,7 +194,7 @@ class TestDB:
 		with gzip.open(file_gz, 'wt') as f:
 			f.write(content)
 
-	def _get_genome_files(self, base: Path, names: list[str], gzipped: bool, relative: bool) -> list[SequenceFile]:
+	def _get_genome_files(self, base: Path, names: list[str], gzipped: bool, relative: bool) -> list[Path]:
 		base2 = base.relative_to(self.paths.root) if relative else base
 
 		files = []
@@ -210,11 +209,11 @@ class TestDB:
 			else:
 				path = base2 / fname
 
-			files.append(SequenceFile(path, 'fasta', 'gzip' if gzipped else None))
+			files.append(path)
 
 		return files
 
-	def get_query_files(self, gzipped: bool = False, relative: bool = False) -> list[SequenceFile]:
+	def get_query_files(self, gzipped: bool = False, relative: bool = False) -> list[Path]:
 		return self._get_genome_files(
 			self.paths.query_genomes_dir,
 			[genome['name'] for genome in self.query_genomes],
@@ -222,7 +221,7 @@ class TestDB:
 			relative=relative,
 		)
 
-	def get_ref_files(self, gzipped: bool = False, relative: bool = False) -> list[SequenceFile]:
+	def get_ref_files(self, gzipped: bool = False, relative: bool = False) -> list[Path]:
 		return self._get_genome_files(
 			self.paths.ref_genomes_dir,
 			[genome['name'] for genome in self.ref_genomes],

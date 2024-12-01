@@ -208,7 +208,7 @@ def create(ctx: click.Context,
 	if dump_params:
 		params = dict(
 			kmerspec=kspec,
-			files=[f.path for f in files],
+			files=files,
 			meta=meta,
 			ids=ids,
 		)

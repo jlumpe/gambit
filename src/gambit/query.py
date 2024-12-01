@@ -12,9 +12,9 @@ import numpy as np
 from gambit import __version__ as GAMBIT_VERSION
 from gambit.classify import classify, ClassifierResult, GenomeMatch
 from gambit.db import ReferenceDatabase, Taxon, ReferenceGenomeSet, reportable_taxon
-from gambit.seq import SequenceFile
 from gambit.sigs.base import KmerSignature, SignaturesMeta, ReferenceSignatures
 from gambit.metric import jaccarddist_matrix
+from gambit.util.io import FilePath
 from gambit.util.progress import progress_config, iter_progress
 from gambit.util.misc import zip_strict
 
@@ -193,7 +193,7 @@ def get_result_item(db: ReferenceDatabase, params: QueryParams, dists: np.ndarra
 
 
 def query_parse(db: ReferenceDatabase,
-                files: Sequence[SequenceFile],
+                files: Sequence[FilePath],
                 params: Optional[QueryParams] = None,
                 *,
                 labels: Optional[Sequence[str]] = None,
@@ -226,7 +226,7 @@ def query_parse(db: ReferenceDatabase,
 	parse_kw.setdefault('progress', pconf.update(desc='Parsing input'))
 
 	if labels is None:
-		labels = [str(file.path) for file in files]
+		labels = [str(file) for file in files]
 	else:
 		if len(labels) != len(files):
 			raise ValueError('Number of labels does not match number of files')
@@ -237,6 +237,6 @@ def query_parse(db: ReferenceDatabase,
 
 	# Assign file attribute of QueryResultItem's
 	for item, file in zip_strict(results.items, files):
-		item.file = file.path
+		item.file = file
 
 	return results

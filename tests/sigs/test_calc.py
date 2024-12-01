@@ -11,9 +11,9 @@ from Bio.Seq import Seq
 from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_signatures, \
 	dense_to_sparse, sparse_to_dense
 from gambit.kmers import KmerSpec, index_to_kmer
-from gambit.seq import SEQ_TYPES, revcomp, SequenceFile
-import gambit.util.io as ioutil
+from gambit.seq import SEQ_TYPES, revcomp
 from gambit.sigs import sigarray_eq, KmerSignature
+from gambit.util.io import open_compressed
 from gambit.util.progress import check_progress
 from ..common import fill_bytearray, make_kmer_seq, make_kmer_seqs, convert_seq
 
@@ -137,26 +137,26 @@ class TestCalcFileSignatures:
 
 		return items
 
-	@pytest.fixture(scope='class', params=[None, 'gzip'])
+	@pytest.fixture(scope='class', params=['none', 'gzip'])
 	def compression(self, request):
 		return request.param
 
 	@pytest.fixture()
-	def files(self, record_sets: RecordSets, tmp_path: Path, compression: Optional[str]):
+	def files(self, record_sets: RecordSets, tmp_path: Path, compression: str):
 
 		files = []
 
 		for i, (records, sig) in enumerate(record_sets):
-			file = SequenceFile(tmp_path / f'{i + 1}.fasta', 'fasta', compression)
+			file = tmp_path / f'{i + 1}.fasta'
 
-			with file.open('wt') as f:
+			with open_compressed(file, 'wt', compression) as f:
 				SeqIO.write(records, f, 'fasta')
 
 			files.append(file)
 
 		return files
 
-	def test_calc_file_signature(self, record_sets: RecordSets, files: list[SequenceFile]):
+	def test_calc_file_signature(self, record_sets: RecordSets, files: list[Path]):
 		"""Test the calc_file_signature function."""
 
 		for file, (records, sig) in zip(files, record_sets):
@@ -164,7 +164,7 @@ class TestCalcFileSignatures:
 			assert np.array_equal(result, sig)
 
 	@pytest.mark.parametrize('concurrency', [None, 'threads', 'processes'])
-	def test_calc_file_signatures(self, record_sets: RecordSets, files: list[SequenceFile], concurrency: Optional[str]):
+	def test_calc_file_signatures(self, record_sets: RecordSets, files: list[Path], concurrency: Optional[str]):
 		"""Test the calc_file_signatures function."""
 		sigs = [sig for records, sig in record_sets]
 

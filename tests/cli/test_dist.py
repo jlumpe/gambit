@@ -10,32 +10,30 @@ import numpy as np
 from gambit.kmers import KmerSpec
 from gambit.metric import jaccarddist_matrix
 from gambit.sigs import SignatureList, dump_signatures
-from gambit.util.io import write_lines
+from gambit.util.io import write_lines, FilePath
 from gambit.cluster import load_dmat_csv
 import gambit.util.json as gjson
 from gambit.kmers import DEFAULT_KMERSPEC
-from gambit.seq import SequenceFile
-from gambit.cli.common import strip_seq_file_ext
 
 from ..testdb import TestDB
 from .common import invoke_cli
 
 
-def get_query_files(testdb: TestDB, n: Optional[int] = None, gz: bool = False) -> list[SequenceFile]:
+def get_query_files(testdb: TestDB, n: Optional[int] = None, gz: bool = False) -> list[Path]:
 	return testdb.get_query_files(gz)[:n]
 
 
-def get_ref_files(testdb: TestDB, n: Optional[int] = None, gz: bool = False) -> list[SequenceFile]:
+def get_ref_files(testdb: TestDB, n: Optional[int] = None, gz: bool = False) -> list[Path]:
 	return testdb.get_ref_files(gz)[:n]
 
 
 def make_args(testdb: TestDB,
 			  outfile: Path,
 			  *,
-			  q_opt: Optional[list[SequenceFile]] = None,  # Query files with -q option
+			  q_opt: Optional[list[FilePath]] = None,  # Query files with -q option
               q_list: Optional[Path] = None,               # Query list file
               q_sigs: bool = False,                        # Use query signature file
-              r_opt: Optional[list[SequenceFile]] = None,  # Ref files with -r option
+              r_opt: Optional[list[FilePath]] = None,  # Ref files with -r option
               r_list: Optional[Path] = None,               # Ref list file
               r_sigs: bool = False,                        # Use refs signature file
               r_db: bool = False,                          # Use db for refs
