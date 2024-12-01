@@ -40,7 +40,7 @@ def check_results(queries: list[TestQueryGenome], query_files: list[SequenceFile
 		clsresult = item.classifier_result
 		predicted = clsresult.predicted_taxon
 
-		assert item.input.file == query_file
+		assert item.file == query_file.path
 
 		# Check if warnings expected (only if in strict mode)
 		assert bool(clsresult.warnings) == (strict and query['warnings'])

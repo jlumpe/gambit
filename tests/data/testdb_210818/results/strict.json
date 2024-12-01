@@ -1,6 +1,6 @@
 {
     "extra": {},
-    "gambit_version": "0.4.0",
+    "gambit_version": "1.0.1",
     "genomeset": {
         "key": "gambit/testdb_210818",
         "version": "1.0"
@@ -96,14 +96,8 @@
                     "matched_taxon": null
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/unclassifiable.fasta"
-                },
-                "label": "unclassifiable.fasta"
-            },
+            "file": "queries/genomes/unclassifiable.fasta",
+            "label": "queries/genomes/unclassifiable.fasta",
             "report_taxon": null
         },
         {
@@ -226,14 +220,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1.fasta"
-                },
-                "label": "A1.fasta"
-            },
+            "file": "queries/genomes/A1.fasta",
+            "label": "queries/genomes/A1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1"
             }
@@ -358,14 +346,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B1_C1.fasta"
-                },
-                "label": "A1_B1_C1.fasta"
-            },
+            "file": "queries/genomes/A1_B1_C1.fasta",
+            "label": "queries/genomes/A1_B1_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B1_C1"
             }
@@ -490,14 +472,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B1_C2.fasta"
-                },
-                "label": "A1_B1_C2.fasta"
-            },
+            "file": "queries/genomes/A1_B1_C2.fasta",
+            "label": "queries/genomes/A1_B1_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B1_C2"
             }
@@ -622,14 +598,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B1_C3.fasta"
-                },
-                "label": "A1_B1_C3.fasta"
-            },
+            "file": "queries/genomes/A1_B1_C3.fasta",
+            "label": "queries/genomes/A1_B1_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B1_C3"
             }
@@ -754,14 +724,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B1_C4.fasta"
-                },
-                "label": "A1_B1_C4.fasta"
-            },
+            "file": "queries/genomes/A1_B1_C4.fasta",
+            "label": "queries/genomes/A1_B1_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B1_C4"
             }
@@ -886,14 +850,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B2.fasta"
-                },
-                "label": "A1_B2.fasta"
-            },
+            "file": "queries/genomes/A1_B2.fasta",
+            "label": "queries/genomes/A1_B2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B2"
             }
@@ -1018,14 +976,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B2_C1.fasta"
-                },
-                "label": "A1_B2_C1.fasta"
-            },
+            "file": "queries/genomes/A1_B2_C1.fasta",
+            "label": "queries/genomes/A1_B2_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B2_C1"
             }
@@ -1150,14 +1102,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B2_C2.fasta"
-                },
-                "label": "A1_B2_C2.fasta"
-            },
+            "file": "queries/genomes/A1_B2_C2.fasta",
+            "label": "queries/genomes/A1_B2_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B2_C2"
             }
@@ -1282,14 +1228,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B2_C3.fasta"
-                },
-                "label": "A1_B2_C3.fasta"
-            },
+            "file": "queries/genomes/A1_B2_C3.fasta",
+            "label": "queries/genomes/A1_B2_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B2_C3"
             }
@@ -1414,14 +1354,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B2_C4.fasta"
-                },
-                "label": "A1_B2_C4.fasta"
-            },
+            "file": "queries/genomes/A1_B2_C4.fasta",
+            "label": "queries/genomes/A1_B2_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B2_C4"
             }
@@ -1546,14 +1480,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B3.fasta"
-                },
-                "label": "A1_B3.fasta"
-            },
+            "file": "queries/genomes/A1_B3.fasta",
+            "label": "queries/genomes/A1_B3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B3"
             }
@@ -1678,14 +1606,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B3_C1.fasta"
-                },
-                "label": "A1_B3_C1.fasta"
-            },
+            "file": "queries/genomes/A1_B3_C1.fasta",
+            "label": "queries/genomes/A1_B3_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B3_C1"
             }
@@ -1810,14 +1732,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B3_C2.fasta"
-                },
-                "label": "A1_B3_C2.fasta"
-            },
+            "file": "queries/genomes/A1_B3_C2.fasta",
+            "label": "queries/genomes/A1_B3_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B3_C2"
             }
@@ -1942,14 +1858,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B3_C3.fasta"
-                },
-                "label": "A1_B3_C3.fasta"
-            },
+            "file": "queries/genomes/A1_B3_C3.fasta",
+            "label": "queries/genomes/A1_B3_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B3_C3"
             }
@@ -2074,14 +1984,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A1_B3_C4.fasta"
-                },
-                "label": "A1_B3_C4.fasta"
-            },
+            "file": "queries/genomes/A1_B3_C4.fasta",
+            "label": "queries/genomes/A1_B3_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A1_B3_C4"
             }
@@ -2206,14 +2110,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2.fasta"
-                },
-                "label": "A2.fasta"
-            },
+            "file": "queries/genomes/A2.fasta",
+            "label": "queries/genomes/A2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2"
             }
@@ -2338,14 +2236,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B1.fasta"
-                },
-                "label": "A2_B1.fasta"
-            },
+            "file": "queries/genomes/A2_B1.fasta",
+            "label": "queries/genomes/A2_B1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B1"
             }
@@ -2470,14 +2362,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B1_C1.fasta"
-                },
-                "label": "A2_B1_C1.fasta"
-            },
+            "file": "queries/genomes/A2_B1_C1.fasta",
+            "label": "queries/genomes/A2_B1_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B1_C1"
             }
@@ -2602,14 +2488,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B1_C2.fasta"
-                },
-                "label": "A2_B1_C2.fasta"
-            },
+            "file": "queries/genomes/A2_B1_C2.fasta",
+            "label": "queries/genomes/A2_B1_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B1_C2"
             }
@@ -2734,14 +2614,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B1_C3.fasta"
-                },
-                "label": "A2_B1_C3.fasta"
-            },
+            "file": "queries/genomes/A2_B1_C3.fasta",
+            "label": "queries/genomes/A2_B1_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B1_C3"
             }
@@ -2866,14 +2740,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B1_C4.fasta"
-                },
-                "label": "A2_B1_C4.fasta"
-            },
+            "file": "queries/genomes/A2_B1_C4.fasta",
+            "label": "queries/genomes/A2_B1_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B1_C4"
             }
@@ -2998,14 +2866,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B2.fasta"
-                },
-                "label": "A2_B2.fasta"
-            },
+            "file": "queries/genomes/A2_B2.fasta",
+            "label": "queries/genomes/A2_B2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B2"
             }
@@ -3130,14 +2992,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B2_C1.fasta"
-                },
-                "label": "A2_B2_C1.fasta"
-            },
+            "file": "queries/genomes/A2_B2_C1.fasta",
+            "label": "queries/genomes/A2_B2_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B2_C1"
             }
@@ -3262,14 +3118,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B2_C2.fasta"
-                },
-                "label": "A2_B2_C2.fasta"
-            },
+            "file": "queries/genomes/A2_B2_C2.fasta",
+            "label": "queries/genomes/A2_B2_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B2_C2"
             }
@@ -3394,14 +3244,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B2_C3.fasta"
-                },
-                "label": "A2_B2_C3.fasta"
-            },
+            "file": "queries/genomes/A2_B2_C3.fasta",
+            "label": "queries/genomes/A2_B2_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B2_C3"
             }
@@ -3526,14 +3370,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B2_C4.fasta"
-                },
-                "label": "A2_B2_C4.fasta"
-            },
+            "file": "queries/genomes/A2_B2_C4.fasta",
+            "label": "queries/genomes/A2_B2_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B2_C4"
             }
@@ -3660,14 +3498,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B3.fasta"
-                },
-                "label": "A2_B3.fasta"
-            },
+            "file": "queries/genomes/A2_B3.fasta",
+            "label": "queries/genomes/A2_B3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B3"
             }
@@ -3792,14 +3624,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B3_C1.fasta"
-                },
-                "label": "A2_B3_C1.fasta"
-            },
+            "file": "queries/genomes/A2_B3_C1.fasta",
+            "label": "queries/genomes/A2_B3_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B3_C1"
             }
@@ -3924,14 +3750,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B3_C2.fasta"
-                },
-                "label": "A2_B3_C2.fasta"
-            },
+            "file": "queries/genomes/A2_B3_C2.fasta",
+            "label": "queries/genomes/A2_B3_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B3_C2"
             }
@@ -4056,14 +3876,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B3_C3.fasta"
-                },
-                "label": "A2_B3_C3.fasta"
-            },
+            "file": "queries/genomes/A2_B3_C3.fasta",
+            "label": "queries/genomes/A2_B3_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B3_C3"
             }
@@ -4188,14 +4002,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A2_B3_C4.fasta"
-                },
-                "label": "A2_B3_C4.fasta"
-            },
+            "file": "queries/genomes/A2_B3_C4.fasta",
+            "label": "queries/genomes/A2_B3_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B3_C4"
             }
@@ -4320,14 +4128,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3.fasta"
-                },
-                "label": "A3.fasta"
-            },
+            "file": "queries/genomes/A3.fasta",
+            "label": "queries/genomes/A3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3"
             }
@@ -4452,14 +4254,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B1.fasta"
-                },
-                "label": "A3_B1.fasta"
-            },
+            "file": "queries/genomes/A3_B1.fasta",
+            "label": "queries/genomes/A3_B1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B1"
             }
@@ -4584,14 +4380,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B1_C1.fasta"
-                },
-                "label": "A3_B1_C1.fasta"
-            },
+            "file": "queries/genomes/A3_B1_C1.fasta",
+            "label": "queries/genomes/A3_B1_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B1_C1"
             }
@@ -4716,14 +4506,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B1_C2.fasta"
-                },
-                "label": "A3_B1_C2.fasta"
-            },
+            "file": "queries/genomes/A3_B1_C2.fasta",
+            "label": "queries/genomes/A3_B1_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B1_C2"
             }
@@ -4848,14 +4632,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B1_C3.fasta"
-                },
-                "label": "A3_B1_C3.fasta"
-            },
+            "file": "queries/genomes/A3_B1_C3.fasta",
+            "label": "queries/genomes/A3_B1_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B1_C3"
             }
@@ -4980,14 +4758,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B1_C4.fasta"
-                },
-                "label": "A3_B1_C4.fasta"
-            },
+            "file": "queries/genomes/A3_B1_C4.fasta",
+            "label": "queries/genomes/A3_B1_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B1_C4"
             }
@@ -5112,14 +4884,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B2.fasta"
-                },
-                "label": "A3_B2.fasta"
-            },
+            "file": "queries/genomes/A3_B2.fasta",
+            "label": "queries/genomes/A3_B2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B2"
             }
@@ -5244,14 +5010,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B2_C1.fasta"
-                },
-                "label": "A3_B2_C1.fasta"
-            },
+            "file": "queries/genomes/A3_B2_C1.fasta",
+            "label": "queries/genomes/A3_B2_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B2_C1"
             }
@@ -5376,14 +5136,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B2_C2.fasta"
-                },
-                "label": "A3_B2_C2.fasta"
-            },
+            "file": "queries/genomes/A3_B2_C2.fasta",
+            "label": "queries/genomes/A3_B2_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B2_C2"
             }
@@ -5508,14 +5262,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B2_C3.fasta"
-                },
-                "label": "A3_B2_C3.fasta"
-            },
+            "file": "queries/genomes/A3_B2_C3.fasta",
+            "label": "queries/genomes/A3_B2_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B2_C3"
             }
@@ -5640,14 +5388,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B2_C4.fasta"
-                },
-                "label": "A3_B2_C4.fasta"
-            },
+            "file": "queries/genomes/A3_B2_C4.fasta",
+            "label": "queries/genomes/A3_B2_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B2_C4"
             }
@@ -5772,14 +5514,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B3.fasta"
-                },
-                "label": "A3_B3.fasta"
-            },
+            "file": "queries/genomes/A3_B3.fasta",
+            "label": "queries/genomes/A3_B3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B3"
             }
@@ -5904,14 +5640,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B3_C1.fasta"
-                },
-                "label": "A3_B3_C1.fasta"
-            },
+            "file": "queries/genomes/A3_B3_C1.fasta",
+            "label": "queries/genomes/A3_B3_C1.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B3_C1"
             }
@@ -6036,14 +5766,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B3_C2.fasta"
-                },
-                "label": "A3_B3_C2.fasta"
-            },
+            "file": "queries/genomes/A3_B3_C2.fasta",
+            "label": "queries/genomes/A3_B3_C2.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B3_C2"
             }
@@ -6168,14 +5892,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B3_C3.fasta"
-                },
-                "label": "A3_B3_C3.fasta"
-            },
+            "file": "queries/genomes/A3_B3_C3.fasta",
+            "label": "queries/genomes/A3_B3_C3.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B3_C3"
             }
@@ -6300,14 +6018,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/A3_B3_C4.fasta"
-                },
-                "label": "A3_B3_C4.fasta"
-            },
+            "file": "queries/genomes/A3_B3_C4.fasta",
+            "label": "queries/genomes/A3_B3_C4.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A3_B3_C4"
             }
@@ -6434,14 +6146,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/inconsistent.fasta"
-                },
-                "label": "inconsistent.fasta"
-            },
+            "file": "queries/genomes/inconsistent.fasta",
+            "label": "queries/genomes/inconsistent.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2"
             }
@@ -6570,14 +6276,8 @@
                     }
                 }
             ],
-            "input": {
-                "file": {
-                    "compression": null,
-                    "format": "fasta",
-                    "path": "queries/genomes/primary_not_closest.fasta"
-                },
-                "label": "primary_not_closest.fasta"
-            },
+            "file": "queries/genomes/primary_not_closest.fasta",
+            "label": "queries/genomes/primary_not_closest.fasta",
             "report_taxon": {
                 "key": "gambit/testdb_210818/A2_B1"
             }
@@ -6599,5 +6299,5 @@
         "name": "testdb_210818",
         "version": "1.0"
     },
-    "timestamp": "2022-01-09T17:29:22.044407"
+    "timestamp": "2024-11-30T22:19:39.124711"
 }
