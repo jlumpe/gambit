@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'GAMBIT'
-copyright = '2021 - 2023, Jared Lumpe'
+copyright = '2021 - 2024, Jared Lumpe'
 author = 'Jared Lumpe'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.1'
+release = '1.1.0'
 
 
 # -- General configuration ---------------------------------------------------
