@@ -9,11 +9,10 @@ import sqlite3
 import gzip
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 from gambit.kmers import KmerSpec
 from gambit.sigs import load_signatures, AnnotatedSignatures
-from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset
+from gambit.db import ReferenceDatabase, only_genomeset, file_sessionmaker, default_sessionmaker
 from gambit.results import ResultsArchiveReader
 from gambit.query import QueryResults
 from gambit.util.io import FilePath
@@ -119,14 +118,9 @@ class TestDB:
 		)
 
 	@lazy
-	def engine(self):
-		"""SQLAlchemy engine connected to genome database."""
-		return create_engine(f'sqlite:///{self.paths.ref_genomes}')
-
-	@lazy
 	def Session(self):
 		"""Sessionmaker for the reference genome database."""
-		return sessionmaker(self.engine, class_=ReadOnlySession)
+		return file_sessionmaker(self.paths.ref_genomes)
 
 	def copy_session(self):
 		"""Create an in-memory copy of the test database."""
@@ -134,7 +128,7 @@ class TestDB:
 		memory = sqlite3.connect(':memory:')
 		src.backup(memory)
 		engine = create_engine('sqlite://', creator=lambda: memory)
-		return sessionmaker(engine)()
+		return default_sessionmaker(engine)()
 
 	@lazy
 	def ref_signatures(self) -> AnnotatedSignatures:

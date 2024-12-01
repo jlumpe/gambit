@@ -1,5 +1,6 @@
 """Custom types and other utilities for SQLAlchemy."""
 import os
+from typing import Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -37,22 +38,34 @@ class JsonString(TypeDecorator):
 		return None if value is None else gjson.loads(value)
 
 
-def file_sessionmaker(path: 'FilePath', readonly: bool = True, cls: type = None, **kw) -> sessionmaker:
+def default_sessionmaker(bind, *, readonly: bool = True, class_: Optional[type] = None, **kw) -> sessionmaker:
+	"""Create an SQLAlchemy ``sessionmaker`` using some common default settings.
+
+	Parameters
+	----------
+	bind
+		First argument to :class:`sqlalchemy.orm.sessionmaker`.
+	readonly
+		Sets the default value for the ``class_`` keyword argument (:class:`.ReadOnlySession` if True,
+		otherwise uses the standard SQLAlchemy session type).
+	\\**kw
+		Additional keyword arguments to :class:`sqlalchemy.orm.sessionmaker`.
+	"""
+	if class_ is None:
+		class_ = ReadOnlySession if readonly else Session
+	return sessionmaker(bind, class_=class_, **kw)
+
+
+def file_sessionmaker(path: 'FilePath', **kw) -> sessionmaker:
 	"""Get an SQLAlchemy ``sessionmaker`` for an sqlite database file.
 
 	Parameters
 	----------
 	path
 		Path to database file.
-	readonly
-		Sets the default value for ``class_``.
-	cls
-		SQLAlchemy ``Session`` subclass to use. Defaults to :class:`gambit.db.sqla.ReadOnlySession`
-		if ``readonly=True``, otherwise uses the standard SQLAlchemy session type.
 	\\**kw
-		Additional keyword arguments to :class:`sqlalchemy.orm.sessionmaker`.
+		Additional keyword arguments to :func:`.default_sessionmaker` /
+		:class:`sqlalchemy.orm.sessionmaker`.
 	"""
-	if cls is None:
-		cls = ReadOnlySession if readonly else Session
 	engine = create_engine(f'sqlite:///{os.fspath(path)}')
-	return sessionmaker(engine, class_=cls, **kw)
+	return default_sessionmaker(engine, **kw)

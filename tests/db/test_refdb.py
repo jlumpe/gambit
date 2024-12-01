@@ -4,10 +4,10 @@ import random
 from pathlib import Path
 
 import pytest
-from sqlalchemy.orm import sessionmaker
 
 from gambit.db import refdb
-from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon, ReferenceDatabase, DatabaseLoadError
+from gambit.db import Genome, ReferenceGenomeSet, AnnotatedGenome, Taxon, ReferenceDatabase, \
+	DatabaseLoadError, default_sessionmaker
 
 from ..testdb import TestDB
 
@@ -27,7 +27,7 @@ class TestGenomeIDMapping:
 	def session(self, make_empty_db):
 		"""In-memory database containing genomes which have values for all ID attributes."""
 		engine = make_empty_db()
-		Session = sessionmaker(engine)
+		Session = default_sessionmaker(engine, readonly=False)
 		session = Session()
 
 		gset = ReferenceGenomeSet(

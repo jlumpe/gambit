@@ -16,5 +16,5 @@ def test_file_sessionmaker(testdb: TestDB):
 	assert isinstance(maker(), Session)
 
 	for cls in [Session, ReadOnlySession]:
-		maker = file_sessionmaker(db_file, cls=cls)
+		maker = file_sessionmaker(db_file, class_=cls)
 		assert isinstance(maker(), cls)

@@ -4,12 +4,10 @@ from pathlib import Path
 from collections import Counter
 
 import click
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from gambit.kmers import KmerSpec, DEFAULT_KMERSPEC
-from gambit.db import ReferenceDatabase, ReadOnlySession, only_genomeset, DatabaseLoadError
+from gambit.db import ReferenceDatabase, only_genomeset, DatabaseLoadError, file_sessionmaker
 from gambit.sigs.base import ReferenceSignatures, load_signatures
 from gambit.util.io import FilePath, read_lines
 from gambit.util.misc import join_list_human
@@ -37,8 +35,6 @@ class CLIContext:
 		Whether reference signatures are available.
 	has_database
 		Whether reference genome metadata and reference signatures are both available.
-	engine
-		SQLAlchemy engine connecting to genomes database.
 	Session
 		SQLAlchemy session maker for genomes database.
 	signatures
@@ -49,7 +45,6 @@ class CLIContext:
 	has_genomes: bool
 	has_signatures: bool
 	has_database: bool
-	engine: Optional[Engine]
 	Session: Optional[sessionmaker]
 	signatures: Optional[ReferenceSignatures]
 
@@ -121,16 +116,10 @@ class CLIContext:
 		self.require_database()
 
 	def _init_genomes(self):
-		if self._engine is not None or not self.has_genomes:
+		if self._Session is not None or not self.has_genomes:
 			return
 
-		self._engine = create_engine(f'sqlite:///{self._genomes_path}')
-		self._Session = sessionmaker(self.engine, class_=ReadOnlySession)
-
-	@property
-	def engine(self):
-		self._init_genomes()
-		return self._engine
+		self._Session = file_sessionmaker(self._genomes_path)
 
 	@property
 	def Session(self):

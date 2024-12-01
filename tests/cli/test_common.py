@@ -34,7 +34,6 @@ class TestCLIContext:
 		assert not ctx.has_database
 		assert not ctx.has_genomes
 		assert not ctx.has_signatures
-		assert ctx.engine is None
 		assert ctx.Session is None
 		assert ctx.signatures is None
 
@@ -65,7 +64,6 @@ class TestCLIContext:
 		assert ctx.has_database
 		assert ctx.has_genomes
 		assert ctx.has_signatures
-		assert ctx.engine is not None
 		assert ctx.Session is not None
 		assert ctx.signatures is not None
 
