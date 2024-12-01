@@ -12,15 +12,15 @@ from gambit.results import CSVResultsExporter, JSONResultsExporter, ResultsArchi
 from gambit._cython.threads import omp_set_num_threads
 
 
-def get_exporter(outfmt: str):
+def get_exporter(outfmt: str, pretty: bool):
 	if outfmt == 'csv':
 		return CSVResultsExporter()
 
 	if outfmt == 'json':
-		return JSONResultsExporter()
+		return JSONResultsExporter(pretty=pretty)
 
 	if outfmt == 'archive':
-		return ResultsArchiveWriter()
+		return ResultsArchiveWriter(pretty=pretty)
 
 	raise ValueError(f'Invalid output format: {outfmt!r}')
 
@@ -51,6 +51,11 @@ def get_exporter(outfmt: str):
 	type=common.filepath(exists=True),
 	help='File containing query signatures, to use in place of GENOMES.',
 )
+@click.option(
+	'--pretty/--no-pretty',
+	default=False,
+	hidden=True,
+)
 @common.progress_param()
 @common.cores_param()
 @click.pass_context
@@ -62,6 +67,7 @@ def query_cmd(ctx: click.Context,
               output: TextIO,
               outfmt: str,
               strict: bool,
+              pretty: bool,
               progress: bool,
               cores: Optional[int],
               ):
@@ -71,7 +77,7 @@ def query_cmd(ctx: click.Context,
 
 	db = ctx.obj.get_database()
 	params = QueryParams(classify_strict=strict)
-	exporter = get_exporter(outfmt)
+	exporter = get_exporter(outfmt, pretty)
 	pconf = progress_config('click' if progress else None)
 
 	if cores is not None:
