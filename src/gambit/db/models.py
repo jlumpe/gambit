@@ -5,9 +5,8 @@ from typing import Any, Optional, Iterable, Collection, Callable
 import sqlalchemy as sa
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Session, relationship, backref, deferred
+from sqlalchemy.orm import Session, relationship, backref, deferred, declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 
 from .sqla import JsonString
@@ -68,15 +67,10 @@ class Genome(Base):
 	"""
 
 	__tablename__ = 'genomes'
+	__table_args__= (UniqueConstraint('ncbi_db', 'ncbi_id'),)
 
 	#: Attributes which serve as unique IDs.
 	ID_ATTRS = ('key', 'genbank_acc', 'refseq_acc', 'ncbi_id')
-
-	@declared_attr
-	def __table_args__(cls):
-		return (
-			UniqueConstraint('ncbi_db', 'ncbi_id'),
-		)
 
 	id = Column(Integer(), primary_key=True)
 	key = Column(String(), unique=True, nullable=False)
@@ -136,12 +130,7 @@ class ReferenceGenomeSet(Base):
 		for this genome set.
 	"""
 	__tablename__ = 'genome_sets'
-
-	@declared_attr
-	def __table_args__(cls):
-		return (
-			UniqueConstraint('key', 'version'),
-		)
+	__table_args__ = (UniqueConstraint('key', 'version'),)
 
 	id = Column(Integer(), primary_key=True)
 	key = Column(String(), index=True, nullable=False)

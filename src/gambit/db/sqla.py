@@ -53,7 +53,8 @@ def default_sessionmaker(bind, *, readonly: bool = True, class_: Optional[type] 
 	"""
 	if class_ is None:
 		class_ = ReadOnlySession if readonly else Session
-	return sessionmaker(bind, class_=class_, **kw)
+	# future=True - forwards compatibility with SQLAlchemy 2.0
+	return sessionmaker(bind, class_=class_, future=True, **kw)
 
 
 def file_sessionmaker(path: 'FilePath', **kw) -> sessionmaker:
