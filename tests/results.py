@@ -164,11 +164,11 @@ def cmp_genomematch_json(data, match: GenomeMatch):
 	cmp_taxon_json(data['matched_taxon'], match.matched_taxon)
 
 
-def check_json_results(file: TextIO,
-                       results: QueryResults,
-                       strict: bool = False,
-                       ):
+def check_json_results(file: TextIO, results: QueryResults, strict: bool = False):
 	"""Assert exported JSON data matches the given results object.
+
+	"Strict" mode also compares the ``timestamp``, ``gambit_version``, and ``extra`` attributes
+	at the top level and expects that full input file paths must match instead of just file names.
 
 	Parameters
 	----------
