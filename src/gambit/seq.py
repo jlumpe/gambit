@@ -98,7 +98,7 @@ def parse_seqs(path: FilePath,
 	format
 		String describing the file format as interpreted by :func:`Bio.SeqIO.parse`.
 	compression
-		String describing compression method of the file, e.g. ``'gzip'``. None means no
+		String describing compression method of the file, e.g. ``'gzip'``. ``none`` means no
 		compression. Default is to determine compression automatically (can only detect gzip or
 		none). See :func:`gambit.util.io.open_compressed`.
 	kwargs
