@@ -1,12 +1,15 @@
 # Changelog
 
 
-## DEV
+## 1.1.0
 
-* CLI
-	* Add additional details to `signatures info` command.
-* Other
-	* Require Python 3.9
+* Command line interface:
+  * Better error reporting when database file(s) not found
+  * Add more details to output of `gambit signatures info` command.
+* Major overhaul of internal Python API and tests (see full release notes on GitHub)
+  * Many fixes to API documentation
+* Increase minimum Python version to 3.9
+* Make compatible with SQLAlchemy 2.0
 
 
 ## 1.0.1
