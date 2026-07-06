@@ -2,6 +2,7 @@
 
 from typing import Optional, Sequence, Any, Iterable, Iterator
 from contextlib import contextmanager
+import importlib.metadata
 
 import click
 from click.testing import CliRunner, Result
@@ -12,6 +13,12 @@ from gambit.cli.root import cli
 DEFAULT_ENV = dict(
 	GAMBIT_DB_PATH=None,  # Ensure this is unset by default in tests.
 )
+
+
+def _get_click_version() -> tuple[int, int]:
+	version_str = importlib.metadata.version('click')
+	major, minor, *_ = version_str.split('.')
+	return int(major), int(minor)
 
 
 def pop_kwargs(d: dict[str, Any], keys: Iterable[str]) -> dict[str, Any]:
@@ -29,7 +36,11 @@ def pop_kwargs(d: dict[str, Any], keys: Iterable[str]) -> dict[str, Any]:
 
 def default_runner(**kw) -> CliRunner:
 	"""Get a CliRunner instance with altered default settings."""
-	kw.setdefault('mix_stderr', False)
+
+	# Argument was removed in Click 8.2, behaves as if False by default.
+	if _get_click_version() < (8, 2):
+		kw['mix_stderr'] = False
+
 	kw.setdefault('env', DEFAULT_ENV)
 	return CliRunner(**kw)
 
@@ -47,7 +58,7 @@ def invoke_cli(args: Sequence, runner: Optional[CliRunner]=None, success: Option
 		If not None, assert that the exit code is zero (True) or non-zero (False).
 	"""
 	if runner is None:
-		runner = default_runner(**pop_kwargs(kw, ['charset', 'echo_stdin', 'mix_stderr']))
+		runner = default_runner(**pop_kwargs(kw, ['charset', 'echo_stdin']))
 
 	kw.setdefault('catch_exceptions', False)
 	args = list(map(str, args))
