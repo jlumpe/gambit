@@ -1,0 +1,87 @@
+# ------------------------------------------------------------------------------------------------ #
+#                                              Config                                              #
+# ------------------------------------------------------------------------------------------------ #
+
+[workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+
+[pypi-options]
+# Run the build in the current environment instead of creating an isolated one for it.
+# This is needed because otherwise the build environment Python version will not match the
+# target environment.
+no-build-isolation = ["gambit"]
+
+
+# ------------------------------------------------------------------------------------------------ #
+#                                           Dependencies                                           #
+# ------------------------------------------------------------------------------------------------ #
+
+# ----------------------------------------- Environments ----------------------------------------- #
+
+[environments]
+
+# Default environment for developing - python 3.12 with editable install
+default = { features=["pkg-editable", "py312", "build", "test", "dev"] }
+
+# For testing with different python versions
+# These do a standard non-editable install (because the Cython build is version-specific).
+py39 = { features = ["py39", "pkg", "build", "test"] }
+py310 = { features = ["py310", "pkg", "build", "test"] }
+py311 = { features = ["py311", "pkg", "build", "test"] }
+py312 = { features = ["py312", "pkg", "build", "test"] }
+py313 = { features = ["py313", "pkg", "build", "test"] }
+
+
+# ------------------------------------------- Features ------------------------------------------- #
+
+# Editable vs non-editable install of package
+[feature.pkg.pypi-dependencies]
+gambit = { path = "." }
+[feature.pkg-editable.pypi-dependencies]
+gambit = { path = "." , editable = true }
+
+# Different minor Python versions
+[feature.py39.dependencies]
+python = "3.9.*"
+[feature.py310.dependencies]
+python = "3.10.*"
+[feature.py311.dependencies]
+python = "3.11.*"
+[feature.py312.dependencies]
+python = "3.12.*"
+[feature.py313.dependencies]
+python = "3.13.*"
+
+# Building
+[feature.build.dependencies]
+setuptools = "*"
+python-build = "*"
+cython = "3.*"
+
+# Testing
+[feature.test.dependencies]
+pytest = "*"
+
+# Development
+[feature.dev.dependencies]
+
+
+# ------------------------------------------------------------------------------------------------ #
+#                                               Tasks                                              #
+# ------------------------------------------------------------------------------------------------ #
+
+# Run pytest tests.
+[feature.test.tasks]
+test = "pytest"
+
+# Run tests on all supported python versions.
+[tasks.test-all]
+depends-on = [
+  { task = "test", environment = "py39" },
+  { task = "test", environment = "py310" },
+  { task = "test", environment = "py311" },
+  { task = "test", environment = "py312" },
+  { task = "test", environment = "py313" },
+]
