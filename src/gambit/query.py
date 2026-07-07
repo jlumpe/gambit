@@ -181,8 +181,11 @@ def get_result_item(db: ReferenceDatabase, params: QueryParams, dists: np.ndarra
 		1D array of distances from query to all reference genomes.
 	label
 	"""
+
 	clsresult = classify(db.genomes, dists, strict=params.classify_strict)
-	closest = [GenomeMatch(db.genomes[i], dists[i]) for i in np.argsort(dists)[:params.report_closest]]
+	# Use stable sort for reproducibility when there are ties
+	closest_idxs = np.argsort(dists, kind='stable')[:params.report_closest]
+	closest = [GenomeMatch(db.genomes[i], dists[i]) for i in closest_idxs]
 
 	return QueryResultItem(
 		label=label,
