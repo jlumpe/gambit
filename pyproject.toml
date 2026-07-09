@@ -1,7 +1,66 @@
 [build-system]
 requires = [
-    "setuptools",
+    "setuptools >= 77",
     "wheel",
     "Cython >= 3.0",
 ]
 build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "gambit"
+description = "Genomic Approximation Method for Bacterial Identification and Tracking"
+readme = "README.md"
+authors = [
+    { name = "Jared Lumpe", email = "jared@jaredlumpe.com" },
+]
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+dynamic = ["version"]
+
+
+requires-python = ">= 3.9"
+dependencies = [
+    # Test failures on 2.x
+    "numpy ~= 1.13",
+    "sqlalchemy >= 1.4",
+    # Seq stores data as bytes
+    "biopython ~= 1.79",
+    "attrs >= 20",
+    # Minimum for 3.12, also introduces potentially breaking changes
+    "cattrs >= 23.2",
+    "click >= 7.0",
+    "h5py ~= 3.0",
+    "scipy ~= 1.7",
+    "typing-extensions >= 4.0",
+]
+
+
+[project.urls]
+Homepage = "http://github.com/jlumpe/gambit"
+
+[project.scripts]
+gambit = "gambit.cli:cli"
+
+[tool.setuptools]
+# Incompatible with Cython extensions
+zip-safe = false
+
+[tool.setuptools.dynamic]
+version = { attr = "gambit.__version__" }
+
+
+# -------------------------------------------- Pytest -------------------------------------------- #
+
+[tool.pytest.ini_options]
+# Run tests in tests/, obviously
+# Also check docstrings in package
+testpaths = ["tests", "gambit"]
+
+# Run doctests on all modules (except __main__.py)
+addopts = "--doctest-modules --ignore-glob '**/__main__.py'"
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL"
+
+# Treat functions/classes prefixed with "benchmark" as tests, for files in tests/benchmarks/.
+python_functions = ["test_*", "benchmark_*"]
+python_classes = ["Test*", "Benchmark*"]
