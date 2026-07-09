@@ -64,3 +64,27 @@ doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL"
 # Treat functions/classes prefixed with "benchmark" as tests, for files in tests/benchmarks/.
 python_functions = ["test_*", "benchmark_*"]
 python_classes = ["Test*", "Benchmark*"]
+
+
+# --------------------------------------------- Ruff --------------------------------------------- #
+
+[tool.ruff]
+# line-length = 120
+line-length = 100
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+# Match previous flake8 defaults: pycodestyle (E/W) + pyflakes (F)
+select = ["E", "W", "F"]
+ignore = [
+    # Indentation contains tabs - we use tabs intentionally
+    "W191",
+    # Indentation contains mixed spaces and tabs - spaces used for alignment
+    "E101",
+    # Blank line at end of file - a single trailing newline is required by .editorconfig,
+    # but this rule is overly aggressive about what counts as a "blank line"
+    "W391",
+]
+
+[tool.ruff.format]
+indent-style = "tab"

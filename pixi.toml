@@ -66,6 +66,7 @@ pytest = "*"
 
 # Development
 [feature.dev.dependencies]
+ruff = "*"
 
 
 # ------------------------------------------------------------------------------------------------ #
@@ -85,3 +86,8 @@ depends-on = [
   { task = "test", environment = "py312" },
   { task = "test", environment = "py313" },
 ]
+
+# Development tasks.
+[feature.dev.tasks]
+lint = "ruff check"
+format = "ruff format"
