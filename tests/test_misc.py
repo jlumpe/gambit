@@ -55,3 +55,31 @@ def test_numpy_errors():
 		np.uint8(255) + np.uint8(1)
 	with pytest.raises(FloatingPointError):
 		np.uint8(0) - np.uint8(1)
+
+
+def test_version_attr():
+	"""Test the gambit.__version__ attribute, kept for backwards compatibility.
+
+	The version is now defined in pyproject.toml instead of a module-level variable, and is
+	exposed at runtime through module-level __getattr__().
+	"""
+
+	from importlib.metadata import version, PackageNotFoundError
+	from warnings import warn
+	import gambit
+
+	# Ensure we can still access standard attributes.
+	assert gambit.__author__ == 'Jared Lumpe'
+
+	# Ensure that the __getattr__() implementation still raises the correct error for missing attributes
+	with pytest.raises(AttributeError):
+		gambit.this_attribute_does_not_exist
+
+	# Now try the version attribute
+	try:
+		expected_version = version('gambit')
+	except PackageNotFoundError:
+		warn('Unable to determine gambit package version.')
+		assert gambit.__version__ is None
+	else:
+		assert gambit.__version__ == expected_version
