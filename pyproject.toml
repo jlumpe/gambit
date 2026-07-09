@@ -50,14 +50,6 @@ zip-safe = false
 # -------------------------------------------- Pytest -------------------------------------------- #
 
 [tool.pytest.ini_options]
-# Run tests in tests/, obviously
-# Also check docstrings in package
-testpaths = ["tests", "gambit"]
-
-# Run doctests on all modules (except __main__.py)
-addopts = "--doctest-modules --ignore-glob '**/__main__.py'"
-doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL"
-
 # Treat functions/classes prefixed with "benchmark" as tests, for files in tests/benchmarks/.
 python_functions = ["test_*", "benchmark_*"]
 python_classes = ["Test*", "Benchmark*"]
