@@ -57,8 +57,12 @@ python = "3.12.*"
 python = "3.13.*"
 
 # Building
+# c-compiler provides the conda-forge gcc toolchain so the OpenMP (-fopenmp) build is reproducible
+# rather than depending on the system compiler.
 [feature.build.dependencies]
+c-compiler = "*"
 setuptools = "*"
+wheel = "*"
 python-build = "*"
 cython = "3.*"
 
