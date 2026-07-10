@@ -1,2 +1,7 @@
-graft src
+# .py source files are already included automatically by setuptools. The only other package
+# files are the Cython sources. (Generated .c files and compiled .so extensions are included
+# automatically too, since they're the ext_modules sources/build output - not from this file.)
+include src/gambit/_cython/*.pyx
+include src/gambit/_cython/*.pxd
+
 graft docs
