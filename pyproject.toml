@@ -78,3 +78,14 @@ ignore = [
 
 [tool.ruff.format]
 indent-style = "tab"
+
+
+# ----------------------------------------- cibuildwheel ----------------------------------------- #
+
+[tool.cibuildwheel]
+# CPython only, linux-64 (manylinux) only - matches supported versions/platforms in pixi.toml.
+build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+skip = "*-musllinux* *_i686 pp*"
+
+test-requires = "pytest"
+test-command = "pytest {project}/tests"
