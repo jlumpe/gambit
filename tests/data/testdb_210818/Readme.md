@@ -19,7 +19,7 @@ repository. To use this database from the CLI, just pass this directory with the
   * `query-signatures.gs`: precalculated signatures for query genomes.
 * `results/`: pre-calculated results using query files in `queries`, exported in the "archive" JSON
   format. Two sets of results, one with strict mode enabled and one without. These are used to
-  reconsitute the `gambit.query.QueryResults` instances using `gambit.results.ResultsArchiveReader`.
+  reconstitute the `gambit.query.QueryResults` instances using `gambit.results.ResultsArchiveReader`.
 * `generate-results.py`: script which generates result files in `results/`. This will need to be
   re-run if the query results object changes structure or if the "archive" JSON format changes.
   Results are verified against contents of `queries.csv` before exporting.
