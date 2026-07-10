@@ -87,5 +87,10 @@ indent-style = "tab"
 build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
 skip = "*-musllinux* *_i686 pp*"
 
+# h5py (and other deps) only publish wheels tagged manylinux_2_28+; the default manylinux2014
+# image's older glibc can't install those, forcing a source build that fails due to missing/old
+# system HDF5.
+manylinux-x86_64-image = "manylinux_2_28"
+
 test-requires = "pytest"
 test-command = "pytest {project}/tests"
