@@ -15,7 +15,7 @@ a basic tutorial.
 
 ## About
 
-Copyright © 2016-2024 Jared Lumpe
+Copyright © 2016-2026 Jared Lumpe
 
 GAMBIT has been a personal project of mine for many years. Although there have been numerous
 contributors to the publication, it is not a product of any lab or institution.

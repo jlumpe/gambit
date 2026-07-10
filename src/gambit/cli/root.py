@@ -21,6 +21,6 @@ def cli(ctx: click.Context, **kw):
 
 	http://github.com/jlumpe/gambit
 
-	Copyright (C) 2016-2024 Jared Lumpe
+	Copyright (C) 2016-2026 Jared Lumpe
 	"""
 	ctx.obj = CLIContext(ctx)
