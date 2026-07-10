@@ -1,0 +1,93 @@
+# NOTE: This is a local working copy of the bioconda recipe (bioconda/bioconda-recipes,
+# recipes/gambit/meta.yaml), modified to build from this repo's working tree instead of the
+# published source tarball. Use it to test the bioconda build/test steps against local changes
+# before cutting a release (see the `conda-build-recipe` pixi task). Do not submit this file
+# upstream as-is - restore the `url`/`sha256` source and re-check requirements against
+# pyproject.toml first.
+
+{% set version = "1.1.0" %}
+
+package:
+  name: gambit
+  version: "{{ version }}"
+
+source:
+  path: ..
+
+build:
+  number: 3
+  # Biopython not currently available for 3.13
+  skip: True  # [py < 39 or py > 312]
+  # --no-build-isolation: without it, pip ignores the cython/setuptools/wheel pinned in `host`
+  # below and fetches its own copies from PyPI into a throwaway venv, which needs network access
+  # during the build and can compile the extension with a different Cython version than the one
+  # conda actually solved/pinned for this environment. Standard practice for conda-forge/bioconda
+  # recipes building compiled extensions.
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv ."
+  entry_points:
+    - gambit = gambit.cli:cli
+  run_exports:
+    - {{ pin_subpackage("gambit", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+  host:
+    - python
+    - pip
+    - setuptools >=77
+    - wheel
+    - cython >=3
+  run:
+    - python
+    # Test failures on 2.x
+    - numpy >=1.19,<2
+    - sqlalchemy >=1.4
+    - biopython >=1.79
+    - attrs >=23.1
+    - cattrs >=23.2
+    - click >=8.0
+    - h5py >=3.1
+    - scipy >=1.7
+    - typing-extensions >=4.1
+
+test:
+  requires:
+    - pytest
+  source_files:
+    - tests/
+  imports:
+    - gambit
+  commands:
+    # Just check command is available
+    - gambit --help
+    # Upstream recipe copies tests/ via source_files but never actually runs it - do so here
+    # to get real coverage when testing local changes.
+    - pytest tests/
+
+about:
+  home: https://github.com/jlumpe/gambit
+  summary: Tool for rapid taxonomic identification of microbial pathogens
+  description: |
+    GAMBIT (Genomic Approximation Method for Bacterial Identification and Tracking)
+    is a tool for rapid taxonomic identification of microbial pathogens. It uses an
+    extremely efficient genomic distance metric along with a curated database of
+    approximately 50,000 reference genomes (derived from NCBI RefSeq) to identify
+    unknown bacterial genomes within seconds.
+  license: AGPL-3.0-or-later
+  license_family: AGPL
+  license_file: LICENSE
+  doc_url: https://gambit-genomics.readthedocs.io/en/latest
+  dev_url: https://github.com/jlumpe/gambit
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - jlumpe
+  identifiers:
+    - doi:10.1371/journal.pone.0277575
+    - biotools:gambit_bacterial

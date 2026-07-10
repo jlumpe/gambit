@@ -35,6 +35,11 @@ py313 = { features = ["py313", "pkg", "build", "test"] }
 
 oldest = { features = ["py39", "oldest", "pkg", "build", "test"] }
 
+# Standalone tool env for building/testing the bioconda recipe (conda-recipe/) against the
+# local source tree. Not combined with the other features - conda-build manages its own
+# isolated build/host envs internally.
+condabuild = { features = ["condabuild"] }
+
 
 # ------------------------------------------- Features ------------------------------------------- #
 
@@ -74,6 +79,11 @@ pytest-cov = "*"
 # Development
 [feature.dev.dependencies]
 ruff = "*"
+
+# Tooling for building/testing the bioconda recipe (conda-recipe/) against local source.
+[feature.condabuild.dependencies]
+conda-build = "*"
+conda-verify = "*"
 
 
 # Oldest supported versions of libraries
@@ -128,6 +138,21 @@ depends-on = [
 # (so the next build re-cythonizes and compiles from scratch).
 [tasks.clean]
 cmd = "rm -rf dist build src/gambit.egg-info src/gambit/_cython/*.c src/gambit/_cython/*.so"
+
+# Build and test the bioconda recipe (conda-recipe/) against this working tree.
+# conda-build copies the source directory verbatim, so clean first to avoid picking up stale
+# compiled extensions/build artifacts from other environments.
+# --croot: conda-build's default build root lives under the env prefix, which is inside this
+# repo (.pixi/envs/...) - since our recipe's source is the repo itself, conda-build refuses to
+# copy a directory into a subdirectory of itself. Point it outside the repo instead.
+[feature.condabuild.tasks.conda-build-recipe]
+cmd = [
+  "conda", "build", "conda-recipe",
+  "--override-channels -c conda-forge -c bioconda",
+  "--python 3.12",
+  "--croot /tmp/gambit-conda-bld",
+]
+depends-on = ["clean"]
 
 # Development tasks.
 [feature.dev.tasks]
