@@ -73,18 +73,14 @@ ruff = "*"
 
 # Oldest supported versions of libraries
 [feature.oldest.dependencies]
-# 1.19 required by scipy 1.7
 numpy = "1.19.*"
 sqlalchemy = "1.4.*"
 biopython = "1.79.*"
-# 23.1 required by cattrs
 attrs = "23.1.*"
 cattrs = "23.2.*"
 click = "8.0.*"
-# 3.0 not available?
 h5py = "3.1.*"
 scipy = "1.7.*"
-# 4.1 required by cattrs
 typing-extensions = "4.1.*"
 
 
