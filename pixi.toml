@@ -107,6 +107,28 @@ depends-on = [
   { task = "test", environment = "py313" },
 ]
 
+# Build a wheel for the current environment's Python version into dist/.
+# --no-isolation uses this environment (matching Python version + conda toolchain) instead of
+# creating a fresh isolated build env, consistent with no-build-isolation above.
+[feature.build.tasks]
+build-wheel = "python -m build --wheel --no-isolation"
+
+# Build wheels for all supported Python versions into dist/.
+# Each environment produces its own version-specific wheel (cp39, cp310, ...).
+[tasks.build-all]
+depends-on = [
+  { task = "build-wheel", environment = "py39" },
+  { task = "build-wheel", environment = "py310" },
+  { task = "build-wheel", environment = "py311" },
+  { task = "build-wheel", environment = "py312" },
+  { task = "build-wheel", environment = "py313" },
+]
+
+# Remove build artifacts, including generated Cython C sources and compiled extensions
+# (so the next build re-cythonizes and compiles from scratch).
+[tasks.clean]
+cmd = "rm -rf dist build src/gambit.egg-info src/gambit/_cython/*.c src/gambit/_cython/*.so"
+
 # Development tasks.
 [feature.dev.tasks]
 lint = "ruff check"
