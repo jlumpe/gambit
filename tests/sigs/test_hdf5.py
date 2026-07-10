@@ -24,6 +24,25 @@ EXTRA = dict(
 )
 
 
+@pytest.fixture(scope='module')
+def kspec():
+	return KmerSpec(8, 'ATG')
+
+
+@pytest.fixture(scope='module', params=[(1000, 'u8'), (1000, 'i4'), (0, 'u8')])
+def sigs(request, kspec: KmerSpec):
+	n, dtype = request.param
+	return make_signatures(kspec, n, dtype)
+
+
+@pytest.fixture(scope='module')
+def h5file(tmp_path_factory, sigs: SignatureArray):
+	"""Write signatures to file and return file name."""
+	fname = tmp_path_factory.mktemp('HDF5FileSignatures') / 'test.gs'
+	dump_signatures_hdf5(fname, sigs)
+	return fname
+
+
 @pytest.mark.parametrize('optional_attrs', [False, True])
 def test_metadata(tmp_path: Path, optional_attrs: bool):
 	"""Test reading/writing metadata"""
@@ -85,22 +104,6 @@ def test_open_invalid(tmp_path: Path):
 
 
 class TestHDF5Signatures:
-
-	@pytest.fixture(scope='class')
-	def kspec(self):
-		return KmerSpec(8, 'ATG')
-
-	@pytest.fixture(scope='class', params=[(1000, 'u8'), (1000, 'i4'), (0, 'u8')])
-	def sigs(self, request, kspec: KmerSpec):
-		n, dtype = request.param
-		return make_signatures(kspec, n, dtype)
-
-	@pytest.fixture(scope='class')
-	def h5file(self, tmp_path_factory, sigs: SignatureArray):
-		"""Write signatures to file and return file name."""
-		fname = tmp_path_factory.mktemp('HDF5FileSignatures') / 'test.gs'
-		dump_signatures_hdf5(fname, sigs)
-		return fname
 
 	@pytest.fixture()
 	def h5sigs(self, h5file: Path):

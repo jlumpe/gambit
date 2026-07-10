@@ -8,19 +8,21 @@ import numpy as np
 import gambit.util.io as ioutil
 
 
+@pytest.fixture(scope='module')
+def text_data():
+	"""Random printable characters encoded as ASCII."""
+	random = np.random.RandomState()
+	return random.randint(32, 128, size=1000, dtype='b').tobytes()
+
+
+@pytest.fixture(scope='module', params=['none', 'gzip'])
+def compression(request):
+	"""Compression method string."""
+	return request.param
+
+
 class TestOpenCompressed:
 	"""Test open_compressed()"""
-
-	@pytest.fixture(scope='class')
-	def text_data(self):
-		"""Random printable characters encoded as ASCII."""
-		random = np.random.RandomState()
-		return random.randint(32, 128, size=1000, dtype='b').tobytes()
-
-	@pytest.fixture(scope='class', params=['none', 'gzip'])
-	def compression(self, request):
-		"""Compression method string."""
-		return request.param
 
 	@pytest.fixture()
 	def text_file(self, text_data: bytes, compression: str, tmp_path: Path):

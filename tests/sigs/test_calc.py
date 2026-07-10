@@ -7,6 +7,7 @@ import pytest
 import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
+from typing_extensions import TypeAlias
 
 from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_signatures, \
 	dense_to_sparse, sparse_to_dense
@@ -112,37 +113,36 @@ class TestCalcSignature:
 			assert all(kmer in expected for kmer in found)
 
 
-RecordSets = list[tuple[list[SeqIO.SeqRecord], KmerSignature]]
+RecordSets: TypeAlias = list[tuple[list[SeqIO.SeqRecord], KmerSignature]]
+
+
+@pytest.fixture(scope='module')
+def record_sets():
+	"""Sets of SeqRecords and their corresponding k-mer signatures."""
+
+	items = []
+
+	np.random.seed(0)
+	for i in range(5):
+		seqs, sig = make_kmer_seqs(KSPEC, 10, 10000, 50, 10)
+
+		# Create the BioPython sequence record object
+		records = [SeqIO.SeqRecord(
+			seq=Seq(seq.decode('ascii')),
+			id='SEQ{}'.format(i + 1),
+			description='sequence {}'.format(i + 1),
+		) for seq in seqs]
+
+		items.append((records, sig))
+
+	return items
 
 
 class TestCalcFileSignatures:
 
-	@pytest.fixture(scope='class')
-	def record_sets(self):
-
-		items = []
-
-		np.random.seed(0)
-		for i in range(5):
-			seqs, sig = make_kmer_seqs(KSPEC, 10, 10000, 50, 10)
-
-			# Create the BioPython sequence record object
-			records = [SeqIO.SeqRecord(
-				seq=Seq(seq.decode('ascii')),
-				id='SEQ{}'.format(i + 1),
-				description='sequence {}'.format(i + 1),
-			) for seq in seqs]
-
-			items.append((records, sig))
-
-		return items
-
-	@pytest.fixture(scope='class', params=['none', 'gzip'])
-	def compression(self, request):
-		return request.param
-
-	@pytest.fixture()
-	def files(self, record_sets: RecordSets, tmp_path: Path, compression: str):
+	@pytest.fixture(params=['none', 'gzip'])
+	def files(self, request, record_sets: RecordSets, tmp_path: Path):
+		compression = request.param
 
 		files = []
 
