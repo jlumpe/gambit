@@ -22,7 +22,7 @@ license-files = ["LICENSE"]
 requires-python = ">= 3.9"
 dependencies = [
     # Test failures on 2.x
-    "numpy ~= 1.19",
+    "numpy >= 1.19",
     "sqlalchemy >= 1.4",
     # Seq stores data as bytes
     "biopython ~= 1.79",
