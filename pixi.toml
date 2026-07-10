@@ -36,6 +36,11 @@ oldest = { features = ["py312", "oldest", "pkg", "build", "test"] }
 # Building and checking the sdist (no package install or compiler needed)
 dist = { features = ["py312", "dist"] }
 
+# Standalone tool env for building/testing the bioconda recipe (conda-recipe/) against the
+# local source tree. Not combined with the other features - conda-build manages its own
+# isolated build/host envs internally.
+condabuild = { features = ["condabuild"] }
+
 
 # ------------------------------------------- Features ------------------------------------------- #
 
@@ -87,6 +92,12 @@ sphinx-rtd-theme = "*"
 [feature.dev.pypi-dependencies]
 # Docs
 linuxdoc = "*"
+
+# Tooling for building/testing the bioconda recipe (conda-recipe/) against local source.
+[feature.condabuild.dependencies]
+conda-build = "*"
+conda-verify = "*"
+
 
 # Oldest supported versions of libraries (lowest series with CPython 3.12 builds on conda-forge).
 [feature.oldest.dependencies]
@@ -143,9 +154,27 @@ check-dist = "twine check --strict dist/*"
 [tasks.clean]
 cmd = "rm -rf dist build src/gambit.egg-info src/gambit/_cython/*.c src/gambit/_cython/*.so"
 
-# Development tasks.
+# Misc development tasks
 [feature.dev.tasks]
 lint = "ruff check"
 format = "ruff format"
 docs = { cmd = "make html", cwd = "docs" }
 docs-clean = { cmd = "make clean", cwd = "docs" }
+
+# Build and test the bioconda recipe (conda-recipe/) against this working tree.
+# conda-build copies the source directory verbatim, so clean first to avoid picking up stale
+# compiled extensions/build artifacts from other environments.
+# --croot: conda-build's default build root lives under the env prefix, which is inside this
+# repo (.pixi/envs/...) - since our recipe's source is the repo itself, conda-build refuses to
+# copy a directory into a subdirectory of itself. Point it outside the repo instead.
+[feature.condabuild.tasks.conda-build-recipe]
+args = [{ arg = "python_version", default = "3.12" }]
+cmd = [
+  "conda", "build", "conda-recipe",
+  "--override-channels",
+  "-c", "conda-forge",
+  "-c", "bioconda",
+  "--python", "{{ python_version }}",
+  "--croot", "/tmp/gambit-conda-bld",
+]
+depends-on = ["clean"]
