@@ -33,6 +33,8 @@ py311 = { features = ["py311", "pkg", "build", "test"] }
 py312 = { features = ["py312", "pkg", "build", "test"] }
 py313 = { features = ["py313", "pkg", "build", "test"] }
 
+oldest = { features = ["py39", "oldest", "pkg", "build", "test"] }
+
 
 # ------------------------------------------- Features ------------------------------------------- #
 
@@ -67,6 +69,23 @@ pytest = "*"
 # Development
 [feature.dev.dependencies]
 ruff = "*"
+
+
+# Oldest supported versions of libraries
+[feature.oldest.dependencies]
+# 1.19 required by scipy 1.7
+numpy = "1.19.*"
+sqlalchemy = "1.4.*"
+biopython = "1.79.*"
+# 23.1 required by cattrs
+attrs = "23.1.*"
+cattrs = "23.2.*"
+click = "8.0.*"
+# 3.0 not available?
+h5py = "3.1.*"
+scipy = "1.7.*"
+# 4.1 required by cattrs
+typing-extensions = "4.1.*"
 
 
 # ------------------------------------------------------------------------------------------------ #
