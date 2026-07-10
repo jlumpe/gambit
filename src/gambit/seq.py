@@ -24,7 +24,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from typing_extensions import TypeAlias
 
-from gambit._cython.kmers import revcomp
+from gambit._cython.kmers import revcomp as revcomp
 from gambit.util.io import FilePath
 from gambit.util.io import open_compressed, ClosingIterator
 

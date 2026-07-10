@@ -6,7 +6,7 @@ import numpy as np
 from attr import attrs, attrib
 
 import gambit._cython.kmers as ckmers
-from gambit._cython.kmers import index_to_kmer
+from gambit._cython.kmers import index_to_kmer as index_to_kmer
 from gambit.seq import NUCLEOTIDES, DNASeq, seq_to_bytes, validate_dna_seq_bytes, revcomp
 from gambit.util.json import Jsonable
 
