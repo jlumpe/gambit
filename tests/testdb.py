@@ -1,12 +1,13 @@
 """Access test database data.
 """
 
-from typing import Callable, TypeVar, Generic, Any, overload, TypedDict
+from typing import TypedDict
 from pathlib import Path
 from dataclasses import dataclass
 from csv import DictReader
 import sqlite3
 import gzip
+from functools import cached_property
 
 from sqlalchemy import create_engine
 
@@ -16,44 +17,6 @@ from gambit.db import ReferenceDatabase, only_genomeset, file_sessionmaker, defa
 from gambit.results import ResultsArchiveReader
 from gambit.query import QueryResults
 from gambit.util.io import FilePath
-
-
-T = TypeVar('T')
-
-
-class LazyAttribute(Generic[T]):
-	"""Descriptor which initializes a property value the first time it is used."""
-
-	def __init__(self, initializer: Callable[[Any], T], value_attr: str):
-		self.initializer = initializer
-		self.value_attr = value_attr
-		self.__doc__ = initializer.__doc__
-
-	@overload
-	def __get__(self, instance: None, owner=None) -> 'LazyAttribute[T]':
-		pass
-
-	@overload
-	def __get__(self, instance, owner=None) -> T:
-		pass
-
-	def __get__(self, instance, owner=None):
-		if instance is None:
-			return self
-
-		try:
-			return instance.__dict__[self.value_attr]
-		except KeyError:
-			pass
-
-		value = self.initializer(instance)
-		setattr(instance, self.value_attr, value)
-		return value
-
-
-def lazy(f: Callable[[Any], T]) -> LazyAttribute[T]:
-	attr = '_' + f.__name__
-	return LazyAttribute(f, attr)
 
 
 @dataclass
@@ -93,9 +56,6 @@ class TestRefGenome(TypedDict):
 
 class TestDB:
 	"""Object which provides access to test database resources.
-
-	Many attributes are "lazy", meaning they are not initialized until first used. This is similar
-	to how it would work if the attributes were separate Pytest fixtures.
 	"""
 
 	paths: TestDBPaths
@@ -117,7 +77,7 @@ class TestDB:
 			results=root / 'results/',
 		)
 
-	@lazy
+	@cached_property
 	def Session(self):
 		"""Sessionmaker for the reference genome database."""
 		return file_sessionmaker(self.paths.ref_genomes)
@@ -130,28 +90,28 @@ class TestDB:
 		engine = create_engine('sqlite://', creator=lambda: memory)
 		return default_sessionmaker(engine)()
 
-	@lazy
+	@cached_property
 	def ref_signatures(self) -> AnnotatedSignatures:
 		"""K-mer signatures for reference genomes."""
 		return load_signatures(self.paths.ref_signatures)  # type: ignore
 
-	@lazy
+	@cached_property
 	def query_signatures(self) -> AnnotatedSignatures:
 		"""K-mer signatures for query genomes."""
 		return load_signatures(self.paths.query_signatures)  # type: ignore
 
-	@lazy
+	@cached_property
 	def kmerspec(self) -> KmerSpec:
 		return self.ref_signatures.kmerspec  # type: ignore
 
-	@lazy
+	@cached_property
 	def refdb(self) -> ReferenceDatabase:
 		"""Full ReferenceDatabase object."""
 		session = self.Session()
 		gset = only_genomeset(session)
 		return ReferenceDatabase(gset, self.ref_signatures)
 
-	@lazy
+	@cached_property
 	def query_genomes(self) -> list[TestQueryGenome]:
 		"""Query genomes and their expected results."""
 
@@ -164,7 +124,7 @@ class TestDB:
 
 		return rows  # type: ignore
 
-	@lazy
+	@cached_property
 	def ref_genomes(self) -> list[TestRefGenome]:
 		"""Reference genomes and their attributes."""
 
