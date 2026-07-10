@@ -17,14 +17,11 @@ bytes containing ascii-encoded nucleotide codes.
 	(``str``, ``bytes``, ``bytearray``, or :class:`Bio.Seq.Seq`).
 """
 
-from pathlib import Path
 import typing
-from typing import Union, Optional, IO, Iterable
-from os import PathLike
+from typing import Union
 
 from Bio import SeqIO
 from Bio.Seq import Seq
-from attr import attrs, attrib
 from typing_extensions import TypeAlias
 
 from gambit._cython.kmers import revcomp

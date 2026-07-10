@@ -1,8 +1,6 @@
 """Test the gambit.query.classify module."""
 
-import pytest
-
-from gambit.classify import matching_taxon, find_matches, consensus_taxon, GenomeMatch
+from gambit.classify import matching_taxon, consensus_taxon, GenomeMatch
 from gambit.db import Taxon, AnnotatedGenome
 from .common import make_lineage
 

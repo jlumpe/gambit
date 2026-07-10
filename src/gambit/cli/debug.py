@@ -51,7 +51,7 @@ def shell(ctx, use_ipython: Optional[bool]):
 	"""
 	if use_ipython is None:
 		try:
-			import IPython
+			import IPython  # noqa: F401
 			use_ipython = True
 		except ImportError:
 			click.echo('IPython not available, defaulting to built-in Python REPL.', err=True)

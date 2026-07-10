@@ -150,7 +150,7 @@ def default_progress_cls() -> type:
 	warning and returns :class:`.NullProgressMeter`.
 	"""
 	try:
-		from tqdm import tqdm
+		from tqdm import tqdm  # noqa: F401
 		return TqdmProgressMeter
 	except ImportError:
 		warn('Could not import tqdm (not installed?), no default progress meter type available.')
