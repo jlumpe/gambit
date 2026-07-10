@@ -18,6 +18,7 @@ bytes containing ascii-encoded nucleotide codes.
 """
 
 from pathlib import Path
+import typing
 from typing import Union, Optional, IO, Iterable
 from os import PathLike
 
@@ -35,9 +36,9 @@ from gambit.util.io import open_compressed, ClosingIterator
 # indexing k-mer sequences
 NUCLEOTIDES = b'ACGT'
 
-SEQ_TYPES = (str, bytes, bytearray, Seq)
+DNASeq: TypeAlias = Union[str, bytes, bytearray, Seq]
+SEQ_TYPES: tuple[DNASeq, ...] = typing.get_args(DNASeq)
 
-DNASeq: TypeAlias = Union[SEQ_TYPES]
 # Type alias for sequence types accepted directly by native (Cython) code.
 DNASeqBytes: TypeAlias = Union[bytes, bytearray]
 
