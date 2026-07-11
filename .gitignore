@@ -1,5 +1,6 @@
-# Cython-generated .c files
+# Cython-generated .c files (and annotated html)
 src/gambit/_cython/*.c
+src/gambit/_cython/*.html
 
 # Pixi env
 .pixi/*

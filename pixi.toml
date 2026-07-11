@@ -147,3 +147,15 @@ lint = "ruff check"
 format = "ruff format"
 docs = { cmd = "make html", cwd = "docs" }
 docs-clean = { cmd = "make clean", cwd = "docs" }
+
+# Re-build the C extensions in place, for "default" environment (uses editable install).
+[feature.build.tasks.build_ext]
+cmd = "python setup.py build_ext --inplace"
+
+# Run cythonize command to build Cython C sources from .pyx files.
+[feature.build.tasks.cythonize]
+cmd = [
+  "cythonize",
+  # Build options - these should match those defined in setup.py
+  "-3", "-X", "boundscheck=False,wraparound=False,cdivision=True",
+]
