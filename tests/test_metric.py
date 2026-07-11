@@ -1,6 +1,9 @@
 """Test distance metric calculations."""
 
+from collections.abc import Iterator, Sequence
+from pathlib import Path
 import pickle
+from typing import Optional
 
 import pytest
 import numpy as np
@@ -8,7 +11,7 @@ import numpy as np
 from gambit.metric import jaccard, jaccarddist, jaccard_bits, jaccard_generic, jaccarddist_array, \
 	jaccarddist_matrix, jaccarddist_pairwise, num_pairs, SCORE_DTYPE
 from gambit.sigs.calc import sparse_to_dense
-from gambit.sigs import SignatureArray, SignatureList, dump_signatures, load_signatures, BOUNDS_DTYPE
+from gambit.sigs import KmerSignature, SignatureArray, SignatureList, dump_signatures, load_signatures, BOUNDS_DTYPE
 from gambit.kmers import KmerSpec
 from gambit.util.progress import check_progress
 from .common import make_signatures
@@ -24,7 +27,7 @@ from .common import make_signatures
 	],
 	scope='module',
 )
-def sigs(request, test_data):
+def sigs(request, test_data: Path) -> SignatureArray:
 	"""SignatureArray to test on."""
 
 	if request.param is None:
@@ -45,21 +48,21 @@ def sigs(request, test_data):
 
 
 @pytest.fixture()
-def queries(sigs):
+def queries(sigs: SignatureArray) -> SignatureArray:
 	"""Query signatures."""
 	# Make it a little different than the reference signatures
 	return sigs[::2]
 
 
 @pytest.fixture()
-def refs_array(sigs):
+def refs_array(sigs: SignatureArray) -> SignatureArray:
 	"""Reference signatures as SignatureArray."""
 	# Make it a little different than the query signatures
 	return sigs[5:]
 
 
 @pytest.fixture()
-def refs(request, refs_array, tmp_path):
+def refs(request, refs_array: SignatureArray, tmp_path: Path):
 	"""Reference signatures in multiple different types. Use indirect parameterization."""
 
 	if request.param == 'SignatureArray':
@@ -93,12 +96,15 @@ def refs(request, refs_array, tmp_path):
 	assert 0
 
 
-def test_jaccard_single(sigs):
+def test_jaccard_single(sigs: SignatureArray):
 	"""Test calculating single distances at a time."""
 
 	# Because jaccard() is calculated as 1 - jaccarddist(), it is off from the other two Python
 	# versions which divide the intersection by the union directly
 	def isclose(a, b): return np.isclose(a, b, atol=1e-7)
+
+	# Empty signature
+	empty = np.zeros(0, dtype=sigs.values.dtype)
 
 	# Iterate over subset of pairs
 	for i, sparse1 in enumerate(sigs[:5]):
@@ -124,11 +130,19 @@ def test_jaccard_single(sigs):
 			if i == j:
 				assert score == 1
 
+		# Check empty vs non-empty
+		if sparse1.size > 0:
+			assert jaccarddist(empty, sparse1) == 1
+			assert jaccarddist(sparse1, empty) == 1
+
+	# Check empty vs empty
+	assert jaccarddist(empty, empty) == 0
+
 
 class TestJaccardDistArray:
 	"""Test jaccarddist_array() function."""
 
-	def test_signaturearray(self, sigs):
+	def test_signaturearray(self, sigs: SignatureArray):
 		"""Full test using SignatureArray as refs argument."""
 
 		for i, sig1 in enumerate(sigs):
@@ -140,12 +154,12 @@ class TestJaccardDistArray:
 				assert dists[j] == jaccarddist(sig1, sig2)
 
 	@pytest.mark.parametrize('refs', ['alt_bounds', 'SignatureList', 'list', 'HDF5Signatures'], indirect=True)
-	def test_alt_types(self, refs_array, refs):
+	def test_alt_types(self, refs_array: SignatureArray, refs: Sequence[KmerSignature]):
 		"""Test alternate types for refs argument."""
 		q = refs_array[0]
 		assert np.array_equal(jaccarddist_array(q, refs), jaccarddist_array(q, refs_array))
 
-	def test_preallocated(self, sigs):
+	def test_preallocated(self, sigs: SignatureArray):
 		"""Test using pre-allocated output array"""
 		out = np.empty(len(sigs), dtype=SCORE_DTYPE)
 		jaccarddist_array(sigs[0], sigs, out=out)
@@ -166,7 +180,7 @@ class TestJaccardDistMatrix:
 	"""Test the jaccarddist_matrix() function."""
 
 	@pytest.fixture()
-	def expected(self, queries, refs_array):
+	def expected(self, queries: SignatureArray, refs_array: SignatureArray) -> np.ndarray:
 		"""Expected array of distances, calculated row by row."""
 		dmat = np.empty((len(queries), len(refs_array)), dtype=SCORE_DTYPE)
 
@@ -179,7 +193,14 @@ class TestJaccardDistMatrix:
 	@pytest.mark.parametrize('refs', ['SignatureArray', 'SignatureList', 'list', 'HDF5Signatures'], indirect=True)
 	@pytest.mark.parametrize('use_ref_indices', [False, True])
 	@pytest.mark.parametrize('chunksize', [None, 10])
-	def test_basic(self, queries, refs, expected, use_ref_indices, chunksize):
+	def test_basic(
+		self,
+		queries: SignatureArray,
+		refs: Sequence[KmerSignature],
+		expected: np.ndarray,
+		use_ref_indices: bool,
+		chunksize: Optional[int],
+	):
 
 		if use_ref_indices:
 			ref_indices = [i for i in range(len(refs)) if i % 3 != 0]
@@ -192,7 +213,7 @@ class TestJaccardDistMatrix:
 
 		assert np.array_equal(out, expected)
 
-	def test_out(self, queries, refs_array, expected):
+	def test_out(self, queries: SignatureArray, refs_array: SignatureArray, expected: np.ndarray):
 		"""Test using pre-allocated output array."""
 		nq = len(queries)
 		nr = len(refs_array)
@@ -215,17 +236,17 @@ class TestJaccardDistMatrix:
 class TestJaccardDistPairwise:
 	"""Test the jaccarddist_pairwise() function."""
 
-	def condense(self, dmat):
+	def condense(self, dmat: np.ndarray) -> np.ndarray:
 		return dmat[np.triu_indices_from(dmat, 1)]
 
 	@pytest.fixture()
-	def expected(self, refs_array):
+	def expected(self, refs_array: SignatureArray) -> np.ndarray:
 		"""Expected distance matrix."""
 		return jaccarddist_matrix(refs_array, refs_array)
 
 	@pytest.mark.parametrize('refs', ['SignatureArray', 'SignatureList', 'list', 'HDF5Signatures'], indirect=True)
 	@pytest.mark.parametrize('use_indices', [False, True])
-	def test_basic(self, refs, expected, use_indices):
+	def test_basic(self, refs: Sequence[KmerSignature], expected: np.ndarray, use_indices: bool):
 
 		if use_indices:
 			indices = [i for i in range(len(refs)) if i % 3 != 0]
@@ -249,7 +270,7 @@ class TestJaccardDistPairwise:
 
 		assert np.array_equal(condensed, self.condense(expected))
 
-	def test_out(self, refs_array, expected):
+	def test_out(self, refs_array: SignatureArray, expected: np.ndarray):
 		"""Test using pre-allocated output array."""
 
 		n = len(refs_array)
