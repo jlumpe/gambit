@@ -73,6 +73,7 @@ cython = "3.*"
 [feature.test.dependencies]
 pytest = "*"
 pytest-cov = "*"
+pytest-benchmark = "*"
 
 # Development
 [feature.dev.dependencies]
