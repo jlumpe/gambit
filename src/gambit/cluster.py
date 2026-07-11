@@ -48,7 +48,6 @@ def linkage_to_bio_tree(link: np.ndarray, labels: Sequence[str]) -> Tree:
 		BioPython tree object.
 	"""
 	nleaves = link.shape[0] + 1
-	nnodes = nleaves * 2 + 1
 
 	labels = list(labels)
 	assert len(labels) == nleaves
