@@ -77,7 +77,13 @@ pytest-cov = "*"
 # Development
 [feature.dev.dependencies]
 ruff = "*"
+# Docs
+sphinx = "*"
+sphinx-rtd-theme = "*"
 
+[feature.dev.pypi-dependencies]
+# Docs
+linuxdoc = "*"
 
 # Oldest supported versions of libraries
 [feature.oldest.dependencies]
@@ -137,3 +143,5 @@ cmd = "rm -rf dist build src/gambit.egg-info src/gambit/_cython/*.c src/gambit/_
 [feature.dev.tasks]
 lint = "ruff check"
 format = "ruff format"
+docs = { cmd = "make html", cwd = "docs" }
+docs-clean = { cmd = "make clean", cwd = "docs" }
