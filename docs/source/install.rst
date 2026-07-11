@@ -20,6 +20,19 @@ The recommended way to install the tool is through the `Conda`_ package manager 
 .. _Bioconda: https://bioconda.github.io/
 
 
+Install from a pre-built wheel
+-------------------------------
+
+Each `GitHub release`_ has pre-built wheels attached to it as downloadable assets, covering
+CPython 3.9-3.14 on 64-bit Linux. These do not require a C compiler or the ``cython`` package to
+install. Download the wheel file matching your Python version (e.g.
+``gambit-1.2.0-cp312-cp312-manylinux_2_28_x86_64.whl`` for Python 3.12) and install it with::
+
+    pip install gambit-1.2.0-cp312-cp312-manylinux_2_28_x86_64.whl
+
+.. _GitHub release: https://github.com/jlumpe/gambit/releases
+
+
 Install from source
 -------------------
 
