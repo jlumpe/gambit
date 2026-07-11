@@ -1,7 +1,7 @@
 # Changelog
 
 
-## Dev
+## 1.2.0
 
 * Resolve ties deterministically when reporting closest reference genomes.
 * NumPy 2.x compatibility.
