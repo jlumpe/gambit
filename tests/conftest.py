@@ -1,4 +1,6 @@
 from pathlib import Path
+from urllib.request import urlretrieve
+from warnings import warn
 
 import numpy as np
 import pytest
@@ -7,10 +9,35 @@ from sqlalchemy import create_engine
 from .testdb import TestDB
 
 
+REFSEQ_SIGNATURES_URL = (
+	'https://storage.googleapis.com/jlumpe-gambit/public/databases/refseq-curated/1.0/'
+	'gambit-refseq-curated-1.0.gs'
+)
+
+
 @pytest.fixture(scope='session')
 def test_data():
 	"""The directory containing test data."""
 	return Path(__file__).parent / 'data'
+
+
+@pytest.fixture(scope='session')
+def refseq_db_signatures_file(test_data) -> Path:
+	"""Path to the full curated RefSeq database signatures file.
+
+	Downloads the file from the Database Releases page if it is not already cached locally.
+	"""
+	filename = REFSEQ_SIGNATURES_URL.split('/')[-1]
+	path = (test_data / 'cache' / filename).resolve()
+
+	if not path.is_file():
+		warn(f'{path} does not exist, downloading...')
+		path.parent.mkdir(parents=True, exist_ok=True)
+		tmp_path = path.with_name(path.name + '.tmp')
+		urlretrieve(REFSEQ_SIGNATURES_URL, tmp_path)
+		tmp_path.rename(path)
+
+	return path
 
 
 @pytest.fixture(autouse=True)
