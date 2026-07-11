@@ -84,7 +84,7 @@ indent-style = "tab"
 
 [tool.cibuildwheel]
 # CPython only, linux-64 (manylinux) only - matches supported versions/platforms in pixi.toml.
-build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+build = "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
 skip = "*-musllinux* *_i686 pp*"
 
 # h5py (and other deps) only publish wheels tagged manylinux_2_28+; the default manylinux2014

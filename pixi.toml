@@ -32,6 +32,7 @@ py310 = { features = ["py310", "pkg", "build", "test"] }
 py311 = { features = ["py311", "pkg", "build", "test"] }
 py312 = { features = ["py312", "pkg", "build", "test"] }
 py313 = { features = ["py313", "pkg", "build", "test"] }
+py314 = { features = ["py314", "pkg", "build", "test"] }
 
 oldest = { features = ["py39", "oldest", "pkg", "build", "test"] }
 
@@ -55,6 +56,8 @@ python = "3.11.*"
 python = "3.12.*"
 [feature.py313.dependencies]
 python = "3.13.*"
+[feature.py314.dependencies]
+python = "3.14.*"
 
 # Building
 # c-compiler provides the conda-forge gcc toolchain so the OpenMP (-fopenmp) build is reproducible
@@ -105,6 +108,7 @@ depends-on = [
   { task = "test", environment = "py311" },
   { task = "test", environment = "py312" },
   { task = "test", environment = "py313" },
+  { task = "test", environment = "py314" },
 ]
 
 # Build a wheel for the current environment's Python version into dist/.
