@@ -37,7 +37,7 @@ def linkage_to_bio_tree(link: np.ndarray, labels: Sequence[str]) -> Tree:
 
 	Parameters
 	----------
-	nodes
+	link
 		Matrix returned by :func:`scipy.cluster.hierarchy.linkage`.
 	labels
 		Leaf node names.

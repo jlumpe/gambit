@@ -77,7 +77,7 @@ def _jaccarddist_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[
 	ref_bounds : numpy.ndarray
 		Bounds of individual k-mer sets within the ``ref_coords`` array. The ``n``\ th k-mer set is
 		the slice of ``ref_coords`` between ``ref_bounds[n]`` and ``ref_bounds[n + 1]``. Length must
-		be one greater than that of``ref_coords``.
+		be one greater than the number of reference sets.
 	out : numpy.ndarray
 		Pre-allocated array to write distances to.
 	"""
