@@ -5,27 +5,35 @@ from cython.parallel import prange, parallel
 
 def jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 	"""Compute the Jaccard index between two k-mer sets in sparse coordinate format."""
-	return 1 - c_jaccarddist(coords1, coords2)
+	return 1 - c_jaccarddist(coords1, coords2, 0, coords2.shape[0])
 
 
 def jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 	"""Compute the Jaccard distance between two k-mer sets in sparse coordinate format."""
-	return c_jaccarddist(coords1, coords2)
+	return c_jaccarddist(coords1, coords2, 0, coords2.shape[0])
 
 
-cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
+cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2, intptr_t begin2, intptr_t end2) noexcept nogil:
 	"""Compute the Jaccard distance between two k-mer sets in ordered coordinate format.
 
 	Declared with nogil so it can be run in parallel.
+
+	``coords2`` is indexed over the half-open range ``[begin2, end2)`` rather than being passed
+	as a pre-sliced memoryview. This lets callers (``_jaccarddist_parallel``) pass the full
+	concatenated reference coordinate array along with per-set bounds instead of slicing it before
+	each call. Slicing a memoryview allocates a new one and adjusts its reference count, which
+	requires an atomic operation when done without the GIL; since this function is called once per
+	iteration of a parallel loop, avoiding that keeps the thread from contending over the same
+	refcount.
 	"""
 
 	cdef:
 		# Lengths of the two arrays
 		intptr_t N = coords1.shape[0]
-		intptr_t M = coords2.shape[0]
+		intptr_t M = end2 - begin2
 
 		# Index and value of items in each array as we are iterating
-		intptr_t i = 0, j = 0
+		intptr_t i = 0, j = begin2
 		COORDS_T a
 		COORDS_T_2 b
 
@@ -34,7 +42,7 @@ cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
 	# Iterate through both arrays simultaneously, advance index for the array
 	# with the smaller value. Advance both if they are equal. Increment the
 	# union count each loop.
-	while i < N and j < M:
+	while i < N and j < end2:
 		a = coords1[i]
 		b = coords2[j]
 
@@ -46,10 +54,10 @@ cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2) nogil:
 		if b <= a:
 			j += 1
 
-	# In most cases we won't have i == N and j == M at the end of the loop,
+	# In most cases we won't have i == N and j == end2 at the end of the loop,
 	# account for the items that we didn't get through
 	u += N - i
-	u += M - j
+	u += end2 - j
 
 	# Avoid divide by zero, define distance between empty sets to be zero
 	if u == 0:
@@ -83,9 +91,9 @@ def _jaccarddist_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[
 	"""
 	cdef intptr_t N = ref_bounds.shape[0] - 1
 	cdef BOUNDS_T begin, end
-	cdef int i
+	cdef intptr_t i
 
 	for i in prange(N, nogil=True, schedule='dynamic'):
 		begin = ref_bounds[i]
 		end = ref_bounds[i+1]
-		out[i] = c_jaccarddist(query, ref_coords[begin:end])
+		out[i] = c_jaccarddist(query, ref_coords, begin, end)
