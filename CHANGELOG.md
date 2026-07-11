@@ -1,13 +1,35 @@
 # Changelog
 
 
+## Dev
+
+* Resolve ties deterministically when reporting closest reference genomes.
+* NumPy 2.x compatibility.
+* Update minimum dependency versions (the previous release was probably not actually working with
+  its declared minimums).
+
+### Internal
+
+* Mark import re-exports for static type checkers.
+* Packaging and build system:
+  * Transition from `setup.cfg` to `pyproject.toml`.
+  * Define package version in `pyproject.toml` (keep `gambit.__version__` for backwards
+    compatibility).
+  * Pixi project for development environments and CI.
+  * Distribute pre-built wheels (linux-64, Python 3.9-3.14), build in CI with `cibuildwheel`.
+* Tests:
+  * Test on Python 3.13 and 3.14.
+  * Test with lowest supported versions of all dependencies.
+  * Fix tests with Click 8.2.
+
+
 ## 1.1.0
 
 * Command line interface:
-  * Better error reporting when database file(s) not found
-  * Add more details to output of `gambit signatures info` command.
+	* Better error reporting when database file(s) not found
+	* Add more details to output of `gambit signatures info` command.
 * Major overhaul of internal Python API and tests (see full release notes on GitHub)
-  * Many fixes to API documentation
+	* Many fixes to API documentation
 * Increase minimum Python version to 3.9
 * Make compatible with SQLAlchemy 2.0
 
@@ -16,8 +38,8 @@
 
 * Significant documentation updates.
 * Better error reporting:
-  * When database files cannot be found (in CLI and API).
-  * On attempting to open an invalid signatures file.
+	* When database files cannot be found (in CLI and API).
+	* On attempting to open an invalid signatures file.
 * Misc
   * Run tests on Python 3.11 and 3.12.
 
