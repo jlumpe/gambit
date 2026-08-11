@@ -85,7 +85,9 @@ indent-style = "tab"
 [tool.cibuildwheel]
 # CPython only, linux-64 (manylinux) only - matches supported versions/platforms in pixi.toml.
 build = "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
-skip = "*-musllinux* *_i686 pp*"
+# musllinux, 32-bit, and PyPy are irrelevant here. cp313t/cp314t (free-threaded builds) are also
+# skipped - the OpenMP/nogil Cython extensions haven't been verified under free-threading yet.
+skip = "*-musllinux* *_i686 pp* cp31?t-*"
 
 # h5py (and other deps) only publish wheels tagged manylinux_2_28+; the default manylinux2014
 # image's older glibc can't install those, forcing a source build that fails due to missing/old
