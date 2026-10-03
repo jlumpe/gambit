@@ -21,7 +21,7 @@ def subset_sigs(sigs: AbstractSignatureArray, size: int, offset: int = 0) -> Abs
 	return subset  # pyright: ignore[reportReturnType]
 
 
-@pytest.fixture(scope='module', params=[100, 1000, 10000])
+@pytest.fixture(scope='module', params=[100, 1000])#, 10000])
 def refs_size(request):
 	"""Number of reference signatures to process at a time.
 
@@ -34,8 +34,8 @@ def refs_size(request):
 @pytest.fixture(scope='module')
 def ref_sigs_all(refseq_db_signatures_file: Path) -> HDF5Signatures:
 	"""
-	Full set of reference signatures RefSeq database (50,000 signatures), as HDF5Signatures object
-	(not loaded into memory).
+	Full set of reference signatures from RefSeq database (50,000 signatures), as HDF5Signatures
+	object (not loaded into memory).
 	"""
 	return load_signatures(refseq_db_signatures_file)  # pyright: ignore[reportReturnType]
 
@@ -59,13 +59,20 @@ def query_sigs(ref_sigs_all: HDF5Signatures) -> list[KmerSignature]:
 	return list(subset_sigs(ref_sigs_all, 10, 10))
 
 
-def _benchmark_jaccarddist_array(query_sigs: list[KmerSignature], ref_sigs: SignatureArray, out: np.ndarray):
+def _benchmark_jaccarddist_array(query_sigs: list[KmerSignature], ref_sigs: SignatureArray, out: np.ndarray, **kw):
 	for query in query_sigs:
-		jaccarddist_array(query, ref_sigs, out)
+		jaccarddist_array(query, ref_sigs, out, **kw)
 
 
 @pytest.mark.parametrize('threads', [1, 2, 4, 8])
-def benchmark_jaccarddist_array(query_sigs: list[KmerSignature], ref_sigs: SignatureArray, benchmark, threads: int):
+@pytest.mark.parametrize('thread_chunksize', [1, 5, 10])
+def benchmark_jaccarddist_array(
+	query_sigs: list[KmerSignature],
+	ref_sigs: SignatureArray,
+	benchmark,
+	threads: int,
+	thread_chunksize: int,
+):
 	"""Benchmark the jaccarddist_array function.
 
 	This is the main workhorse function, ``jaccarddist_matrix()`` (used by ``query()``) calls this
@@ -77,4 +84,4 @@ def benchmark_jaccarddist_array(query_sigs: list[KmerSignature], ref_sigs: Signa
 
 	omp_set_num_threads(threads)
 	out = np.empty(len(ref_sigs), SCORE_DTYPE)
-	benchmark(_benchmark_jaccarddist_array, query_sigs, ref_sigs, out)
+	benchmark(_benchmark_jaccarddist_array, query_sigs, ref_sigs, out, thread_chunksize=thread_chunksize)

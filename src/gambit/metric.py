@@ -22,6 +22,9 @@ _COORDS_UNSIGNED_DTYPES = [np.dtype(f'u{s}') for s in [2, 4, 8]]
 _COORDS_SIGNED_DTYPES = [np.dtype(f'i{s}') for s in [2, 4, 8]]
 
 
+DEFAULT_THREAD_CHUNKSIZE = 1
+
+
 def _cast_sigs_array(arr: np.ndarray) -> np.ndarray:
 	"""Convert signature array to proper data type for Cython metric code.
 
@@ -140,7 +143,14 @@ def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
 	return 1. if union == 0 else intersection / union
 
 
-def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: np.ndarray | None = None) -> np.ndarray:
+def jaccarddist_array(
+	query: KmerSignature,
+	refs: Sequence[KmerSignature],
+	out: np.ndarray | None = None,
+	*,
+	threads: int = 0,
+	thread_chunksize: int | None = None,
+) -> np.ndarray:
 	"""
 	Calculate Jaccard distances between a query k-mer signature and a list of reference signatures.
 
@@ -180,10 +190,17 @@ def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: 
 		raise ValueError(f'Output array dtype must be {SCORE_DTYPE}, got {out.dtype}')
 
 	if isinstance(refs, SignatureArray):
+		if thread_chunksize is None:
+			thread_chunksize = DEFAULT_THREAD_CHUNKSIZE
+		if thread_chunksize <= 0:
+			raise ValueError('thread_chunksize must be positive.')
+
 		values = _cast_sigs_array(refs.values)
 		bounds = refs.bounds.astype(BOUNDS_DTYPE, copy=False)
 
-		_cmetric._jaccarddist_parallel(query, values, bounds, out)
+		_cmetric._jaccarddist_parallel(query, values, bounds, out,
+			threads=threads,
+			chunksize=thread_chunksize,)
 
 	else:
 		for i, ref in enumerate(refs):
@@ -193,13 +210,16 @@ def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: 
 	return out
 
 
-def jaccarddist_matrix(queries: Sequence[KmerSignature],
-                       refs: Sequence[KmerSignature],
-                       ref_indices: Sequence[int] | None = None,
-                       out: np.ndarray | None = None,
-                       chunksize: int | None = None,
-                       progress = None,
-                       ) -> np.ndarray:
+def jaccarddist_matrix(
+	queries: Sequence[KmerSignature],
+	refs: Sequence[KmerSignature],
+	ref_indices: Sequence[int] | None = None,
+	out: np.ndarray | None = None,
+	*,
+	chunksize: int | None = None,
+	progress = None,
+	**kw,
+) -> np.ndarray:
 	"""
 	Calculate a Jaccard distance matrix between a list of query signatures and a list of
 	reference signatures.
@@ -264,7 +284,7 @@ def jaccarddist_matrix(queries: Sequence[KmerSignature],
 			ref_chunk = refs[idx]
 
 			for (i, query) in enumerate(queries):
-				jaccarddist_array(query, ref_chunk, out=out[i, ref_slice])
+				jaccarddist_array(query, ref_chunk, out=out[i, ref_slice], **kw)
 				meter.increment(len(ref_chunk))
 
 	return out

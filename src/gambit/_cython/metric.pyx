@@ -1,6 +1,7 @@
 """Cython functions for calculating k-mer distance metrics"""
 
 from cython.parallel import prange, parallel
+from openmp cimport omp_get_max_threads
 
 
 def jaccard(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
@@ -13,7 +14,12 @@ def jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2):
 	return c_jaccarddist(coords1, coords2, 0, coords2.shape[0])
 
 
-cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2, intptr_t begin2, intptr_t end2) noexcept nogil:
+cdef SCORE_T c_jaccarddist(
+	COORDS_T[:] coords1,
+	COORDS_T_2[:] coords2,
+	intptr_t begin2,
+	intptr_t end2,
+) noexcept nogil:
 	"""Compute the Jaccard distance between two k-mer sets in ordered coordinate format.
 
 	Declared with nogil so it can be run in parallel.
@@ -68,7 +74,14 @@ cdef SCORE_T c_jaccarddist(COORDS_T[:] coords1, COORDS_T_2[:] coords2, intptr_t 
 	return <SCORE_T>(2 * u - N - M) / u
 
 
-def _jaccarddist_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[:] ref_bounds, SCORE_T[:] out):
+def _jaccarddist_parallel(
+	COORDS_T[:] query,
+	COORDS_T_2[:] ref_coords,
+	BOUNDS_T[:] ref_bounds,
+	SCORE_T[:] out,
+	int chunksize = 1,
+	int threads = 0,
+):
 	"""Calculate Jaccard distances between a query k-mer set and a collection of reference sets.
 
 	Data types of k-mer coordinate arrays may be 16, 32, or 64-bit signed or
@@ -88,12 +101,21 @@ def _jaccarddist_parallel(COORDS_T[:] query, COORDS_T_2[:] ref_coords, BOUNDS_T[
 		be one greater than the number of reference sets.
 	out : numpy.ndarray
 		Pre-allocated array to write distances to.
+	chunksize : int, optional
+		Size of chunks to process in parallel. Default is 1.
+	threads : int, optional
+		Number of threads to use for parallelization. Default is the maximum number of threads
+		available.
 	"""
 	cdef intptr_t N = ref_bounds.shape[0] - 1
 	cdef BOUNDS_T begin, end
 	cdef intptr_t i
 
-	for i in prange(N, nogil=True, schedule='dynamic'):
+	if threads <= 0:
+		# This is the default behavior in Cython 3.3, prior to that 0 is an error
+		threads = omp_get_max_threads()
+
+	for i in prange(N, nogil=True, schedule='dynamic', num_threads=threads, chunksize=chunksize):
 		begin = ref_bounds[i]
 		end = ref_bounds[i+1]
 		out[i] = c_jaccarddist(query, ref_coords, begin, end)
