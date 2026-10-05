@@ -2,7 +2,10 @@
 
 [![Build Status](https://github.com/jlumpe/gambit/actions/workflows/ci.yml/badge.svg)](https://github.com/jlumpe/gambit/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/gambit-genomics/badge/?version=latest)](https://gambit-genomics.readthedocs.io/en/latest/?badge=latest)
-[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/gambit/README.html)
+<!-- [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](https://bioconda.github.io/recipes/gambit/README.html) -->
+[![Bioconda](https://img.shields.io/conda/vn/bioconda/gambit)](https://bioconda.github.io/recipes/gambit/README.html)
+[![PyPI](https://img.shields.io/pypi/v/gambit)](https://pypi.org/project/gambit/)
+[![Python versions](https://img.shields.io/pypi/pyversions/gambit)](https://pypi.org/project/gambit/)
 
 GAMBIT (Genomic Approximation Method for Bacterial Identification and Tracking) is a tool for rapid taxonomic identification of microbial pathogens.
 It uses an efficient genomic distance metric along with a curated database of approximately 50,000 reference genomes (derived from NCBI
