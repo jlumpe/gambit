@@ -18,6 +18,26 @@ authors = [
 license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 
+keywords = ["bioinformatics", "genomics", "taxonomy", "bacteria", "pathogen", "k-mer", "kmer"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Environment :: Console",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Cython",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Natural Language :: English",
+]
 
 requires-python = ">= 3.9"
 dependencies = [
@@ -38,7 +58,11 @@ dependencies = [
 
 
 [project.urls]
-Homepage = "http://github.com/jlumpe/gambit"
+Homepage = "https://github.com/jlumpe/gambit"
+Documentation = "https://gambit-genomics.readthedocs.io/en/latest"
+Source = "https://github.com/jlumpe/gambit"
+Issues = "https://github.com/jlumpe/gambit/issues"
+Changelog = "https://github.com/jlumpe/gambit/blob/main/CHANGELOG.md"
 
 [project.scripts]
 gambit = "gambit.cli:cli"
