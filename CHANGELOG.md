@@ -1,6 +1,16 @@
 # Changelog
 
 
+## 1.2.0.post1
+
+Packaging-only release to support PyPI. No changes to package code.
+
+* Update CI to add the missing CPython 3.14 wheel.
+* Publish to PyPI from CI.
+* Add PyPI metadata (classifiers, keywords, project URLs).
+* Update installation instructions in README and Sphinx docs.
+
+
 ## 1.2.0
 
 * Resolve ties deterministically when reporting closest reference genomes.
