@@ -1,14 +1,26 @@
 name: Release
 
 on:
+  # On release (will attach distribution files and publish to PyPI)
   release:
     types: [published]
+  # Manual dispatch (will publish to TestPyPI or skip based on input)
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Where to publish the built distributions
+        type: choice
+        options:
+        - none
+        - testpypi
+        default: none
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
+
+  # Build wheels for all supported Python versions using cibuildwheel and save as workflow artifacts
   build-wheels:
     runs-on: ubuntu-latest
     steps:
@@ -23,8 +35,96 @@ jobs:
         name: wheels
         path: wheelhouse/*.whl
 
-    - name: Attach wheels to release
-      if: github.event_name == 'release'
+  # Build the source distribution (sdist) tarball and save as a workflow artifact
+  build-sdist:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    # Uses the lightweight "dist" Pixi environment (build backend + twine, no compiler or package
+    # install) so the sdist is built and checked the same way as locally.
+    - uses: prefix-dev/setup-pixi@v0.10.0
+      with:
+        pixi-version: v0.72.1
+        environments: dist
+        locked: true
+        cache: true
+
+    - name: Build sdist
+      run: pixi run -e dist build-sdist
+
+    - name: Check distribution metadata
+      run: pixi run -e dist check-dist
+
+    - name: Upload sdist as workflow artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sdist
+        path: dist/*.tar.gz
+
+  # Attach distributions (wheels and sdist) to release
+  attach-to-release:
+    if: github.event_name == 'release'
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Download distributions
+      uses: actions/download-artifact@v4
+      with:
+        path: dist
+        merge-multiple: true
+
+    # --repo is required because this job has no checkout for gh to infer the repository from.
+    - name: Attach distributions to release
       env:
         GH_TOKEN: ${{ github.token }}
-      run: gh release upload "${{ github.event.release.tag_name }}" wheelhouse/*.whl
+      run: gh release upload "${{ github.event.release.tag_name }}" dist/* --repo "${{ github.repository }}"
+
+  # Publish distribution files to PyPI
+  # Run on release
+  publish-pypi:
+    if: github.event_name == 'release'
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-latest
+    # Environment name must match the PyPI trusted publisher config. The url is only shown as a
+    # link in the run summary.
+    environment:
+      name: pypi
+      url: https://pypi.org/p/gambit
+    permissions:
+      id-token: write
+    steps:
+    - name: Download distributions
+      uses: actions/download-artifact@v4
+      with:
+        path: dist
+        merge-multiple: true
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+  # Publish distribution files to TestPyPI
+  # Run on manual trigger, if "publish" input is "testpypi"
+  publish-testpypi:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish == 'testpypi'
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-latest
+    # Environment name must match the TestPyPI trusted publisher config.
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/gambit
+    permissions:
+      id-token: write
+    steps:
+    - name: Download distributions
+      uses: actions/download-artifact@v4
+      with:
+        path: dist
+        merge-multiple: true
+
+    - name: Publish to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
