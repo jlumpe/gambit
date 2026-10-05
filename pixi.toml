@@ -36,6 +36,9 @@ py314 = { features = ["py314", "pkg", "build", "test"] }
 
 oldest = { features = ["py39", "oldest", "pkg", "build", "test"] }
 
+# Building and checking the sdist (no package install or compiler needed)
+dist = { features = ["py312", "dist"] }
+
 
 # ------------------------------------------- Features ------------------------------------------- #
 
@@ -68,6 +71,14 @@ setuptools = "*"
 wheel = "*"
 python-build = "*"
 cython = "3.*"
+
+# Building and checking distributions for upload
+[feature.dist.dependencies]
+setuptools = ">=77"
+wheel = "*"
+python-build = "*"
+cython = "3.*"
+twine = "*"
 
 # Testing
 [feature.test.dependencies]
@@ -124,7 +135,7 @@ depends-on = [
 [feature.build.tasks]
 build-wheel = "python -m build --wheel --no-isolation"
 
-# Build wheels for all supported Python versions into dist/.
+# Build wheels for all supported Python versions as well as source distribution into dist/.
 # Each environment produces its own version-specific wheel (cp39, cp310, ...).
 [tasks.build-all]
 depends-on = [
@@ -134,7 +145,14 @@ depends-on = [
   { task = "build-wheel", environment = "py312" },
   { task = "build-wheel", environment = "py313" },
   { task = "build-wheel", environment = "py314" },
+  { task = "build-sdist", environment = "dist" },
 ]
+
+[feature.dist.tasks]
+# Build the sdist into dist/
+build-sdist = "python -m build --sdist --no-isolation"
+# Check the metadata of everything in dist/ (as rendered on PyPI)
+check-dist = "twine check --strict dist/*"
 
 # Remove build artifacts, including generated Cython C sources and compiled extensions
 # (so the next build re-cythonizes and compiles from scratch).
