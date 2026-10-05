@@ -6,44 +6,59 @@ Installation and Setup
 Python package and command-line tool
 ====================================
 
-Install from Bioconda
----------------------
+Conda
+-----
 
-The recommended way to install the tool is through the `Conda`_ package manager (I recommend the
-`Miniconda`_ distribution) from the `Bioconda`_ channel::
+Install with the `Conda`_ package manager from the `Bioconda`_ channel::
 
-    conda install -c bioconda gambit
+    conda install -c conda-forge -c bioconda gambit
 
-
-.. _Conda: https://www.anaconda.com/products/distribution
-.. _Miniconda: https://docs.conda.io/en/latest/miniconda.html
+.. _Conda: https://docs.conda.io/
 .. _Bioconda: https://bioconda.github.io/
 
 
-Install from a pre-built wheel
--------------------------------
+Pixi
+----
 
-Each `GitHub release`_ has pre-built wheels attached to it as downloadable assets, covering
-CPython 3.9-3.14 on 64-bit Linux. These do not require a C compiler or the ``cython`` package to
-install. Download the wheel file matching your Python version (e.g.
-``gambit-1.2.0-cp312-cp312-manylinux_2_28_x86_64.whl`` for Python 3.12) and install it with::
+Install the ``gambit`` command globally using `Pixi`_::
 
-    pip install gambit-1.2.0-cp312-cp312-manylinux_2_28_x86_64.whl
+    pixi global install -c conda-forge -c bioconda gambit
 
-.. _GitHub release: https://github.com/jlumpe/gambit/releases
+To add GAMBIT to an existing Pixi workspace instead, use ``pixi add gambit`` (after ensuring the
+``conda-forge`` and ``bioconda`` channels are added to the workspace).
+
+.. _Pixi: https://pixi.prefix.dev/latest/global_tools/introduction/
 
 
-Install from source
--------------------
+Pip
+---
 
-Installing from source requires the ``cython`` package as well as a C compiler be installed on your
-system. Clone the repository and navigate to the directory, and then run::
+Install from `PyPI`_::
 
-    pip install .
+    pip install gambit
 
-Or do an editable development install with::
+Pre-built wheels are only provided for Linux (x86_64) and CPython 3.9-3.14. On other platforms pip
+will attempt to build from the source distribution (see :ref:`install-source`).
 
-    pip install -e .
+.. _PyPI: https://pypi.org/project/gambit/
+
+
+.. _install-source:
+
+From source
+-----------
+
+Clone the repository and install with pip::
+
+    git clone https://github.com/jlumpe/gambit.git
+    cd gambit
+    pip install .  # or "pip install -e ." for an editable install
+
+Requires a C compiler with OpenMP support. Not supported on macOS (Apple clang lacks ``-fopenmp``)
+or Windows. macOS users should install using Conda or Pixi instead, and Windows users should use
+`WSL`_.
+
+.. _WSL: https://learn.microsoft.com/en-us/windows/wsl/
 
 
 .. _install-db:
