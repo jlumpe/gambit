@@ -28,9 +28,6 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
@@ -39,20 +36,23 @@ classifiers = [
     "Natural Language :: English",
 ]
 
-requires-python = ">= 3.9"
+requires-python = ">= 3.12"
 dependencies = [
-    # Test failures on 2.x
-    "numpy >= 1.19",
-    "sqlalchemy >= 1.4",
-    # Seq stores data as bytes
-    "biopython ~= 1.79",
+    # First series with CPython 3.12 builds.
+    "numpy >= 1.26",
+    # First 1.4 release with CPython 3.12 builds.
+    "sqlalchemy >= 1.4.49",
+    # Seq stores data as bytes. 1.81 is the first release with CPython 3.12 builds.
+    "biopython ~= 1.81",
     "attrs >= 23.1",
     # Minimum for 3.12, also introduces potentially breaking changes
     "cattrs >= 23.2",
-    # path_type=pathlib.Path support in click.Path requires >= 8.0
-    "click >= 8.0",
-    "h5py ~= 3.1",
-    "scipy ~= 1.7",
+    # path_type=pathlib.Path support in click.Path requires >= 8.0.
+    # 8.1 is the first series with CPython 3.12 builds.
+    "click >= 8.1",
+    # First series with CPython 3.12 builds.
+    "h5py ~= 3.9",
+    "scipy ~= 1.11",
     "typing-extensions >= 4.1",
 ]
 
@@ -108,7 +108,7 @@ indent-style = "tab"
 
 [tool.cibuildwheel]
 # CPython only, linux-64 (manylinux) only - matches supported versions/platforms in pixi.toml.
-build = "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
+build = "cp312-* cp313-* cp314-*"
 # musllinux, 32-bit, and PyPy are irrelevant here. cp313t/cp314t (free-threaded builds) are also
 # skipped - the OpenMP/nogil Cython extensions haven't been verified under free-threading yet.
 skip = "*-musllinux* *_i686 pp* cp31?t-*"

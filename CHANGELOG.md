@@ -1,6 +1,11 @@
 # Changelog
 
 
+## Unreleased
+
+* Increase minimum Python version to 3.12.
+
+
 ## 1.2.0.post1
 
 Packaging-only release to support PyPI. No changes to package code.

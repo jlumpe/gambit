@@ -37,7 +37,7 @@ Install from `PyPI`_::
 
     pip install gambit
 
-Pre-built wheels are only provided for Linux (x86_64) and CPython 3.9-3.14. On other platforms pip
+Pre-built wheels are only provided for Linux (x86_64) and CPython 3.12-3.14. On other platforms pip
 will attempt to build from the source distribution (see :ref:`install-source`).
 
 .. _PyPI: https://pypi.org/project/gambit/
