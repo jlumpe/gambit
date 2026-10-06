@@ -18,11 +18,15 @@
 # -- Project information -----------------------------------------------------
 
 project = 'GAMBIT'
-copyright = '2021 - 2026, Jared Lumpe'
+copyright = '2016 - 2026, Jared Lumpe'
 author = 'Jared Lumpe'
 
-# The full version, including alpha/beta/rc tags
-release = '1.2.0'
+# The full version, including alpha/beta/rc tags.
+# Requires the package to be installed (Read the Docs does this, see .readthedocs.yml).
+from importlib.metadata import version as _get_version
+release = _get_version('gambit')
+# Major.minor version
+version = '.'.join(release.split('.')[:2])
 
 
 # -- General configuration ---------------------------------------------------
