@@ -128,8 +128,8 @@ def record_sets():
 		# Create the BioPython sequence record object
 		records = [SeqIO.SeqRecord(
 			seq=Seq(seq.decode('ascii')),
-			id='SEQ{}'.format(i + 1),
-			description='sequence {}'.format(i + 1),
+			id=f'SEQ{i + 1}',
+			description=f'sequence {i + 1}',
 		) for seq in seqs]
 
 		items.append((records, sig))

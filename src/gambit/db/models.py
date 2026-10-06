@@ -219,14 +219,10 @@ class AnnotatedGenome(Base):
 	refseq_acc = hybrid_property(lambda self: self.genome.refseq_acc)
 
 	def __repr__(self):
-		return '<{}:{}:{} {!r}/{!r}>'.format(
-			type(self).__name__,
-			self.genome_set_id,
-			self.genome_id,
-			# Don't break display if not fully instantiated
-			None if self.genome_set is None else self.genome_set.key,
-			None if self.genome is None else self.genome.key,
-		)
+		# Don't break display if not fully instantiated
+		gset_key = None if self.genome_set is None else self.genome_set.key
+		genome_key = None if self.genome is None else self.genome.key
+		return f'<{type(self).__name__}:{self.genome_set_id}:{self.genome_id} {gset_key!r}/{genome_key!r}>'
 
 
 class Taxon(Base):
