@@ -292,12 +292,13 @@ def get_file_id(path: FilePath, strip_dir: bool = True, strip_ext: bool = True) 
 	return id
 
 
-def get_sequence_files(explicit: Iterable[FilePath] | None=None,
-                       listfile: None | FilePath | TextIO=None,
-                       listfile_dir: str | None=None,
-                       strip_dir: bool = True,
-                       strip_ext: bool = True,
-                       ) -> tuple[list[str], list[Path]] | tuple[None, None]:
+def get_sequence_files(
+	explicit: Iterable[FilePath] | None=None,
+	listfile: None | FilePath | TextIO=None,
+	listfile_dir: str | None=None,
+	strip_dir: bool = True,
+	strip_ext: bool = True,
+) -> tuple[list[str], list[Path]] | tuple[None, None]:
 	"""Get list of sequence file paths and IDs from several types of CLI arguments.
 
 	Does not check for conflict between ``explicit`` and ``listfile``.
@@ -360,7 +361,10 @@ def warn_duplicate_file_ids(ids: list[str], template: str):
 # Click introspection
 ################################################################################
 
-def params_by_name(cmd: click.Command, names: Iterable[str] | None = None):
+def params_by_name(
+	cmd: click.Command,
+	names: Iterable[str] | None = None,
+) -> dict[str, click.Parameter] | list[click.Parameter]:
 	"""Get parameters of click command by name.
 
 	Parameters
@@ -380,7 +384,12 @@ def params_by_name(cmd: click.Command, names: Iterable[str] | None = None):
 	else:
 		return [by_name[name] for name in names]
 
-def check_params_group(ctx: click.Context, names: Iterable[str], exclusive: bool, required: bool):
+def check_params_group(
+	ctx: click.Context,
+	names: Iterable[str],
+	exclusive: bool,
+	required: bool,
+) -> None:
 	"""Check for the presence of the given parameter values and raise an informative error if needed.
 
 	Parameters
@@ -427,7 +436,7 @@ def param_name_human(param: click.Parameter) -> str:
 # Misc
 ################################################################################
 
-def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: str=''):
+def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: str='') -> None:
 	"""Print a basic table."""
 
 	echo = lambda s: click.echo(s, nl=False)
