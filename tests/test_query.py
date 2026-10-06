@@ -3,7 +3,6 @@
 import pytest
 
 from gambit.query import QueryResults, query, query_parse
-from gambit.util.misc import zip_strict
 from gambit import __version__ as GAMBIT_VERSION
 
 from .testdb import TestDB
@@ -25,7 +24,7 @@ class TestQuery:
 		assert results.genomeset == ref_results.genomeset
 		assert results.signaturesmeta == ref_results.signaturesmeta
 
-		for item, ref_item in zip_strict(results.items, ref_results.items):
+		for item, ref_item in zip(results.items, ref_results.items, strict=True):
 			compare_result_items(item, ref_item)
 
 	def test_query(self, testdb: TestDB, strict: bool):
@@ -38,7 +37,7 @@ class TestQuery:
 		results = query(testdb.refdb, query_sigs, params)
 		self.check_results(results, ref_results)
 
-		for sigid, item in zip_strict(query_sigs.ids, results.items):
+		for sigid, item in zip(query_sigs.ids, results.items, strict=True):
 			assert item.file is None
 			assert item.label == sigid
 
@@ -52,6 +51,6 @@ class TestQuery:
 		results = query_parse(testdb.refdb, query_files, params)
 		self.check_results(results, ref_results)
 
-		for file, item in zip_strict(query_files, results.items):
+		for file, item in zip(query_files, results.items, strict=True):
 			assert item.file == file
 			assert item.label == str(file)

@@ -9,7 +9,6 @@ import numpy as np
 
 from gambit.cli import cli, common
 from gambit.db import ReferenceDatabase
-from gambit.util.misc import zip_strict
 from gambit.util.io import write_lines, FilePath
 
 from ..testdb import TestDB
@@ -97,7 +96,7 @@ class TestGetSequenceFiles:
 	"""Test the get_sequence_files() function."""
 
 	def check_ids(self, ids: Iterable[str], paths: Iterable[FilePath], strip_dir: bool, strip_ext: bool):
-		for id_, path in zip_strict(ids, paths):
+		for id_, path in zip(ids, paths, strict=True):
 			if strip_dir:
 				expected = Path(path).name
 				if strip_ext:
@@ -108,7 +107,7 @@ class TestGetSequenceFiles:
 			assert id_ == expected
 
 	def check_files(self, files, expected):
-		for file, ex in zip_strict(files, expected):
+		for file, ex in zip(files, expected, strict=True):
 			assert isinstance(file, Path)
 			assert file == Path(ex)
 

@@ -12,7 +12,6 @@ import numpy as np
 from gambit.util.json import to_json
 from gambit.query import QueryResults, QueryResultItem, QueryParams
 from gambit.classify import GenomeMatch, ClassifierResult
-from gambit.util.misc import zip_strict
 from gambit.db.models import AnnotatedGenome, Taxon, reportable_taxon
 
 
@@ -152,7 +151,7 @@ def cmp_annnotatedgenome_json(data: dict[str, Any], genome: AnnotatedGenome):
 		genome,
 		['key', 'description', 'organism', 'ncbi_db', 'ncbi_id', 'genbank_acc', 'refseq_acc'],
 	)
-	for taxon_data, taxon in zip_strict(data['taxonomy'], genome.taxon.ancestors(True)):
+	for taxon_data, taxon in zip(data['taxonomy'], genome.taxon.ancestors(True), strict=True):
 		cmp_taxon_json(taxon_data, taxon)
 
 
@@ -220,7 +219,7 @@ def check_json_results(file: TextIO, results: QueryResults, strict: bool = False
 
 		# Closest genomes
 		assert len(item_data['closest_genomes']) == len(item.closest_genomes)
-		for match, match_data in zip_strict(item.closest_genomes, item_data['closest_genomes']):
+		for match, match_data in zip(item.closest_genomes, item_data['closest_genomes'], strict=True):
 			cmp_genomematch_json(match_data, match)
 
 

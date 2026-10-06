@@ -12,7 +12,6 @@ from pathlib import Path
 
 from gambit.query import QueryParams, QueryResults, query_parse
 from gambit.results import ResultsArchiveWriter
-from gambit.util.misc import zip_strict
 from gambit.util.io import FilePath
 
 
@@ -35,7 +34,7 @@ def check_results(queries: list[TestQueryGenome], query_files: list[FilePath], r
 
 	strict = results.params.classify_strict
 
-	for query, query_file, item in zip_strict(queries, query_files, results.items):
+	for query, query_file, item in zip(queries, query_files, results.items, strict=True):
 
 		clsresult = item.classifier_result
 		predicted = clsresult.predicted_taxon

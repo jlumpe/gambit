@@ -19,7 +19,6 @@ from gambit.sigs.base import KmerSignature, SignaturesMeta, ReferenceSignatures
 from gambit.metric import jaccarddist_matrix
 from gambit.util.io import FilePath
 from gambit.util.progress import progress_config, iter_progress
-from gambit.util.misc import zip_strict
 
 
 @attrs()
@@ -242,7 +241,7 @@ def query_parse(db: ReferenceDatabase,
 	results = query(db, query_sigs, params, labels=labels, progress=pconf, **kw)
 
 	# Assign file attribute of QueryResultItem's
-	for item, file in zip_strict(results.items, files):
+	for item, file in zip(results.items, files, strict=True):
 		item.file = file
 
 	return results

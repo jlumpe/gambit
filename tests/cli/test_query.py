@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 
 from gambit.query import QueryResults
-from gambit.util.misc import zip_strict
 from gambit.util.io import write_lines, FilePath
 from gambit.cli.common import strip_seq_file_ext
 
@@ -62,7 +61,7 @@ def make_ref_results(testdb: TestDB,
 	ref_results = copy(testdb.get_query_results(strict))
 	ref_results.items = ref_results.items[:nqueries]
 
-	for item, label in zip_strict(ref_results.items, labels):
+	for item, label in zip(ref_results.items, labels, strict=True):
 		item.label = label
 
 	if files is None:
@@ -70,7 +69,7 @@ def make_ref_results(testdb: TestDB,
 			item.file = None
 
 	if files is not None:
-		for item, file in zip_strict(ref_results.items, files):
+		for item, file in zip(ref_results.items, files, strict=True):
 			item.file = Path(file)
 
 	return ref_results

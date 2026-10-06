@@ -8,7 +8,6 @@ from attr import attrs, attrib
 import numpy as np
 
 from gambit.db import AnnotatedGenome, Taxon
-from gambit.util.misc import zip_strict
 
 
 def matching_taxon(taxon: Taxon, d: float) -> Taxon | None:
@@ -240,7 +239,7 @@ def classify(ref_genomes: Sequence[AnnotatedGenome],
 		)
 
 	# Find all matches and attempt to get consensus
-	matches = find_matches(zip_strict(ref_genomes, dists))
+	matches = find_matches(zip(ref_genomes, dists, strict=True))
 	consensus, others = consensus_taxon(matches.keys())
 
 	# No matches found

@@ -12,7 +12,6 @@ from scipy.cluster.hierarchy import linkage
 from Bio.Phylo.BaseTree import Tree, Clade
 
 from gambit.util.io import FilePath, maybe_open
-from gambit.util.misc import zip_strict
 
 
 def hclust(dmat: np.ndarray) -> np.ndarray:
@@ -133,7 +132,7 @@ def dump_dmat_csv(file: FilePath | TextIO,
 	with maybe_open(file, 'w', newline='') as fobj:
 		writer = csv.writer(fobj)
 		writer.writerow([corner or '', *map(str, col_ids)])
-		for row_id, values in zip_strict(row_ids, dmat):
+		for row_id, values in zip(row_ids, dmat, strict=True):
 			values_str = (format(d, fmt) for d in values)
 			writer.writerow([str(row_id), *values_str])
 
