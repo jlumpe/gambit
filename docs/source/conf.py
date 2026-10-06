@@ -99,3 +99,34 @@ intersphinx_mapping = {
 }
 
 todo_include_todos = True
+
+
+# -- Reference fixes ---------------------------------------------------------
+
+# Targets whose runtime qualified name differs from where they are documented.
+_REF_TARGET_FIXES = {
+	'concurrent.futures._base.Executor': 'concurrent.futures.Executor',
+}
+
+
+def _fix_missing_reference(app, env, node, contnode):
+	from sphinx.ext.intersphinx import missing_reference
+
+	if node.get('refdomain') != 'py':
+		return None
+
+	target = node['reftarget']
+	newnode = node.deepcopy()
+	newnode['reftarget'] = _REF_TARGET_FIXES.get(target, target)
+
+	# Numpy scalar types (e.g. numpy.float32) are documented as attributes, not classes
+	if node['reftype'] == 'class' and target.startswith('numpy.'):
+		newnode['reftype'] = 'attr'
+	elif newnode['reftarget'] == target:
+		return None
+
+	return missing_reference(app, env, newnode, contnode)
+
+
+def setup(app):
+	app.connect('missing-reference', _fix_missing_reference)
