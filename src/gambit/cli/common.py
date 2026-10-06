@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import os
-from typing import Optional, Sequence, TextIO, Union, Iterable, Any
+from typing import TextIO, Any
+from collections.abc import Sequence, Iterable
 from pathlib import Path
 from collections import Counter
 
@@ -41,12 +44,12 @@ class CLIContext:
 		Reference genome signatures.
 	"""
 	root_context: click.Context
-	db_path: Optional[Path]
+	db_path: Path | None
 	has_genomes: bool
 	has_signatures: bool
 	has_database: bool
-	Session: Optional[sessionmaker]
-	signatures: Optional[ReferenceSignatures]
+	Session: sessionmaker | None
+	signatures: ReferenceSignatures | None
 
 	def __init__(self, root_context: click.Context):
 		"""
@@ -214,7 +217,7 @@ def kspec_params(default: bool = False):
 	return lambda f: kopt(popt(f))
 
 
-def kspec_from_params(k: Optional[int], prefix: Optional[str], default: bool = False) -> Optional[KmerSpec]:
+def kspec_from_params(k: int | None, prefix: str | None, default: bool = False) -> KmerSpec | None:
 	"""Get KmerSpec from CLI arguments and validate.
 
 	Parameters
@@ -271,7 +274,7 @@ def strip_seq_file_ext(filename: str) -> str:
 	return filename
 
 
-def get_file_id(path: 'FilePath', strip_dir: bool = True, strip_ext: bool = True) -> str:
+def get_file_id(path: FilePath, strip_dir: bool = True, strip_ext: bool = True) -> str:
 	"""Get sequence file ID derived from file path.
 
 	Parameters
@@ -289,12 +292,12 @@ def get_file_id(path: 'FilePath', strip_dir: bool = True, strip_ext: bool = True
 	return id
 
 
-def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
-                       listfile: Union[None, FilePath, TextIO]=None,
-                       listfile_dir: Optional[str]=None,
+def get_sequence_files(explicit: Iterable[FilePath] | None=None,
+                       listfile: None | FilePath | TextIO=None,
+                       listfile_dir: str | None=None,
                        strip_dir: bool = True,
                        strip_ext: bool = True,
-                       ) -> Union[tuple[list[str], list[Path]], tuple[None, None]]:
+                       ) -> tuple[list[str], list[Path]] | tuple[None, None]:
 	"""Get list of sequence file paths and IDs from several types of CLI arguments.
 
 	Does not check for conflict between ``explicit`` and ``listfile``.
@@ -358,7 +361,7 @@ def warn_duplicate_file_ids(ids: list[str], template: str):
 # Click introspection
 ################################################################################
 
-def params_by_name(cmd: click.Command, names: Optional[Iterable[str]] = None):
+def params_by_name(cmd: click.Command, names: Iterable[str] | None = None):
 	"""Get parameters of click command by name.
 
 	Parameters
@@ -452,7 +455,7 @@ def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: 
 		echo('\n')
 
 
-def get_revision_info(revision) -> Optional[dict[str, Any]]:
+def get_revision_info(revision) -> dict[str, Any] | None:
 	"""Extract revision information from metadata JSON.
 
 	:class:`gambit.sigs.base.SignaturesMeta` and :class:`gambit.db.models.ReferenceGenomeSet`

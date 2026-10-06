@@ -1,7 +1,10 @@
 """Utility code that doesn't fit anywhere else."""
 
+from __future__ import annotations
+
 import sys
-from typing import Iterator, Callable, Iterable, TypeVar, overload
+from typing import TypeVar, overload
+from collections.abc import Iterator, Callable, Iterable
 from functools import singledispatch, wraps
 
 

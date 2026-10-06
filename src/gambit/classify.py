@@ -1,6 +1,8 @@
 """Classify queries based on distance to reference sequences."""
 
-from typing import Optional, Iterable, Sequence
+from __future__ import annotations
+
+from collections.abc import Iterable, Sequence
 
 from attr import attrs, attrib
 import numpy as np
@@ -9,7 +11,7 @@ from gambit.db import AnnotatedGenome, Taxon
 from gambit.util.misc import zip_strict
 
 
-def matching_taxon(taxon: Taxon, d: float) -> Optional[Taxon]:
+def matching_taxon(taxon: Taxon, d: float) -> Taxon | None:
 	"""Find first taxon in linage for which distance ``d`` is within its classification threshold.
 
 	Parameters
@@ -53,7 +55,7 @@ def find_matches(itr: Iterable[tuple[AnnotatedGenome, float]]) -> dict[Taxon, li
 	return matches
 
 
-def consensus_taxon(taxa: Iterable[Taxon]) -> tuple[Optional[Taxon], set[Taxon]]:
+def consensus_taxon(taxa: Iterable[Taxon]) -> tuple[Taxon | None, set[Taxon]]:
 	"""Take a set of taxa matching a query and find a single consensus taxon for classification.
 
 	If a query matches a given taxon, it is expected that there may be matches to some of that
@@ -138,13 +140,13 @@ class GenomeMatch:
 	"""
 	genome: AnnotatedGenome = attrib()
 	distance: float = attrib()
-	matched_taxon: Optional[Taxon] = attrib()
+	matched_taxon: Taxon | None = attrib()
 
 	@matched_taxon.default
 	def _matched_taxon_default(self):
 		return matching_taxon(self.genome.taxon, self.distance)
 
-	def next_taxon(self) -> Optional[Taxon]:
+	def next_taxon(self) -> Taxon | None:
 		"""Get next most specific taxon in lineage of ``genome`` for which the threshold was not met."""
 		lo = None
 		hi = self.genome.taxon  # Leaf should always have threshold
@@ -189,12 +191,12 @@ class ClassifierResult:
 		Message describing a fatal error which occurred, if any.
 	"""
 	success: bool = attrib()
-	predicted_taxon: Optional[Taxon] = attrib()
-	primary_match: Optional[GenomeMatch] = attrib()
+	predicted_taxon: Taxon | None = attrib()
+	primary_match: GenomeMatch | None = attrib()
 	closest_match: GenomeMatch = attrib()
-	next_taxon: Optional[Taxon] = attrib()
+	next_taxon: Taxon | None = attrib()
 	warnings: list[str] = attrib(factory=list, repr=False)
-	error: Optional[str] = attrib(default=None, repr=False)
+	error: str | None = attrib(default=None, repr=False)
 
 	@next_taxon.default
 	def _next_taxon_default(self):

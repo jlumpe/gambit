@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Sequence, Union, Optional, Any
+from typing import Union, Any
+from collections.abc import Sequence
 
 from sqlalchemy.orm import object_session, Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -27,9 +30,9 @@ class DatabaseLoadError(Exception):
 	"""
 
 	msg: str
-	directory: Optional[Path]
-	genomes_file: Optional[Path]
-	signatures_file: Optional[Path]
+	directory: Path | None
+	genomes_file: Path | None
+	signatures_file: Path | None
 
 	def __init__(self, msg, directory=None, genomes_file=None, signatures_file=None):
 		self.msg = msg
@@ -38,7 +41,7 @@ class DatabaseLoadError(Exception):
 		self.signatures_file = signatures_file
 
 
-def load_genomeset(db_file: 'FilePath') -> tuple[Session, ReferenceGenomeSet]:
+def load_genomeset(db_file: FilePath) -> tuple[Session, ReferenceGenomeSet]:
 	"""Get the only :class:`gambit.db.models.ReferenceGenomeSet` from a genomes database file."""
 	session = file_sessionmaker(db_file)()
 	gset = only_genomeset(session)
@@ -60,7 +63,7 @@ def _check_genome_id_attr(attr: GenomeAttr) -> InstrumentedAttribute:
 	raise ValueError('Genome ID attribute must be one of the following: ' + ', '.join(Genome.ID_ATTRS))
 
 
-def _get_genome_id(genome: Union[Genome, AnnotatedGenome], attr: InstrumentedAttribute):
+def _get_genome_id(genome: Genome | AnnotatedGenome, attr: InstrumentedAttribute):
 	"""Get value of ID attribute for genome."""
 	if isinstance(genome, AnnotatedGenome):
 		genome = genome.genome
@@ -78,13 +81,13 @@ def _check_genomes_have_ids(genomeset: ReferenceGenomeSet, id_attr: Instrumented
 		raise RuntimeError(f'{c} genomes missing value for ID attribute {id_attr.key}')
 
 
-def _map_ids_to_genomes(genomeset: ReferenceGenomeSet, id_attr: Union[str, InstrumentedAttribute]) -> dict[AnnotatedGenome, Any]:
+def _map_ids_to_genomes(genomeset: ReferenceGenomeSet, id_attr: str | InstrumentedAttribute) -> dict[AnnotatedGenome, Any]:
 	"""Get dict mapping ID values to AnnotatedGenome."""
 	q = genomeset.genomes.join(AnnotatedGenome.genome).add_columns(id_attr)
 	return {id_: g for g, id_ in q}
 
 
-def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Sequence, strict: bool = True) -> list[Optional[AnnotatedGenome]]:
+def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Sequence, strict: bool = True) -> list[AnnotatedGenome | None]:
 	"""Match a ``ReferenceGenomeSet``'s genomes to a set of ID values.
 
 	This is primarily used to match genomes to signatures based on the ID values stored in a
@@ -211,7 +214,7 @@ class ReferenceDatabase:
 			raise ValueError(f'{missing} of {n} genomes not matched to signature IDs. Is the id_attr attribute of the signatures metadata correct?')
 
 	@classmethod
-	def locate_files(cls, path: 'FilePath') -> tuple[Path, Path]:
+	def locate_files(cls, path: FilePath) -> tuple[Path, Path]:
 		"""Locate an SQLite genome database file and HDF5 signatures file in a directory.
 
 		Files are located by extension, ``.gdb`` or ``.db`` for SQLite file and ``.gs`` or ``.h5``
@@ -258,14 +261,14 @@ class ReferenceDatabase:
 		return genomes_file, signatures_file
 
 	@classmethod
-	def load(cls, genomes_file: 'FilePath', signatures_file: 'FilePath') -> 'ReferenceDatabase':
+	def load(cls, genomes_file: FilePath, signatures_file: FilePath) -> ReferenceDatabase:
 		"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
 		session, gset = load_genomeset(genomes_file)
 		sigs = load_signatures(signatures_file)
 		return cls(gset, sigs)
 
 	@classmethod
-	def load_from_dir(cls, path: 'FilePath') -> 'ReferenceDatabase':
+	def load_from_dir(cls, path: FilePath) -> ReferenceDatabase:
 		"""
 		Load complete database given directory containing SQLite genomes database file and HDF5
 		signatures file.

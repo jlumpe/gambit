@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from abc import abstractmethod
-from typing import NewType, Sequence, Optional, Iterable, MutableSequence, Union, Mapping, Any
+from typing import NewType, Any
+from collections.abc import Sequence, Iterable, MutableSequence, Mapping
 
 import numpy as np
 from attr import attrs, attrib
@@ -48,7 +51,7 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 	dtype
 		Numpy data type of signatures.
 	"""
-	kmerspec: Optional[KmerSpec]
+	kmerspec: KmerSpec | None
 	dtype: np.dtype
 
 	def sizeof(self, index: int) -> int:
@@ -70,7 +73,7 @@ class AbstractSignatureArray(Sequence[KmerSignature]):
 		return np.fromiter(map(self.sizeof, range(len(self))), dtype=int)
 
 	@abstractmethod
-	def __getitem__(self, index: Union[int, slice, Sequence[int], Sequence[bool]]) -> Union[KmerSignature, 'AbstractSignatureArray']:
+	def __getitem__(self, index: int | slice | Sequence[int] | Sequence[bool]) -> KmerSignature | AbstractSignatureArray:
 		pass
 
 	def __eq__(self, other):
@@ -167,8 +170,8 @@ class SignatureArray(ConcatenatedSignatureArray):
 
 	def __init__(self,
 	             signatures: Sequence[KmerSignature],
-	             kmerspec: Optional[KmerSpec] = None,
-	             dtype: Optional[np.dtype] = None,
+	             kmerspec: KmerSpec | None = None,
+	             dtype: np.dtype | None = None,
 	             ):
 		"""
 		Parameters
@@ -213,8 +216,8 @@ class SignatureArray(ConcatenatedSignatureArray):
 	def from_arrays(cls,
 	                values: np.ndarray,
 	                bounds: np.ndarray,
-	                kmerspec: Optional[KmerSpec],
-	                ) -> 'SignatureArray':
+	                kmerspec: KmerSpec | None,
+	                ) -> SignatureArray:
 		"""Create directly from values and bounds arrays."""
 		sa = cls.__new__(cls)
 		sa._init_from_arrays(values, bounds, kmerspec)
@@ -223,9 +226,9 @@ class SignatureArray(ConcatenatedSignatureArray):
 	@classmethod
 	def uninitialized(cls,
 	                  lengths: Sequence[int],
-	                  kmerspec: Optional[KmerSpec],
+	                  kmerspec: KmerSpec | None,
 	                  dtype: np.dtype = None,
-	                  ) -> 'SignatureArray':
+	                  ) -> SignatureArray:
 		"""Create with an uninitialized values array.
 
 		Parameters
@@ -252,8 +255,8 @@ class SignatureList(AdvancedIndexingMixin, AbstractSignatureArray, MutableSequen
 
 	def __init__(self,
 	             signatures: Iterable[KmerSignature],
-	             kmerspec: Optional[KmerSpec] = None,
-	             dtype: Optional[np.dtype] = None,
+	             kmerspec: KmerSpec | None = None,
+	             dtype: np.dtype | None = None,
 	             ):
 		"""
 		Parameters
@@ -328,11 +331,11 @@ class SignaturesMeta:
 		Extra arbitrary metadata. Should be a ``dict`` or other mapping which can be converted to JSON.
 	"""
 
-	id : Optional[str] = attrib(default=None, kw_only=True)
-	name : Optional[str] = attrib(default=None, kw_only=True)
-	version : Optional[str] = attrib(default=None, kw_only=True)
-	id_attr : Optional[str] = attrib(default=None, kw_only=True)
-	description : Optional[str] = attrib(default=None, kw_only=True, repr=False)
+	id : str | None = attrib(default=None, kw_only=True)
+	name : str | None = attrib(default=None, kw_only=True)
+	version : str | None = attrib(default=None, kw_only=True)
+	id_attr : str | None = attrib(default=None, kw_only=True)
+	description : str | None = attrib(default=None, kw_only=True, repr=False)
 	extra : Mapping[str, Any] = attrib(factory=dict, kw_only=True, repr=False)
 
 
@@ -359,8 +362,8 @@ class AnnotatedSignatures(ReferenceSignatures):
 
 	def __init__(self,
 	             signatures: AbstractSignatureArray,
-	             ids: Optional[Sequence] = None,
-	             meta: Optional[SignaturesMeta] = None,
+	             ids: Sequence | None = None,
+	             meta: SignaturesMeta | None = None,
 	             ):
 		"""
 		Parameters
@@ -409,7 +412,7 @@ class SignaturesFileError(Exception):
 	filename: str
 	format: str
 
-	def __init__(self, message: str, filename: Optional['FilePath'], format: Optional[str]):
+	def __init__(self, message: str, filename: FilePath | None, format: str | None):
 		self.message = message
 		self.filename = str(filename)
 		self.format = format
@@ -418,7 +421,7 @@ class SignaturesFileError(Exception):
 		return self.message
 
 
-def load_signatures(path: 'FilePath', **kw) -> AbstractSignatureArray:
+def load_signatures(path: FilePath, **kw) -> AbstractSignatureArray:
 	"""Load signatures from file.
 
 	Currently the only format used to store signatures is the one in :mod:`gambit.sigs.hdf5`, but
@@ -435,7 +438,7 @@ def load_signatures(path: 'FilePath', **kw) -> AbstractSignatureArray:
 	return load_signatures_hdf5(path, **kw)
 
 
-def dump_signatures(path: 'FilePath',
+def dump_signatures(path: FilePath,
                     signatures: AbstractSignatureArray,
                     format: str = 'hdf5',
                     **kw,

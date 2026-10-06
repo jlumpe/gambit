@@ -1,7 +1,8 @@
 """Store k-mer signature sets in HDF5 format."""
 
+from __future__ import annotations
+
 import json
-from typing import Optional
 
 import numpy as np
 import h5py as h5
@@ -177,9 +178,9 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	           group: h5.Group,
 	           signatures: AbstractSignatureArray,
 	           *,
-	           compression: Optional[str] = None,
+	           compression: str | None = None,
 	           compression_opts = None,
-	           ) -> 'HDF5Signatures':
+	           ) -> HDF5Signatures:
 		"""Store k-mer signatures and associated metadata in an HDF5 group.
 
 		Parameters
@@ -218,7 +219,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 		return cls(group)
 
 
-def load_signatures_hdf5(path: 'FilePath', **kw) -> HDF5Signatures:
+def load_signatures_hdf5(path: FilePath, **kw) -> HDF5Signatures:
 	"""Open HDF5 signature file.
 
 	Parameters
@@ -254,7 +255,7 @@ def load_signatures_hdf5(path: 'FilePath', **kw) -> HDF5Signatures:
 		raise
 
 
-def dump_signatures_hdf5(path: 'FilePath', signatures: AbstractSignatureArray, **kw):
+def dump_signatures_hdf5(path: FilePath, signatures: AbstractSignatureArray, **kw):
 	"""Write k-mer signatures and associated metadata to an HDF5 file.
 
 	Parameters

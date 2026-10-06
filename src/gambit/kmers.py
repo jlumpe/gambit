@@ -1,6 +1,9 @@
 """Core functions for searching for and working with k-mers."""
 
-from typing import Optional, Any, Iterator
+from __future__ import annotations
+
+from typing import Any
+from collections.abc import Iterator
 
 import numpy as np
 from attr import attrs, attrib
@@ -16,7 +19,7 @@ def nkmers(k: int) -> int:
 	return 4 ** k
 
 
-def index_dtype(k: int) -> Optional[np.dtype]:
+def index_dtype(k: int) -> np.dtype | None:
 	"""Get the smallest unsigned integer dtype that can store k-mer indices for the given ``k``."""
 	if k <= 4:
 		return np.dtype('u1')
@@ -30,7 +33,7 @@ def index_dtype(k: int) -> Optional[np.dtype]:
 		return None
 
 
-def kmer_to_index(kmer: 'DNASeq') -> int:
+def kmer_to_index(kmer: DNASeq) -> int:
 	"""Convert a k-mer to its integer index.
 
 	Raises
@@ -41,7 +44,7 @@ def kmer_to_index(kmer: 'DNASeq') -> int:
 	return ckmers.kmer_to_index(seq_to_bytes(kmer))
 
 
-def kmer_to_index_rc(kmer: 'DNASeq') -> int:
+def kmer_to_index_rc(kmer: DNASeq) -> int:
 	"""Get the integer index of a k-mer's reverse complement.
 
 	Raises
@@ -84,7 +87,7 @@ class KmerSpec(Jsonable):
 	nkmers: int = attrib(eq=False)
 	index_dtype: np.dtype = attrib(eq=False)
 
-	def __init__(self, k: int, prefix: 'DNASeq'):
+	def __init__(self, k: int, prefix: DNASeq):
 		"""
 		Parameters
 		----------
@@ -119,7 +122,7 @@ class KmerSpec(Jsonable):
 		return dict(k=int(self.k), prefix=self.prefix_str)
 
 	@classmethod
-	def __from_json__(cls, data: dict[str, Any]) -> 'KmerSpec':
+	def __from_json__(cls, data: dict[str, Any]) -> KmerSpec:
 		return cls(data['k'], data['prefix'])
 
 
@@ -143,7 +146,7 @@ class KmerMatch:
 		If the match is on the reverse strand.
 	"""
 	kmerspec: KmerSpec = attrib()
-	seq: 'DNASeq' = attrib()
+	seq: DNASeq = attrib()
 	pos: int = attrib()
 	reverse: bool = attrib()
 
@@ -178,7 +181,7 @@ class KmerMatch:
 		return kmer_to_index_rc(kmer) if self.reverse else kmer_to_index(kmer)
 
 
-def find_kmers(kmerspec: KmerSpec, seq: 'DNASeq') -> Iterator[KmerMatch]:
+def find_kmers(kmerspec: KmerSpec, seq: DNASeq) -> Iterator[KmerMatch]:
 	"""Locate k-mers with the given prefix in a DNA sequence.
 
 	Searches sequence both backwards and forwards (reverse complement). The sequence may contain

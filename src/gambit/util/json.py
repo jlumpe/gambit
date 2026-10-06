@@ -5,6 +5,8 @@ equivalents in the :mod:`json` module, but support additional types such as ``at
 classes.
 """
 
+from __future__ import annotations
+
 import json
 from typing import Any, TextIO
 from datetime import date, datetime

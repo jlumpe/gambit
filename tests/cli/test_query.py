@@ -3,7 +3,7 @@ Test the 'gambit query' CLI command using the testdb_210818 database.
 """
 
 from copy import copy
-from typing import Optional, Iterable
+from collections.abc import Iterable
 from pathlib import Path
 
 import pytest
@@ -19,11 +19,11 @@ from .common import invoke_cli
 
 
 def make_args(testdb: TestDB, *,
-              positional_files: Optional[Iterable[FilePath]] = None,
-              list_file: Optional['FilePath'] = None,
+              positional_files: Iterable[FilePath] | None = None,
+              list_file: FilePath | None = None,
               sig_file: bool = False,
-              output: Optional['FilePath'] = None,
-              outfmt: Optional[str] = None,
+              output: FilePath | None = None,
+              outfmt: str | None = None,
               strict: bool=False,
               ) -> list[str]:
 	"""Make command line arguments for querying."""
@@ -52,8 +52,8 @@ def make_args(testdb: TestDB, *,
 def make_ref_results(testdb: TestDB,
                      labels: Iterable[str],
                      strict: bool,
-                     files: Optional[Iterable[FilePath]],
-                     nqueries: Optional[int] = None,
+                     files: Iterable[FilePath] | None,
+                     nqueries: int | None = None,
                      ):
 	"""
 	Make a copy of the reference query results to compare to, modifying to account for possibly
@@ -106,7 +106,7 @@ def check_results(results_file: Path, out_fmt: str, ref_results: QueryResults):
 	],
 )
 def test_full_query(testdb: TestDB,
-                    nqueries: Optional[int],
+                    nqueries: int | None,
                     use_list_file: bool,
                     out_fmt: str,
                     strict: bool,

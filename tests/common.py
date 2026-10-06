@@ -1,6 +1,6 @@
 """Helper functions for tests."""
 
-from typing import Optional, Union, Sequence
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -19,7 +19,7 @@ def convert_seq(seq, type):
 	return type(seq)
 
 
-def bernoulli(size: Union[int, tuple], p: float) -> np.ndarray:
+def bernoulli(size: int | tuple, p: float) -> np.ndarray:
 	"""Sample from Bernoulli distribution using Numpy.
 
 	Parameters
@@ -32,7 +32,7 @@ def bernoulli(size: Union[int, tuple], p: float) -> np.ndarray:
 	return np.random.choice([False, True], size, p=[1 - p, p])
 
 
-def make_signatures(k_or_kspec: Union[int, KmerSpec], n: int, dtype: np.dtype = np.dtype('u8')) -> SignatureArray:
+def make_signatures(k_or_kspec: int | KmerSpec, n: int, dtype: np.dtype = np.dtype('u8')) -> SignatureArray:
 	"""Make artificial k-mer signatures.
 
 	Parameters
@@ -122,7 +122,7 @@ def fill_bytearray(pattern: bytes, n: int) -> bytearray:
 def make_kmer_seq(kspec: KmerSpec,
                   seqlen: int,
                   kmer_interval: int,
-                  n_interval: Optional[int] = None,
+                  n_interval: int | None = None,
                   ) -> tuple[bytes, KmerSignature]:
 	"""Create a DNA sequence with a known k-mer signature.
 
@@ -186,7 +186,7 @@ def make_kmer_seqs(kspec: KmerSpec,
                    nseqs: int,
                    seqlen: int,
                    kmer_interval: int,
-                   n_interval: Optional[int] = None,
+                   n_interval: int | None = None,
                    ) -> tuple[list[bytes], KmerSignature]:
 	"""Create a set of DNA sequences with known combined signature."""
 
@@ -208,7 +208,7 @@ def make_kmer_seqs(kspec: KmerSpec,
 	return seqs, dense_to_sparse(vec)
 
 
-def make_lineage(thresholds: Sequence[Optional[float]]) -> list[Taxon]:
+def make_lineage(thresholds: Sequence[float | None]) -> list[Taxon]:
 	"""Create a linage of taxa that have the given distance thresholds.
 
 	Parameters

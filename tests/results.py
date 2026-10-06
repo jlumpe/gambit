@@ -2,7 +2,8 @@
 
 import csv
 import json
-from typing import TextIO, Any, Iterable, Optional
+from typing import TextIO, Any
+from collections.abc import Iterable
 from pathlib import Path
 from warnings import warn
 
@@ -77,7 +78,7 @@ def check_result_item(item: QueryResultItem, params: QueryParams, warnings: bool
 					)
 
 
-def compare_genome_matches(match1: Optional[GenomeMatch], match2: Optional[GenomeMatch]):
+def compare_genome_matches(match1: GenomeMatch | None, match2: GenomeMatch | None):
 	"""Assert two ``GenomeMatch`` instances are equal.
 
 	The values for the ``distance`` attribute are only checked for approximate equality, to support
@@ -126,7 +127,7 @@ def cmp_json_attrs(data: dict[str, Any], obj, attrnames: Iterable[str]):
 		assert data[attr] == getattr(obj, attr)
 
 
-def cmp_taxon_json(data: dict[str, Any], taxon: Optional[Taxon]):
+def cmp_taxon_json(data: dict[str, Any], taxon: Taxon | None):
 	"""Assert Taxon instance matches data in JSON export."""
 
 	if taxon is None:
@@ -223,7 +224,7 @@ def check_json_results(file: TextIO, results: QueryResults, strict: bool = False
 			cmp_genomematch_json(match_data, match)
 
 
-def cmp_csv_taxon(row: dict[str, str], taxon: Optional[Taxon], prefix: str):
+def cmp_csv_taxon(row: dict[str, str], taxon: Taxon | None, prefix: str):
 
 	if taxon is None:
 		assert row[prefix + '.name'] == ''

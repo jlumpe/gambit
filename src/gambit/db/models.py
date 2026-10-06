@@ -1,6 +1,9 @@
 """SQLAlchemy models for storing reference genomes and taxonomy information."""
 
-from typing import Any, Optional, Iterable, Collection, Callable
+from __future__ import annotations
+
+from typing import Any
+from collections.abc import Iterable, Collection, Callable
 
 import sqlalchemy as sa
 from sqlalchemy import Column, Integer, String, Boolean, Float
@@ -145,7 +148,7 @@ class ReferenceGenomeSet(Base):
 	def __repr__(self):
 		return f'<{type(self).__name__}:{self.id} {self.key!r}:{self.version!r}>'
 
-	def root_taxa(self) -> Collection['Taxon']:
+	def root_taxa(self) -> Collection[Taxon]:
 		"""Query for root taxa belonging to the set.
 
 		Returns
@@ -294,7 +297,7 @@ class Taxon(Base):
 	)
 	parent = relationship('Taxon', remote_side=[id], backref=backref('children', lazy=True))
 
-	def ancestors(self, incself=False) -> Iterable['Taxon']:
+	def ancestors(self, incself=False) -> Iterable[Taxon]:
 		"""Iterate through the taxon's ancestors from bottom to top.
 
 		Parameters
@@ -307,14 +310,14 @@ class Taxon(Base):
 			yield taxon
 			taxon = taxon.parent
 
-	def ancestor_of_rank(self, rank: str) -> Optional['Taxon']:
+	def ancestor_of_rank(self, rank: str) -> Taxon | None:
 		"""Get the taxon's ancestor with the given rank, if it exists."""
 		for ancestor in self.ancestors(True):
 			if ancestor.rank == rank:
 				return ancestor
 		return None
 
-	def lineage(self, ranks: Optional[Iterable[str]] = None) -> list[Optional['Taxon']]:
+	def lineage(self, ranks: Iterable[str] | None = None) -> list[Taxon | None]:
 		"""Get a last of this taxon's ancestors.
 
 		With an argument, gets ancestors with the given ranks. Without, gets a sorted list of the
@@ -329,7 +332,7 @@ class Taxon(Base):
 		else:
 			return [self.ancestor_of_rank(rank) for rank in ranks]
 
-	def root(self) -> 'Taxon':
+	def root(self) -> Taxon:
 		"""Get the root taxon of this taxon's tree.
 
 		The set of taxa in a :class:`.ReferenceGenomeSet` will generally form
@@ -354,7 +357,7 @@ class Taxon(Base):
 		"""The number of ancestors the taxon has."""
 		return sum(1 for a in self.ancestors())
 
-	def traverse(self, postorder: bool = False) -> Iterable['Taxon']:
+	def traverse(self, postorder: bool = False) -> Iterable[Taxon]:
 		"""Iterate through all nodes in this taxon's subtree.
 
 		Parameters
@@ -370,7 +373,7 @@ class Taxon(Base):
 		if postorder:
 			yield self
 
-	def descendants(self, postorder: bool = False) -> Iterable['Taxon']:
+	def descendants(self, postorder: bool = False) -> Iterable[Taxon]:
 		"""Iterate through taxa all of the taxon's descendants.
 
 		This is the same as :meth:`traverse` except the taxon itself is not included.
@@ -384,7 +387,7 @@ class Taxon(Base):
 		for child in self.children:
 			yield from child.traverse(postorder)
 
-	def leaves(self) -> Iterable['Taxon']:
+	def leaves(self) -> Iterable[Taxon]:
 		"""Iterate through all leaves in the taxon's subtree.
 
 		For leaf taxa this will just yield the taxon itself.
@@ -405,7 +408,7 @@ class Taxon(Base):
 		return self in genome.taxon.ancestors(True)
 
 	@classmethod
-	def common_ancestors(cls, taxa: Iterable['Taxon']) -> list['Taxon']:
+	def common_ancestors(cls, taxa: Iterable[Taxon]) -> list[Taxon]:
 		"""Get list of common ancestors of a set of taxa.
 
 		Returns
@@ -443,7 +446,7 @@ class Taxon(Base):
 		return [] if ancestors is None else ancestors
 
 	@classmethod
-	def lca(cls, taxa: Iterable['Taxon']) -> Optional['Taxon']:
+	def lca(cls, taxa: Iterable[Taxon]) -> Taxon | None:
 		"""Find the Least Common Ancestor of a set of taxa.
 
 		Returns None if `taxa` is empty or its members do not all lie in the same tree.
@@ -452,10 +455,10 @@ class Taxon(Base):
 		return ancestors[-1] if ancestors else None
 
 	def print_tree(self,
-	               f: Optional[Callable[['Taxon'], str]] = None,
+	               f: Callable[[Taxon], str] | None = None,
 	               *,
 	               indent: str = '  ',
-	               sort_key: Optional[Callable[['Taxon'], Any]] = None,
+	               sort_key: Callable[[Taxon], Any] | None = None,
 	               ):
 		"""Print the taxon's subtree for debugging.
 
@@ -515,7 +518,7 @@ def only_genomeset(session: Session) -> ReferenceGenomeSet:
 		raise RuntimeError('Database contains no genome sets.') from e
 
 
-def reportable_taxon(taxon: Optional[Taxon]) -> Optional[Taxon]:
+def reportable_taxon(taxon: Taxon | None) -> Taxon | None:
 	"""Find the first reportable taxon in a linage.
 
 	Parameters

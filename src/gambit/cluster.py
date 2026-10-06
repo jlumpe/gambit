@@ -1,6 +1,9 @@
 """Distance matrices and basic clustering/trees."""
 
-from typing import Union, Optional, Sequence, TextIO
+from __future__ import annotations
+
+from typing import TextIO
+from collections.abc import Sequence
 import csv
 
 import numpy as np
@@ -118,11 +121,11 @@ def check_tree_matches_linkage(tree: Tree, link: np.ndarray, labels, atol=1e-5):
 	assert root_i == nleaves * 2 - 2
 
 
-def dump_dmat_csv(file: Union['FilePath', TextIO],
+def dump_dmat_csv(file: FilePath | TextIO,
                   dmat: np.ndarray,
                   row_ids: Sequence,
                   col_ids: Sequence,
-                  corner: Optional[str] = None,
+                  corner: str | None = None,
                   fmt: str = '0.4f',
                   ):
 	"""Write distance matrix to file in CSV format."""
@@ -135,7 +138,7 @@ def dump_dmat_csv(file: Union['FilePath', TextIO],
 			writer.writerow([str(row_id), *values_str])
 
 
-def load_dmat_csv(file: Union['FilePath', TextIO]) -> tuple[np.ndarray, list[str], list[str]]:
+def load_dmat_csv(file: FilePath | TextIO) -> tuple[np.ndarray, list[str], list[str]]:
 	"""Load distance matrix from CSV file.
 
 	Returns

@@ -1,10 +1,12 @@
 """Abstract interface for progress meters."""
 
+from __future__ import annotations
+
 import sys
 
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Callable, Iterable, TextIO, Mapping, Any, cast, Iterator, \
-	TypeVar
+from typing import Union, TextIO, Any, cast, TypeVar
+from collections.abc import Callable, Iterable, Mapping, Iterator
 from warnings import warn
 from contextlib import contextmanager
 
@@ -20,7 +22,7 @@ REGISTRY = dict()
 
 def register(key: str):
 	"""Decorator to register progress meter class or factory function under the given key."""
-	def decorator(cls_or_func: Union[type, Callable]):
+	def decorator(cls_or_func: type | Callable):
 		if isinstance(cls_or_func, type) and issubclass(cls_or_func, AbstractProgressMeter):
 			REGISTRY[key] = cls_or_func.create
 		else:
@@ -75,10 +77,10 @@ class AbstractProgressMeter(ABC):
 	           total: int,
 	           *,
 	           initial: int = 0,
-	           desc: Optional[str] = None,
-	           file: Optional[TextIO] = None,
+	           desc: str | None = None,
+	           file: TextIO | None = None,
 	           **kw,
-	           ) -> 'AbstractProgressMeter':
+	           ) -> AbstractProgressMeter:
 		"""Factory function with standardized signature to create instances.
 
 		Parameters
@@ -97,7 +99,7 @@ class AbstractProgressMeter(ABC):
 		pass
 
 	@classmethod
-	def config(cls, **kw) -> 'ProgressConfig':
+	def config(cls, **kw) -> ProgressConfig:
 		"""Create a factory function which creates instances with the given default settings.
 
 		Keyword arguments are passed on to :meth:`create`.
@@ -248,7 +250,7 @@ class ProgressIterator(Iterator[T]):
 
 def iter_progress(iterable: Iterable[T],
                   progress: ProgressArg = True,
-                  total: Optional[int] = None,
+                  total: int | None = None,
                   **kw,
                   ) -> ProgressIterator[T]:
 	"""Display a progress meter while iterating over an object.
@@ -308,7 +310,7 @@ def capture_progress(config: ProgressConfig) -> tuple[ProgressConfig, list[Abstr
 
 @contextmanager
 def check_progress(*,
-                   total: Optional[int] = None,
+                   total: int | None = None,
                    allow_decrement: bool = False,
                    check_closed: bool = True,
                    ) -> Iterator[ProgressConfig]:
@@ -450,8 +452,8 @@ class TqdmProgressMeter(AbstractProgressMeter):
 	           total: int,
 	           *,
 	           initial: int = 0,
-	           desc: Optional[str] = None,
-	           file: Optional[TextIO] = None,
+	           desc: str | None = None,
+	           file: TextIO | None = None,
 	           **kw,
 	           ):
 		from tqdm import tqdm
@@ -491,8 +493,8 @@ class ClickProgressMeter(AbstractProgressMeter):
 	           total: int,
 	           *,
 	           initial: int = 0,
-	           desc: Optional[str] = None,
-	           file: Optional[TextIO] = None,
+	           desc: str | None = None,
+	           file: TextIO | None = None,
 	           **kw,
 	           ):
 		import click

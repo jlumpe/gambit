@@ -1,7 +1,7 @@
 """Tests for the "dist" command."""
 
 import json
-from typing import Optional, Iterable
+from collections.abc import Iterable
 from pathlib import Path
 
 import pytest
@@ -19,26 +19,26 @@ from ..testdb import TestDB
 from .common import invoke_cli
 
 
-def get_query_files(testdb: TestDB, n: Optional[int] = None, gz: bool = False) -> list[Path]:
+def get_query_files(testdb: TestDB, n: int | None = None, gz: bool = False) -> list[Path]:
 	return testdb.get_query_files(gz)[:n]
 
 
-def get_ref_files(testdb: TestDB, n: Optional[int] = None, gz: bool = False) -> list[Path]:
+def get_ref_files(testdb: TestDB, n: int | None = None, gz: bool = False) -> list[Path]:
 	return testdb.get_ref_files(gz)[:n]
 
 
 def make_args(testdb: TestDB,
 			  outfile: Path,
 			  *,
-			  q_opt: Optional[list[FilePath]] = None,  # Query files with -q option
-              q_list: Optional[Path] = None,               # Query list file
+			  q_opt: list[FilePath] | None = None,  # Query files with -q option
+              q_list: Path | None = None,               # Query list file
               q_sigs: bool = False,                        # Use query signature file
-              r_opt: Optional[list[FilePath]] = None,  # Ref files with -r option
-              r_list: Optional[Path] = None,               # Ref list file
+              r_opt: list[FilePath] | None = None,  # Ref files with -r option
+              r_list: Path | None = None,               # Ref list file
               r_sigs: bool = False,                        # Use refs signature file
               r_db: bool = False,                          # Use db for refs
               with_db: bool = False,                       # Pass db at root level
-              kmerspec: Optional[KmerSpec] = None,         # Pass -k and -p options
+              kmerspec: KmerSpec | None = None,         # Pass -k and -p options
               extra: Iterable[str] = (),                   # Additional args
               ) -> list[str]:
 
@@ -78,7 +78,7 @@ def make_args(testdb: TestDB,
 	return args
 
 
-def check_output(outfile: Path, expected_matrix: np.ndarray, nqueries: Optional[int], nrefs: Optional[int]):
+def check_output(outfile: Path, expected_matrix: np.ndarray, nqueries: int | None, nrefs: int | None):
 	dmat, row_ids, col_ids = load_dmat_csv(outfile)
 	assert np.allclose(dmat, expected_matrix[:nqueries, :nrefs], atol=1e-4)
 	# TODO: check row/col IDs

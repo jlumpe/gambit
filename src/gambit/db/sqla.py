@@ -1,6 +1,8 @@
 """Custom types and other utilities for SQLAlchemy."""
+
+from __future__ import annotations
+
 import os
-from typing import Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -38,7 +40,7 @@ class JsonString(TypeDecorator):
 		return None if value is None else gjson.loads(value)
 
 
-def default_sessionmaker(bind, *, readonly: bool = True, class_: Optional[type] = None, **kw) -> sessionmaker:
+def default_sessionmaker(bind, *, readonly: bool = True, class_: type | None = None, **kw) -> sessionmaker:
 	"""Create an SQLAlchemy ``sessionmaker`` using some common default settings.
 
 	Parameters
@@ -57,7 +59,7 @@ def default_sessionmaker(bind, *, readonly: bool = True, class_: Optional[type] 
 	return sessionmaker(bind, class_=class_, future=True, **kw)
 
 
-def file_sessionmaker(path: 'FilePath', **kw) -> sessionmaker:
+def file_sessionmaker(path: FilePath, **kw) -> sessionmaker:
 	"""Get an SQLAlchemy ``sessionmaker`` for an sqlite database file.
 
 	Parameters

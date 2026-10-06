@@ -1,13 +1,12 @@
 """Tests for gambit.search module."""
 
-from typing import Optional
 from pathlib import Path
+from typing import TypeAlias
 
 import pytest
 import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
-from typing_extensions import TypeAlias
 
 from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_signatures, \
 	dense_to_sparse, sparse_to_dense
@@ -164,7 +163,7 @@ class TestCalcFileSignatures:
 			assert np.array_equal(result, sig)
 
 	@pytest.mark.parametrize('concurrency', [None, 'threads', 'processes'])
-	def test_calc_file_signatures(self, record_sets: RecordSets, files: list[Path], concurrency: Optional[str]):
+	def test_calc_file_signatures(self, record_sets: RecordSets, files: list[Path], concurrency: str | None):
 		"""Test the calc_file_signatures function."""
 		sigs = [sig for records, sig in record_sets]
 
