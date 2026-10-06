@@ -23,7 +23,6 @@ def matching_taxon(taxon: Taxon, d: float) -> Taxon | None:
 
 	Returns
 	-------
-	Optional[Taxon]
 		Most specific taxon in ancestry with ``threshold_distance >= d``.
 	"""
 	for t in taxon.ancestors(incself=True):
@@ -77,8 +76,10 @@ def consensus_taxon(taxa: Iterable[Taxon]) -> tuple[Taxon | None, set[Taxon]]:
 
 	Returns
 	-------
-	tuple[Optional[Taxon], set[Taxon]]
-		Consensus taxon along with the set of any taxa in the argument which are descended from it.
+	consensus
+		Consensus taxon.
+	descendants
+		Subsetet of ``taxa`` which are descended from the consensus.
 	"""
 	taxa = list(taxa)
 

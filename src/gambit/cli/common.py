@@ -317,7 +317,6 @@ def get_sequence_files(explicit: Iterable[FilePath] | None=None,
 
 	Returns
 	-------
-	tuple[Optional[list[str]], Optional[list[Path]]]
 		``(ids, files)`` tuple. ``ids`` is a list of string IDs that can be used to label output.
 		If the ``explicit`` and ``listfile`` arguments are None/empty both components of the tuple
 		will be None as well.
@@ -372,7 +371,6 @@ def params_by_name(cmd: click.Command, names: Iterable[str] | None = None):
 
 	Returns
 	-------
-	Union[Dict[str, click.Parameter], List[click.Parameter]]
 		Parameters with given in ``names`` argument if not None, otherwise a dictionary containing
 		all of the command's parameters keyed by name.
 	"""

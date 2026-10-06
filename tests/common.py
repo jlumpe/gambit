@@ -218,7 +218,6 @@ def make_lineage(thresholds: Sequence[float | None]) -> list[Taxon]:
 
 	Returns
 	-------
-	List[Taxon]
 		Created taxa in ascending order.
 	"""
 	taxa = []

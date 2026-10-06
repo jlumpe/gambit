@@ -266,7 +266,7 @@ def iter_progress(iterable: Iterable[T],
 		Passed to :func:`get_progress`.
 	total
 		Total number of expected iterations. Defaults to ``len(iterable)``.
-	\\**kw
+	kw
 		Additional keyword arguments to pass to progress meter factory.
 
 	Returns
@@ -293,7 +293,6 @@ def capture_progress(config: ProgressConfig) -> tuple[ProgressConfig, list[Abstr
 
 	Returns
 	-------
-	Tuple[ProgressConfig, List[AbstractProgressMeter]]
 		The first item is a modified ``ProgessConfig`` instance which can be passed to the function
 		to be tested. The second is a list which is initially empty, and is populated with progress
 		meter instances as they are created by it.

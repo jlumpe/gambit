@@ -106,7 +106,7 @@ def parse_seqs(path: FilePath,
 	Returns
 	-------
 	gambit.util.io.ClosingIterator
-		Iterator yielding :class:`Bio.SeqIO.SeqRecord` instances for each sequence in the file.
+		Iterator yielding :class:`Bio.SeqRecord.SeqRecord` instances for each sequence in the file.
 	"""
 
 	fobj = open_compressed(path, 'rt', compression, **kwargs)

@@ -233,7 +233,7 @@ def calc_file_signatures(kspec: KmerSpec,
 	max_workers
 		Number of worker threads/processes to use if ``concurrency`` is not None.
 	executor
-		Instance of class:`concurrent.futures.Executor` to use for concurrency. Overrides the
+		Instance of :class:`concurrent.futures.Executor` to use for concurrency. Overrides the
 		``concurrency`` and ``max_workers`` arguments.
 
 	See Also

@@ -192,7 +192,6 @@ def maybe_open(file_or_path: FilePath | IO, mode: str = 'r', **open_kw) -> Conte
 
 	Returns
 	-------
-	ContextManager[IO]
 		Context manager which gives an open file object on enter and closes it on exit only if it
 		was opened by this function.
 	"""

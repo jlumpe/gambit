@@ -108,7 +108,6 @@ def genomes_by_id(genomeset: ReferenceGenomeSet, id_attr: GenomeAttr, ids: Seque
 
 	Returns
 	-------
-	list[Optional[AnnotatedGenome]]
 		List of genomes of same length as ``ids``. If ``strict=False`` and a genome cannot be found
 		for a given ID the list will contain ``None`` at the corresponding position.
 
