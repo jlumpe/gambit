@@ -80,7 +80,7 @@ class AbstractProgressMeter(ABC):
 	           desc: str | None = None,
 	           file: TextIO | None = None,
 	           **kw,
-	           ) -> AbstractProgressMeter:
+	           ) -> Self:
 		"""Factory function with standardized signature to create instances.
 
 		Parameters
@@ -138,7 +138,7 @@ class ProgressConfig:
 		final_kw.update(kw)
 		return self.callable(total, **final_kw)
 
-	def update(self, *args: Mapping[str, Any], **kw):
+	def update(self, *args: Mapping[str, Any], **kw) -> Self:
 		"""Update keyword arguments and return a new instance."""
 		new_kw = dict(self.kw)
 		new_kw.update(*args, **kw)

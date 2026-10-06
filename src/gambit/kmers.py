@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Self
 from collections.abc import Iterator
 
 import numpy as np
@@ -122,7 +122,7 @@ class KmerSpec(Jsonable):
 		return dict(k=int(self.k), prefix=self.prefix_str)
 
 	@classmethod
-	def __from_json__(cls, data: dict[str, Any]) -> KmerSpec:
+	def __from_json__(cls, data: dict[str, Any]) -> Self:
 		return cls(data['k'], data['prefix'])
 
 

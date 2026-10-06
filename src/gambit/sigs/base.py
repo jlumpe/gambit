@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import NewType, Any
+from typing import NewType, Any, Self
 from collections.abc import Sequence, Iterable, MutableSequence, Mapping
 
 import numpy as np
@@ -217,7 +217,7 @@ class SignatureArray(ConcatenatedSignatureArray):
 	                values: np.ndarray,
 	                bounds: np.ndarray,
 	                kmerspec: KmerSpec | None,
-	                ) -> SignatureArray:
+	                ) -> Self:
 		"""Create directly from values and bounds arrays."""
 		sa = cls.__new__(cls)
 		sa._init_from_arrays(values, bounds, kmerspec)
@@ -228,7 +228,7 @@ class SignatureArray(ConcatenatedSignatureArray):
 	                  lengths: Sequence[int],
 	                  kmerspec: KmerSpec | None,
 	                  dtype: np.dtype = None,
-	                  ) -> SignatureArray:
+	                  ) -> Self:
 		"""Create with an uninitialized values array.
 
 		Parameters

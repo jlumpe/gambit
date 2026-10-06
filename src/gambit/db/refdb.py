@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Union, Any
+from typing import Any, Self
 from collections.abc import Sequence
 
 from sqlalchemy.orm import object_session, Session
@@ -260,14 +260,14 @@ class ReferenceDatabase:
 		return genomes_file, signatures_file
 
 	@classmethod
-	def load(cls, genomes_file: FilePath, signatures_file: FilePath) -> ReferenceDatabase:
+	def load(cls, genomes_file: FilePath, signatures_file: FilePath) -> Self:
 		"""Load complete database given paths to SQLite genomes database file and HDF5 signatures file."""
 		session, gset = load_genomeset(genomes_file)
 		sigs = load_signatures(signatures_file)
 		return cls(gset, sigs)
 
 	@classmethod
-	def load_from_dir(cls, path: FilePath) -> ReferenceDatabase:
+	def load_from_dir(cls, path: FilePath) -> Self:
 		"""
 		Load complete database given directory containing SQLite genomes database file and HDF5
 		signatures file.

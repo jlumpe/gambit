@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from typing import Self
 
 import numpy as np
 import h5py as h5
@@ -180,7 +181,7 @@ class HDF5Signatures(ConcatenatedSignatureArray, ReferenceSignatures):
 	           *,
 	           compression: str | None = None,
 	           compression_opts = None,
-	           ) -> HDF5Signatures:
+	           ) -> Self:
 		"""Store k-mer signatures and associated metadata in an HDF5 group.
 
 		Parameters
