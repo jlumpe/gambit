@@ -3706,7 +3706,6 @@ packages:
   - click>=8.1
   - h5py~=3.9
   - scipy~=1.11
-  - typing-extensions>=4.1
   requires_python: '>=3.12'
 - pypi: https://files.pythonhosted.org/packages/2b/7c/7ab9f9aadc5944fdd06612484ed7918fe376ad871a5f50404dc1536e0194/sqlalchemy-2.0.51-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
   name: sqlalchemy
