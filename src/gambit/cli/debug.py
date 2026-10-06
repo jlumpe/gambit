@@ -1,4 +1,6 @@
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Any
 
 import click
 
@@ -43,7 +45,7 @@ def make_shell_ns(ctx) -> dict[str, Any]:
 	help='Use IPython instead of built-in Python REPL.',
 )
 @click.pass_context
-def shell(ctx, use_ipython: Optional[bool]):
+def shell(ctx, use_ipython: bool | None):
 	"""Start an interactive shell with application data and modules imported.
 
 	Attempts to launch an IPython interactive interpreter if it is installed,

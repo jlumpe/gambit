@@ -91,7 +91,7 @@ class TestClosingIterator:
 		buf = StringIO()
 
 		for i in range(self.NLINES):
-			buf.write('{}\n'.format(i))
+			buf.write(f'{i}\n')
 
 		buf.seek(0)
 

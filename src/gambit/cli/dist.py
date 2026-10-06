@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import Optional, TextIO
+from typing import TextIO
 
 import click
 
@@ -37,21 +39,21 @@ def fmt_kspec(kspec):
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_context
 def dist_cmd(ctx: click.Context,
-             k: Optional[int],
-             prefix: Optional[str],
+             k: int | None,
+             prefix: str | None,
              output: str,
              q: list[str],
-             ql: Optional[TextIO],
-             qdir: Optional[str],
-             qs: Optional[str],
+             ql: TextIO | None,
+             qdir: str | None,
+             qs: str | None,
              r: list[str],
-             rl: Optional[TextIO],
-             rdir: Optional[str],
-             rs: Optional[str],
+             rl: TextIO | None,
+             rdir: str | None,
+             rs: str | None,
              square: bool,
              use_db: bool,
              progress: bool,
-             cores: Optional[int],
+             cores: int | None,
              dump_params: bool,
              ):
 	"""Calculate the GAMBIT distances between a set of query geneomes and a set of reference genomes.

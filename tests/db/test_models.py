@@ -3,7 +3,7 @@
 Uses the included testdb_210818 database.
 """
 
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 import pytest
 from sqlalchemy.orm import sessionmaker
@@ -255,7 +255,7 @@ class TestTaxon:
 
 		session = testdb.Session()
 
-		def check(name: str, rank: str, expected: Optional[str]):
+		def check(name: str, rank: str, expected: str | None):
 			taxon = self.taxon_by_name(session, name)
 			ancestor = taxon.ancestor_of_rank(rank)
 			assert (ancestor is None) == (expected is None)

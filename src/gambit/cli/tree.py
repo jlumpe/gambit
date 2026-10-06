@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import Optional, TextIO
+from typing import TextIO
 
 import click
 from Bio import Phylo
@@ -28,14 +30,14 @@ from gambit.cluster import hclust, linkage_to_bio_tree
 @common.progress_param()
 @click.pass_context
 def tree_cmd(ctx: click.Context,
-             listfile: Optional[TextIO],
-             ldir: Optional[str],
+             listfile: TextIO | None,
+             ldir: str | None,
              files_arg: list[str],
-             sigfile: Optional[str],
-             k: Optional[int],
-             prefix: Optional[str],
+             sigfile: str | None,
+             k: int | None,
+             prefix: str | None,
              progress: bool,
-             cores: Optional[int],
+             cores: int | None,
              ):
 	"""
 	Estimate a relatedness tree for a set of genomes and output in Newick format.

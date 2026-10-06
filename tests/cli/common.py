@@ -1,6 +1,7 @@
 """Tools for testing CLI."""
 
-from typing import Optional, Sequence, Any, Iterable, Iterator
+from typing import Any
+from collections.abc import Sequence, Iterable, Iterator
 from contextlib import contextmanager
 import importlib.metadata
 
@@ -45,7 +46,7 @@ def default_runner(**kw) -> CliRunner:
 	return CliRunner(**kw)
 
 
-def invoke_cli(args: Sequence, runner: Optional[CliRunner]=None, success: Optional[bool]=True, **kw) -> Result:
+def invoke_cli(args: Sequence, runner: CliRunner | None=None, success: bool | None=True, **kw) -> Result:
 	"""Invoke CLI in test context, using different defaults than base Click method.
 
 	Parameters

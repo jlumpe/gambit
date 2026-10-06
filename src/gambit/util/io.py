@@ -6,17 +6,16 @@
 	Alias for types which can represent a file system path (``str`` or :class:`os.PathLike`).
 """
 
+from __future__ import annotations
+
 import os
 from io import TextIOWrapper
-from typing import Union, IO, TextIO, BinaryIO, ContextManager, Iterable, TypeVar
+from typing import IO, TextIO, BinaryIO, ContextManager
+from collections.abc import Iterable, Iterator
 from contextlib import nullcontext
 
-from typing_extensions import TypeAlias
 
-
-FilePath: TypeAlias = Union[str, os.PathLike]
-
-T = TypeVar('T')
+type FilePath = str | os.PathLike[str]
 
 
 def _open_auto(path: FilePath, mode: str, **kwargs):
@@ -58,7 +57,7 @@ def guess_compression(fobj: BinaryIO) -> str:
 		return 'none'
 
 
-def open_compressed(path: 'FilePath',
+def open_compressed(path: FilePath,
                     mode: str = 'rt',
                     compression: str = 'auto',
                     **kwargs,
@@ -107,7 +106,7 @@ def open_compressed(path: 'FilePath',
 		raise ValueError(f'Unknown compression type {compression!r}') from None
 
 
-class ClosingIterator(Iterable[T]):
+class ClosingIterator[T](Iterator[T]):
 	"""Wraps an iterator which reads from a stream, closes the stream when finished.
 
 	Used to wrap return values from functions which do some sort of lazy IO
@@ -171,7 +170,7 @@ class ClosingIterator(Iterable[T]):
 		self.close()
 
 
-def maybe_open(file_or_path: Union['FilePath', IO], mode: str = 'r', **open_kw) -> ContextManager[IO]:
+def maybe_open(file_or_path: FilePath | IO, mode: str = 'r', **open_kw) -> ContextManager[IO]:
 	"""Open a file given a file path as an argument, but pass existing file objects though.
 
 	Intended to be used by API functions that take either type as an argument. If a file path is
@@ -191,7 +190,6 @@ def maybe_open(file_or_path: Union['FilePath', IO], mode: str = 'r', **open_kw) 
 
 	Returns
 	-------
-	ContextManager[IO]
 		Context manager which gives an open file object on enter and closes it on exit only if it
 		was opened by this function.
 	"""
@@ -207,7 +205,7 @@ def maybe_open(file_or_path: Union['FilePath', IO], mode: str = 'r', **open_kw) 
 		return open(path, mode, **open_kw)
 
 
-def read_lines(file_or_path: Union['FilePath', TextIO], strip: bool=True, skip_empty: bool=False) -> Iterable[str]:
+def read_lines(file_or_path: FilePath | TextIO, strip: bool=True, skip_empty: bool=False) -> Iterable[str]:
 	"""Iterate over lines in text file.
 
 	Parameters
@@ -231,7 +229,7 @@ def read_lines(file_or_path: Union['FilePath', TextIO], strip: bool=True, skip_e
 				yield line
 
 
-def write_lines(lines: Iterable, file_or_path: Union['FilePath', TextIO]):
+def write_lines(lines: Iterable, file_or_path: FilePath | TextIO):
 	"""Write strings to text file, one per line.
 
 	Parameters

@@ -1,8 +1,11 @@
 """Run queries against a GAMBIT database to predict taxonomy of genome sequences."""
 
+from __future__ import annotations
+
 from warnings import warn
 from datetime import datetime
-from typing import Sequence, Optional, Any
+from typing import Any
+from collections.abc import Sequence
 from pathlib import Path
 
 from attr import attrs, attrib
@@ -16,7 +19,6 @@ from gambit.sigs.base import KmerSignature, SignaturesMeta, ReferenceSignatures
 from gambit.metric import jaccarddist_matrix
 from gambit.util.io import FilePath
 from gambit.util.progress import progress_config, iter_progress
-from gambit.util.misc import zip_strict
 
 
 @attrs()
@@ -58,9 +60,9 @@ class QueryResultItem:
 	"""
 	label: str = attrib()
 	classifier_result: ClassifierResult = attrib()
-	report_taxon: Optional[Taxon] = attrib(default=None)
+	report_taxon: Taxon | None = attrib(default=None)
 	closest_genomes: list[GenomeMatch] = attrib(factory=list)
-	file: Optional[Path] = attrib(default=None, converter=optional_converter(Path))
+	file: Path | None = attrib(default=None, converter=optional_converter(Path))
 
 
 @attrs(repr=False)
@@ -85,9 +87,9 @@ class QueryResults:
 		JSON-able dict containing additional arbitrary metadata.
 	"""
 	items: list[QueryResultItem] = attrib()
-	params: Optional[QueryParams] = attrib(default=None)
-	genomeset: Optional[ReferenceGenomeSet] = attrib(default=None)
-	signaturesmeta: Optional[SignaturesMeta] = attrib(default=None)
+	params: QueryParams | None = attrib(default=None)
+	genomeset: ReferenceGenomeSet | None = attrib(default=None)
+	signaturesmeta: SignaturesMeta | None = attrib(default=None)
 	gambit_version: str = attrib(default=GAMBIT_VERSION)
 	timestamp: datetime = attrib(factory=datetime.now)
 	extra: dict[str, Any] = attrib(factory=dict)
@@ -95,9 +97,9 @@ class QueryResults:
 
 def query(db: ReferenceDatabase,
           queries: Sequence[KmerSignature],
-          params: Optional[QueryParams] = None,
+          params: QueryParams | None = None,
           *,
-          labels: Optional[Sequence[str]] = None,
+          labels: Sequence[str] | None = None,
           progress = None,
           **kw,
           ) -> QueryResults:
@@ -197,10 +199,10 @@ def get_result_item(db: ReferenceDatabase, params: QueryParams, dists: np.ndarra
 
 def query_parse(db: ReferenceDatabase,
                 files: Sequence[FilePath],
-                params: Optional[QueryParams] = None,
+                params: QueryParams | None = None,
                 *,
-                labels: Optional[Sequence[str]] = None,
-                parse_kw: Optional[dict[str, Any]] = None,
+                labels: Sequence[str] | None = None,
+                parse_kw: dict[str, Any] | None = None,
                 **kw,
                 ) -> QueryResults:
 	"""Query a database with signatures derived by parsing a set of genome sequence files.
@@ -239,7 +241,7 @@ def query_parse(db: ReferenceDatabase,
 	results = query(db, query_sigs, params, labels=labels, progress=pconf, **kw)
 
 	# Assign file attribute of QueryResultItem's
-	for item, file in zip_strict(results.items, files):
+	for item, file in zip(results.items, files, strict=True):
 		item.file = file
 
 	return results

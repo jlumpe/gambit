@@ -1,6 +1,8 @@
 """Calculate k-mer signatures from sequence data."""
 
-from typing import Optional, Sequence, MutableSet, Union, Iterable
+from __future__ import annotations
+
+from collections.abc import Sequence, MutableSet, Iterable
 from abc import abstractmethod
 from concurrent.futures import Executor, ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from contextlib import nullcontext
@@ -128,7 +130,7 @@ def default_accumulator(k: int) -> KmerAccumulator:
 	return SetAccumulator(k) if k > 11 else ArrayAccumulator(k)
 
 
-def accumulate_kmers(accumulator: KmerAccumulator, kmerspec: KmerSpec, seq: 'DNASeq'):
+def accumulate_kmers(accumulator: KmerAccumulator, kmerspec: KmerSpec, seq: DNASeq):
 	"""Find k-mer matches in sequence and add their indices to an accumulator."""
 	for match in find_kmers(kmerspec, seq):
 		try:
@@ -139,9 +141,9 @@ def accumulate_kmers(accumulator: KmerAccumulator, kmerspec: KmerSpec, seq: 'DNA
 
 
 def calc_signature(kmerspec: KmerSpec,
-                   seqs: Union['DNASeq', Iterable['DNASeq']],
+                   seqs: DNASeq | Iterable[DNASeq],
                    *,
-                   accumulator: Optional[KmerAccumulator] = None,
+                   accumulator: KmerAccumulator | None = None,
                    ) -> KmerSignature:
 	"""Calculate the k-mer signature of a DNA sequence or set of sequences.
 
@@ -181,7 +183,7 @@ def calc_signature(kmerspec: KmerSpec,
 def calc_file_signature(kspec: KmerSpec,
                         seqfile: FilePath,
                         *,
-                        accumulator: Optional[KmerAccumulator] = None,
+                        accumulator: KmerAccumulator | None = None,
                         ) -> KmerSignature:
 	"""Open a sequence file on disk and calculate its k-mer signature.
 
@@ -211,9 +213,9 @@ def calc_file_signature(kspec: KmerSpec,
 def calc_file_signatures(kspec: KmerSpec,
                          files: Sequence[FilePath],
                          progress=None,
-                         concurrency: Optional[str] = 'processes',
-                         max_workers: Optional[int] = None,
-                         executor: Optional[Executor] = None,
+                         concurrency: str | None = 'processes',
+                         max_workers: int | None = None,
+                         executor: Executor | None = None,
                          ) -> SignatureList:
 	"""Parse and calculate k-mer signatures for multiple sequence files.
 
@@ -231,7 +233,7 @@ def calc_file_signatures(kspec: KmerSpec,
 	max_workers
 		Number of worker threads/processes to use if ``concurrency`` is not None.
 	executor
-		Instance of class:`concurrent.futures.Executor` to use for concurrency. Overrides the
+		Instance of :class:`concurrent.futures.Executor` to use for concurrency. Overrides the
 		``concurrency`` and ``max_workers`` arguments.
 
 	See Also
@@ -297,7 +299,7 @@ def dense_to_sparse(vec: Sequence[bool]) -> KmerSignature:
 	return np.flatnonzero(vec)
 
 
-def sparse_to_dense(k_or_kspec: Union[int, KmerSpec],  coords: KmerSignature) -> np.ndarray:
+def sparse_to_dense(k_or_kspec: int | KmerSpec,  coords: KmerSignature) -> np.ndarray:
 	"""Convert k-mer set from sparse coordinate representation back to dense bit vector.
 
 	Parameters

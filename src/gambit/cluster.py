@@ -1,6 +1,9 @@
 """Distance matrices and basic clustering/trees."""
 
-from typing import Union, Optional, Sequence, TextIO
+from __future__ import annotations
+
+from typing import TextIO
+from collections.abc import Sequence
 import csv
 
 import numpy as np
@@ -9,7 +12,6 @@ from scipy.cluster.hierarchy import linkage
 from Bio.Phylo.BaseTree import Tree, Clade
 
 from gambit.util.io import FilePath, maybe_open
-from gambit.util.misc import zip_strict
 
 
 def hclust(dmat: np.ndarray) -> np.ndarray:
@@ -118,11 +120,11 @@ def check_tree_matches_linkage(tree: Tree, link: np.ndarray, labels, atol=1e-5):
 	assert root_i == nleaves * 2 - 2
 
 
-def dump_dmat_csv(file: Union['FilePath', TextIO],
+def dump_dmat_csv(file: FilePath | TextIO,
                   dmat: np.ndarray,
                   row_ids: Sequence,
                   col_ids: Sequence,
-                  corner: Optional[str] = None,
+                  corner: str | None = None,
                   fmt: str = '0.4f',
                   ):
 	"""Write distance matrix to file in CSV format."""
@@ -130,12 +132,12 @@ def dump_dmat_csv(file: Union['FilePath', TextIO],
 	with maybe_open(file, 'w', newline='') as fobj:
 		writer = csv.writer(fobj)
 		writer.writerow([corner or '', *map(str, col_ids)])
-		for row_id, values in zip_strict(row_ids, dmat):
+		for row_id, values in zip(row_ids, dmat, strict=True):
 			values_str = (format(d, fmt) for d in values)
 			writer.writerow([str(row_id), *values_str])
 
 
-def load_dmat_csv(file: Union['FilePath', TextIO]) -> tuple[np.ndarray, list[str], list[str]]:
+def load_dmat_csv(file: FilePath | TextIO) -> tuple[np.ndarray, list[str], list[str]]:
 	"""Load distance matrix from CSV file.
 
 	Returns

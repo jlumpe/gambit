@@ -1,7 +1,8 @@
 """Calculate the Jaccard index/distance between sets."""
 
-from collections.abc import Set
-from typing import Iterable, Sequence, Optional
+from __future__ import annotations
+
+from collections.abc import Iterable, Sequence, Set
 
 import numpy as np
 
@@ -139,7 +140,7 @@ def jaccard_bits(bits1: np.ndarray, bits2: np.ndarray) -> float:
 	return 1. if union == 0 else intersection / union
 
 
-def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: Optional[np.ndarray] = None) -> np.ndarray:
+def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: np.ndarray | None = None) -> np.ndarray:
 	"""
 	Calculate Jaccard distances between a query k-mer signature and a list of reference signatures.
 
@@ -194,9 +195,9 @@ def jaccarddist_array(query: KmerSignature, refs: Sequence[KmerSignature], out: 
 
 def jaccarddist_matrix(queries: Sequence[KmerSignature],
                        refs: Sequence[KmerSignature],
-                       ref_indices: Optional[Sequence[int]] = None,
-                       out: Optional[np.ndarray] = None,
-                       chunksize: Optional[int] = None,
+                       ref_indices: Sequence[int] | None = None,
+                       out: np.ndarray | None = None,
+                       chunksize: int | None = None,
                        progress = None,
                        ) -> np.ndarray:
 	"""
@@ -275,9 +276,9 @@ def num_pairs(n: int) -> int:
 
 
 def jaccarddist_pairwise(sigs: Sequence[KmerSignature],
-                         indices: Optional[Sequence[int]] = None,
+                         indices: Sequence[int] | None = None,
                          flat: bool = False,
-                         out: Optional[np.ndarray] = None,
+                         out: np.ndarray | None = None,
                          progress = None,
                          ) -> np.ndarray:
 	"""

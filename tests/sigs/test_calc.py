@@ -1,13 +1,11 @@
 """Tests for gambit.search module."""
 
-from typing import Optional
 from pathlib import Path
 
 import pytest
 import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
-from typing_extensions import TypeAlias
 
 from gambit.sigs.calc import calc_signature, calc_file_signature, calc_file_signatures, \
 	dense_to_sparse, sparse_to_dense
@@ -113,7 +111,7 @@ class TestCalcSignature:
 			assert all(kmer in expected for kmer in found)
 
 
-RecordSets: TypeAlias = list[tuple[list[SeqIO.SeqRecord], KmerSignature]]
+type RecordSets = list[tuple[list[SeqIO.SeqRecord], KmerSignature]]
 
 
 @pytest.fixture(scope='module')
@@ -129,8 +127,8 @@ def record_sets():
 		# Create the BioPython sequence record object
 		records = [SeqIO.SeqRecord(
 			seq=Seq(seq.decode('ascii')),
-			id='SEQ{}'.format(i + 1),
-			description='sequence {}'.format(i + 1),
+			id=f'SEQ{i + 1}',
+			description=f'sequence {i + 1}',
 		) for seq in seqs]
 
 		items.append((records, sig))
@@ -164,7 +162,7 @@ class TestCalcFileSignatures:
 			assert np.array_equal(result, sig)
 
 	@pytest.mark.parametrize('concurrency', [None, 'threads', 'processes'])
-	def test_calc_file_signatures(self, record_sets: RecordSets, files: list[Path], concurrency: Optional[str]):
+	def test_calc_file_signatures(self, record_sets: RecordSets, files: list[Path], concurrency: str | None):
 		"""Test the calc_file_signatures function."""
 		sigs = [sig for records, sig in record_sets]
 

@@ -1,5 +1,7 @@
 """Define the root CLI command group."""
 
+from __future__ import annotations
+
 import click
 
 from gambit import __version__ as GAMBIT_VERSION

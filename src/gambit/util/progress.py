@@ -1,18 +1,30 @@
-"""Abstract interface for progress meters."""
+"""Abstract interface for progress meters.
+
+
+.. class:: ProgressFactoryFunc
+
+	Callable which takes ``total`` and keyword arguments and returns an
+	:class:`.AbstractProgressMeter`.
+
+.. class:: ProgressArg
+
+	Flexible argument type accepted by :func:`.progress_config` and :func:`.get_progress`
+	(:class:`.ProgressConfig`, ``str``, ``bool``, a progress meter class, factory callable, or
+	``None``).
+"""
+
+from __future__ import annotations
 
 import sys
 
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Callable, Iterable, TextIO, Mapping, Any, cast, Iterator, \
-	TypeVar
+from typing import TextIO, Any, Self, cast
+from collections.abc import Callable, Iterable, Mapping, Iterator
 from warnings import warn
 from contextlib import contextmanager
 
 
-T = TypeVar('T')
-
-#: Type alias for a callable which takes ``total`` and keyword arguments and returns an AbstractProgressMeter
-ProgressFactoryFunc = Callable[[int], 'AbstractProgressMeter']
+type ProgressFactoryFunc = Callable[[int], AbstractProgressMeter]
 
 
 #: TODO
@@ -20,7 +32,7 @@ REGISTRY = dict()
 
 def register(key: str):
 	"""Decorator to register progress meter class or factory function under the given key."""
-	def decorator(cls_or_func: Union[type, Callable]):
+	def decorator(cls_or_func: type | Callable):
 		if isinstance(cls_or_func, type) and issubclass(cls_or_func, AbstractProgressMeter):
 			REGISTRY[key] = cls_or_func.create
 		else:
@@ -75,10 +87,10 @@ class AbstractProgressMeter(ABC):
 	           total: int,
 	           *,
 	           initial: int = 0,
-	           desc: Optional[str] = None,
-	           file: Optional[TextIO] = None,
+	           desc: str | None = None,
+	           file: TextIO | None = None,
 	           **kw,
-	           ) -> 'AbstractProgressMeter':
+	           ) -> Self:
 		"""Factory function with standardized signature to create instances.
 
 		Parameters
@@ -97,7 +109,7 @@ class AbstractProgressMeter(ABC):
 		pass
 
 	@classmethod
-	def config(cls, **kw) -> 'ProgressConfig':
+	def config(cls, **kw) -> ProgressConfig:
 		"""Create a factory function which creates instances with the given default settings.
 
 		Keyword arguments are passed on to :meth:`create`.
@@ -136,7 +148,7 @@ class ProgressConfig:
 		final_kw.update(kw)
 		return self.callable(total, **final_kw)
 
-	def update(self, *args: Mapping[str, Any], **kw):
+	def update(self, *args: Mapping[str, Any], **kw) -> Self:
 		"""Update keyword arguments and return a new instance."""
 		new_kw = dict(self.kw)
 		new_kw.update(*args, **kw)
@@ -157,7 +169,7 @@ def default_progress_cls() -> type:
 		return NullProgressMeter
 
 
-ProgressArg = Union[ProgressConfig, str, bool, type, ProgressFactoryFunc, None]
+type ProgressArg = ProgressConfig | str | bool | type | ProgressFactoryFunc | None
 
 def progress_config(arg: ProgressArg, **kw) -> ProgressConfig:
 	"""Get a ``ProgressConfig`` instance from flexible argument types.
@@ -217,7 +229,7 @@ def get_progress(arg: ProgressArg, total: int, initial: int = 0, **kw) -> Abstra
 	return config.create(total, initial=initial, **kw)
 
 
-class ProgressIterator(Iterator[T]):
+class ProgressIterator[T](Iterator[T]):
 	itr: Iterator[T]
 	meter: AbstractProgressMeter
 
@@ -246,9 +258,9 @@ class ProgressIterator(Iterator[T]):
 		self.meter.close()
 
 
-def iter_progress(iterable: Iterable[T],
+def iter_progress[T](iterable: Iterable[T],
                   progress: ProgressArg = True,
-                  total: Optional[int] = None,
+                  total: int | None = None,
                   **kw,
                   ) -> ProgressIterator[T]:
 	"""Display a progress meter while iterating over an object.
@@ -264,7 +276,7 @@ def iter_progress(iterable: Iterable[T],
 		Passed to :func:`get_progress`.
 	total
 		Total number of expected iterations. Defaults to ``len(iterable)``.
-	\\**kw
+	kw
 		Additional keyword arguments to pass to progress meter factory.
 
 	Returns
@@ -291,7 +303,6 @@ def capture_progress(config: ProgressConfig) -> tuple[ProgressConfig, list[Abstr
 
 	Returns
 	-------
-	Tuple[ProgressConfig, List[AbstractProgressMeter]]
 		The first item is a modified ``ProgessConfig`` instance which can be passed to the function
 		to be tested. The second is a list which is initially empty, and is populated with progress
 		meter instances as they are created by it.
@@ -308,7 +319,7 @@ def capture_progress(config: ProgressConfig) -> tuple[ProgressConfig, list[Abstr
 
 @contextmanager
 def check_progress(*,
-                   total: Optional[int] = None,
+                   total: int | None = None,
                    allow_decrement: bool = False,
                    check_closed: bool = True,
                    ) -> Iterator[ProgressConfig]:
@@ -450,8 +461,8 @@ class TqdmProgressMeter(AbstractProgressMeter):
 	           total: int,
 	           *,
 	           initial: int = 0,
-	           desc: Optional[str] = None,
-	           file: Optional[TextIO] = None,
+	           desc: str | None = None,
+	           file: TextIO | None = None,
 	           **kw,
 	           ):
 		from tqdm import tqdm
@@ -491,8 +502,8 @@ class ClickProgressMeter(AbstractProgressMeter):
 	           total: int,
 	           *,
 	           initial: int = 0,
-	           desc: Optional[str] = None,
-	           file: Optional[TextIO] = None,
+	           desc: str | None = None,
+	           file: TextIO | None = None,
 	           **kw,
 	           ):
 		import click

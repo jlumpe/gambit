@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import os
-from typing import Optional, Sequence, TextIO, Union, Iterable, Any
+from typing import TextIO, Any
+from collections.abc import Sequence, Iterable
 from pathlib import Path
 from collections import Counter
 
@@ -41,12 +44,12 @@ class CLIContext:
 		Reference genome signatures.
 	"""
 	root_context: click.Context
-	db_path: Optional[Path]
+	db_path: Path | None
 	has_genomes: bool
 	has_signatures: bool
 	has_database: bool
-	Session: Optional[sessionmaker]
-	signatures: Optional[ReferenceSignatures]
+	Session: sessionmaker | None
+	signatures: ReferenceSignatures | None
 
 	def __init__(self, root_context: click.Context):
 		"""
@@ -214,7 +217,7 @@ def kspec_params(default: bool = False):
 	return lambda f: kopt(popt(f))
 
 
-def kspec_from_params(k: Optional[int], prefix: Optional[str], default: bool = False) -> Optional[KmerSpec]:
+def kspec_from_params(k: int | None, prefix: str | None, default: bool = False) -> KmerSpec | None:
 	"""Get KmerSpec from CLI arguments and validate.
 
 	Parameters
@@ -271,7 +274,7 @@ def strip_seq_file_ext(filename: str) -> str:
 	return filename
 
 
-def get_file_id(path: 'FilePath', strip_dir: bool = True, strip_ext: bool = True) -> str:
+def get_file_id(path: FilePath, strip_dir: bool = True, strip_ext: bool = True) -> str:
 	"""Get sequence file ID derived from file path.
 
 	Parameters
@@ -289,12 +292,13 @@ def get_file_id(path: 'FilePath', strip_dir: bool = True, strip_ext: bool = True
 	return id
 
 
-def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
-                       listfile: Union[None, FilePath, TextIO]=None,
-                       listfile_dir: Optional[str]=None,
-                       strip_dir: bool = True,
-                       strip_ext: bool = True,
-                       ) -> Union[tuple[list[str], list[Path]], tuple[None, None]]:
+def get_sequence_files(
+	explicit: Iterable[FilePath] | None=None,
+	listfile: None | FilePath | TextIO=None,
+	listfile_dir: str | None=None,
+	strip_dir: bool = True,
+	strip_ext: bool = True,
+) -> tuple[list[str], list[Path]] | tuple[None, None]:
 	"""Get list of sequence file paths and IDs from several types of CLI arguments.
 
 	Does not check for conflict between ``explicit`` and ``listfile``.
@@ -314,7 +318,6 @@ def get_sequence_files(explicit: Optional[Iterable[FilePath]]=None,
 
 	Returns
 	-------
-	tuple[Optional[list[str]], Optional[list[Path]]]
 		``(ids, files)`` tuple. ``ids`` is a list of string IDs that can be used to label output.
 		If the ``explicit`` and ``listfile`` arguments are None/empty both components of the tuple
 		will be None as well.
@@ -358,7 +361,10 @@ def warn_duplicate_file_ids(ids: list[str], template: str):
 # Click introspection
 ################################################################################
 
-def params_by_name(cmd: click.Command, names: Optional[Iterable[str]] = None):
+def params_by_name(
+	cmd: click.Command,
+	names: Iterable[str] | None = None,
+) -> dict[str, click.Parameter] | list[click.Parameter]:
 	"""Get parameters of click command by name.
 
 	Parameters
@@ -369,7 +375,6 @@ def params_by_name(cmd: click.Command, names: Optional[Iterable[str]] = None):
 
 	Returns
 	-------
-	Union[Dict[str, click.Parameter], List[click.Parameter]]
 		Parameters with given in ``names`` argument if not None, otherwise a dictionary containing
 		all of the command's parameters keyed by name.
 	"""
@@ -379,7 +384,12 @@ def params_by_name(cmd: click.Command, names: Optional[Iterable[str]] = None):
 	else:
 		return [by_name[name] for name in names]
 
-def check_params_group(ctx: click.Context, names: Iterable[str], exclusive: bool, required: bool):
+def check_params_group(
+	ctx: click.Context,
+	names: Iterable[str],
+	exclusive: bool,
+	required: bool,
+) -> None:
 	"""Check for the presence of the given parameter values and raise an informative error if needed.
 
 	Parameters
@@ -426,7 +436,7 @@ def param_name_human(param: click.Parameter) -> str:
 # Misc
 ################################################################################
 
-def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: str=''):
+def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: str='') -> None:
 	"""Print a basic table."""
 
 	echo = lambda s: click.echo(s, nl=False)
@@ -452,7 +462,7 @@ def print_table(rows: Sequence[Sequence], colsep: str=' ', left: str='', right: 
 		echo('\n')
 
 
-def get_revision_info(revision) -> Optional[dict[str, Any]]:
+def get_revision_info(revision) -> dict[str, Any] | None:
 	"""Extract revision information from metadata JSON.
 
 	:class:`gambit.sigs.base.SignaturesMeta` and :class:`gambit.db.models.ReferenceGenomeSet`

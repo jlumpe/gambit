@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import TextIO, Optional
+from typing import TextIO
 
 import click
 
@@ -60,16 +62,16 @@ def get_exporter(outfmt: str, pretty: bool):
 @common.cores_param()
 @click.pass_context
 def query_cmd(ctx: click.Context,
-              listfile: Optional[TextIO],
-              ldir: Optional[str],
+              listfile: TextIO | None,
+              ldir: str | None,
               files_arg: list[str],
-              sigfile: Optional[str],
+              sigfile: str | None,
               output: TextIO,
               outfmt: str,
               strict: bool,
               pretty: bool,
               progress: bool,
-              cores: Optional[int],
+              cores: int | None,
               ):
 	"""Predict taxonomy of microbial samples from genome sequences."""
 

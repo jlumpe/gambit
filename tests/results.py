@@ -2,7 +2,8 @@
 
 import csv
 import json
-from typing import TextIO, Any, Iterable, Optional
+from typing import TextIO, Any
+from collections.abc import Iterable
 from pathlib import Path
 from warnings import warn
 
@@ -11,7 +12,6 @@ import numpy as np
 from gambit.util.json import to_json
 from gambit.query import QueryResults, QueryResultItem, QueryParams
 from gambit.classify import GenomeMatch, ClassifierResult
-from gambit.util.misc import zip_strict
 from gambit.db.models import AnnotatedGenome, Taxon, reportable_taxon
 
 
@@ -77,7 +77,7 @@ def check_result_item(item: QueryResultItem, params: QueryParams, warnings: bool
 					)
 
 
-def compare_genome_matches(match1: Optional[GenomeMatch], match2: Optional[GenomeMatch]):
+def compare_genome_matches(match1: GenomeMatch | None, match2: GenomeMatch | None):
 	"""Assert two ``GenomeMatch`` instances are equal.
 
 	The values for the ``distance`` attribute are only checked for approximate equality, to support
@@ -126,7 +126,7 @@ def cmp_json_attrs(data: dict[str, Any], obj, attrnames: Iterable[str]):
 		assert data[attr] == getattr(obj, attr)
 
 
-def cmp_taxon_json(data: dict[str, Any], taxon: Optional[Taxon]):
+def cmp_taxon_json(data: dict[str, Any], taxon: Taxon | None):
 	"""Assert Taxon instance matches data in JSON export."""
 
 	if taxon is None:
@@ -151,7 +151,7 @@ def cmp_annnotatedgenome_json(data: dict[str, Any], genome: AnnotatedGenome):
 		genome,
 		['key', 'description', 'organism', 'ncbi_db', 'ncbi_id', 'genbank_acc', 'refseq_acc'],
 	)
-	for taxon_data, taxon in zip_strict(data['taxonomy'], genome.taxon.ancestors(True)):
+	for taxon_data, taxon in zip(data['taxonomy'], genome.taxon.ancestors(True), strict=True):
 		cmp_taxon_json(taxon_data, taxon)
 
 
@@ -219,11 +219,11 @@ def check_json_results(file: TextIO, results: QueryResults, strict: bool = False
 
 		# Closest genomes
 		assert len(item_data['closest_genomes']) == len(item.closest_genomes)
-		for match, match_data in zip_strict(item.closest_genomes, item_data['closest_genomes']):
+		for match, match_data in zip(item.closest_genomes, item_data['closest_genomes'], strict=True):
 			cmp_genomematch_json(match_data, match)
 
 
-def cmp_csv_taxon(row: dict[str, str], taxon: Optional[Taxon], prefix: str):
+def cmp_csv_taxon(row: dict[str, str], taxon: Taxon | None, prefix: str):
 
 	if taxon is None:
 		assert row[prefix + '.name'] == ''

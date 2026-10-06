@@ -1,4 +1,6 @@
-from typing import Optional, TextIO
+from __future__ import annotations
+
+from typing import TextIO
 import sys
 from pathlib import Path
 
@@ -157,17 +159,17 @@ def info(ctx: click.Context, file: Path, json: bool, pretty: bool, ids: bool, us
 @click.option('--dump-params', is_flag=True, hidden=True)
 @click.pass_context
 def create(ctx: click.Context,
-           listfile: Optional[TextIO],
-           ldir: Optional[str],
+           listfile: TextIO | None,
+           ldir: str | None,
            files_arg: list[str],
            output: str,
-           prefix: Optional[str],
-           k: Optional[int],
-           meta_file: Optional[TextIO],
-           ids_file: Optional[TextIO],
+           prefix: str | None,
+           k: int | None,
+           meta_file: TextIO | None,
+           ids_file: TextIO | None,
            db_params: bool,
            progress: bool,
-           cores: Optional[int],
+           cores: int | None,
            dump_params: bool,
            ):
 	"""Create k-mer signatures from genome sequences."""

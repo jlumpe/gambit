@@ -1,6 +1,8 @@
 """Tools to implement and test Numpy-style advanced indexing for Sequence types."""
 
-from typing import Sequence
+from __future__ import annotations
+
+from collections.abc import Sequence
 
 import numpy as np
 

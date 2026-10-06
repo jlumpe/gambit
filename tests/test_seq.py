@@ -8,7 +8,6 @@ from Bio import Seq, SeqIO
 
 from gambit.seq import revcomp, parse_seqs
 from gambit.kmers import nkmers, index_to_kmer
-from gambit.util.misc import zip_strict
 from gambit.util.io import open_compressed
 
 from .common import random_seq
@@ -123,7 +122,7 @@ def test_parse_seqs(tmp_path: Path, seqrecords: list[SeqIO.SeqRecord], compressi
 		assert parsed.fobj.closed
 
 	# Check parsed records are correct
-	for record, record2 in zip_strict(seqrecords, records2):
+	for record, record2 in zip(seqrecords, records2, strict=True):
 		assert record2.seq == record.seq
 		assert record2.id == record.id
 		assert record2.description == record.description

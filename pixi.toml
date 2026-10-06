@@ -22,19 +22,16 @@ no-build-isolation = ["gambit"]
 
 [environments]
 
-# Default environment for developing - python 3.12 with editable install
-default = { features=["pkg-editable", "py312", "build", "test", "dev"] }
+# Default environment for developing - python 3.14 with editable install
+default = { features=["pkg-editable", "py314", "build", "test", "dev"] }
 
 # For testing with different python versions
 # These do a standard non-editable install (because the Cython build is version-specific).
-py39 = { features = ["py39", "pkg", "build", "test"] }
-py310 = { features = ["py310", "pkg", "build", "test"] }
-py311 = { features = ["py311", "pkg", "build", "test"] }
 py312 = { features = ["py312", "pkg", "build", "test"] }
 py313 = { features = ["py313", "pkg", "build", "test"] }
 py314 = { features = ["py314", "pkg", "build", "test"] }
 
-oldest = { features = ["py39", "oldest", "pkg", "build", "test"] }
+oldest = { features = ["py312", "oldest", "pkg", "build", "test"] }
 
 # Building and checking the sdist (no package install or compiler needed)
 dist = { features = ["py312", "dist"] }
@@ -49,12 +46,6 @@ gambit = { path = "." }
 gambit = { path = "." , editable = true }
 
 # Different minor Python versions
-[feature.py39.dependencies]
-python = "3.9.*"
-[feature.py310.dependencies]
-python = "3.10.*"
-[feature.py311.dependencies]
-python = "3.11.*"
 [feature.py312.dependencies]
 python = "3.12.*"
 [feature.py313.dependencies]
@@ -97,17 +88,16 @@ sphinx-rtd-theme = "*"
 # Docs
 linuxdoc = "*"
 
-# Oldest supported versions of libraries
+# Oldest supported versions of libraries (lowest series with CPython 3.12 builds on conda-forge).
 [feature.oldest.dependencies]
-numpy = "1.19.*"
+numpy = "1.26.*"
 sqlalchemy = "1.4.*"
-biopython = "1.79.*"
+biopython = "1.81.*"
 attrs = "23.1.*"
 cattrs = "23.2.*"
-click = "8.0.*"
-h5py = "3.1.*"
-scipy = "1.7.*"
-typing-extensions = "4.1.*"
+click = "8.1.*"
+h5py = "3.9.*"
+scipy = "1.11.*"
 
 
 # ------------------------------------------------------------------------------------------------ #
@@ -121,9 +111,6 @@ test = "pytest"
 # Run tests on all supported python versions.
 [tasks.test-all]
 depends-on = [
-  { task = "test", environment = "py39" },
-  { task = "test", environment = "py310" },
-  { task = "test", environment = "py311" },
   { task = "test", environment = "py312" },
   { task = "test", environment = "py313" },
   { task = "test", environment = "py314" },
@@ -136,12 +123,9 @@ depends-on = [
 build-wheel = "python -m build --wheel --no-isolation"
 
 # Build wheels for all supported Python versions as well as source distribution into dist/.
-# Each environment produces its own version-specific wheel (cp39, cp310, ...).
+# Each environment produces its own version-specific wheel (cp312, cp313, ...).
 [tasks.build-all]
 depends-on = [
-  { task = "build-wheel", environment = "py39" },
-  { task = "build-wheel", environment = "py310" },
-  { task = "build-wheel", environment = "py311" },
   { task = "build-wheel", environment = "py312" },
   { task = "build-wheel", environment = "py313" },
   { task = "build-wheel", environment = "py314" },
