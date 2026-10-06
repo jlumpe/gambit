@@ -5,6 +5,11 @@
 
 * Increase minimum Python version to 3.12.
 
+### Internal
+
+* Modernize typing for Python 3.12+
+* Remove pre-3.12 shims.
+
 
 ## 1.2.0.post1
 
