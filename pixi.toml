@@ -149,3 +149,4 @@ lint = "ruff check"
 format = "ruff format"
 docs = { cmd = "make html", cwd = "docs" }
 docs-clean = { cmd = "make clean", cwd = "docs" }
+docs-nitpicky = { cmd = "make SPHINXOPTS=-n html", cwd = "docs" }
