@@ -61,7 +61,7 @@ nitpick_ignore_regex = [
 	('py:.*', r'sqlalchemy\..*'),
 	('py:.*', r'h5py\..*'),
 	('py:.*', r'scipy\..*'),
-	# TypeVar
+	# TypeVar / PEP 695 type parameters
 	('py:.*', r'(.*\.)?T\d?'),
 ]
 
@@ -91,11 +91,6 @@ autodoc_default_options = {
 autodoc_class_signature = 'separated'
 autodoc_member_order = 'groupwise'
 autodoc_typehints = 'description'
-
-autodoc_type_aliases = {
-    'FilePath': 'FilePath',
-    'DNASeq': 'DNASeq',
-}
 
 intersphinx_mapping = {
 	'python': ('https://docs.python.org/3', None),

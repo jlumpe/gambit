@@ -21,6 +21,7 @@ gambit.sigs
 -----------------
 
 .. automodule:: gambit.sigs
+   :no-members:
 
 
 gambit.sigs.base

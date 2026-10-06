@@ -5,6 +5,7 @@ gambit.db
 ---------
 
 .. automodule:: gambit.db
+   :no-members:
 
 
 gambit.db.refdb
