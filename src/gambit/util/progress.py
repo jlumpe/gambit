@@ -1,20 +1,30 @@
-"""Abstract interface for progress meters."""
+"""Abstract interface for progress meters.
+
+
+.. class:: ProgressFactoryFunc
+
+	Callable which takes ``total`` and keyword arguments and returns an
+	:class:`.AbstractProgressMeter`.
+
+.. class:: ProgressArg
+
+	Flexible argument type accepted by :func:`.progress_config` and :func:`.get_progress`
+	(:class:`.ProgressConfig`, ``str``, ``bool``, a progress meter class, factory callable, or
+	``None``).
+"""
 
 from __future__ import annotations
 
 import sys
 
 from abc import ABC, abstractmethod
-from typing import Union, TextIO, Any, cast, TypeVar
+from typing import TextIO, Any, Self, cast
 from collections.abc import Callable, Iterable, Mapping, Iterator
 from warnings import warn
 from contextlib import contextmanager
 
 
-T = TypeVar('T')
-
-#: Type alias for a callable which takes ``total`` and keyword arguments and returns an AbstractProgressMeter
-ProgressFactoryFunc = Callable[[int], 'AbstractProgressMeter']
+type ProgressFactoryFunc = Callable[[int], AbstractProgressMeter]
 
 
 #: TODO
@@ -159,7 +169,7 @@ def default_progress_cls() -> type:
 		return NullProgressMeter
 
 
-ProgressArg = Union[ProgressConfig, str, bool, type, ProgressFactoryFunc, None]
+type ProgressArg = ProgressConfig | str | bool | type | ProgressFactoryFunc | None
 
 def progress_config(arg: ProgressArg, **kw) -> ProgressConfig:
 	"""Get a ``ProgressConfig`` instance from flexible argument types.
@@ -219,7 +229,7 @@ def get_progress(arg: ProgressArg, total: int, initial: int = 0, **kw) -> Abstra
 	return config.create(total, initial=initial, **kw)
 
 
-class ProgressIterator(Iterator[T]):
+class ProgressIterator[T](Iterator[T]):
 	itr: Iterator[T]
 	meter: AbstractProgressMeter
 
@@ -248,7 +258,7 @@ class ProgressIterator(Iterator[T]):
 		self.meter.close()
 
 
-def iter_progress(iterable: Iterable[T],
+def iter_progress[T](iterable: Iterable[T],
                   progress: ProgressArg = True,
                   total: int | None = None,
                   **kw,

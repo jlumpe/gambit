@@ -1,7 +1,6 @@
 """Tests for gambit.search module."""
 
 from pathlib import Path
-from typing import TypeAlias
 
 import pytest
 import numpy as np
@@ -112,7 +111,7 @@ class TestCalcSignature:
 			assert all(kmer in expected for kmer in found)
 
 
-RecordSets: TypeAlias = list[tuple[list[SeqIO.SeqRecord], KmerSignature]]
+type RecordSets = list[tuple[list[SeqIO.SeqRecord], KmerSignature]]
 
 
 @pytest.fixture(scope='module')

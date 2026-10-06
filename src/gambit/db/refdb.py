@@ -1,3 +1,12 @@
+"""Reference database loading and access.
+
+
+.. class:: GenomeAttr
+
+	Type alias for an argument specifying a genome ID attribute (``str`` or SQLAlchemy
+	``InstrumentedAttribute``).
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -14,7 +23,7 @@ from gambit.util.io import FilePath
 
 
 # Type alias for argument specifying genome id attribute
-GenomeAttr = Union[str, InstrumentedAttribute]
+type GenomeAttr = str | InstrumentedAttribute
 
 
 class DatabaseLoadError(Exception):

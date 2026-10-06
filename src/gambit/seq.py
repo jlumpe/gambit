@@ -15,12 +15,16 @@ bytes containing ascii-encoded nucleotide codes.
 
 	Type alias for DNA sequence types accepted for k-mer search / signature calculation
 	(``str``, ``bytes``, ``bytearray``, or :class:`Bio.Seq.Seq`).
+
+.. class:: DNASeqBytes
+
+	Type alias for sequence types accepted directly by native (Cython) code
+	(``bytes`` or ``bytearray``).
 """
 
 from __future__ import annotations
 
 import typing
-from typing import TypeAlias
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -34,11 +38,11 @@ from gambit.util.io import open_compressed, ClosingIterator
 # indexing k-mer sequences
 NUCLEOTIDES = b'ACGT'
 
-DNASeq: TypeAlias = str | bytes | bytearray | Seq
-SEQ_TYPES: tuple[DNASeq, ...] = typing.get_args(DNASeq)
+type DNASeq = str | bytes | bytearray | Seq
+SEQ_TYPES: tuple[type, ...] = typing.get_args(DNASeq.__value__)
 
 # Type alias for sequence types accepted directly by native (Cython) code.
-DNASeqBytes: TypeAlias = bytes | bytearray
+type DNASeqBytes = bytes | bytearray
 
 
 def seq_to_bytes(seq: DNASeq) -> DNASeqBytes:

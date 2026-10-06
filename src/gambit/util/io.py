@@ -10,14 +10,12 @@ from __future__ import annotations
 
 import os
 from io import TextIOWrapper
-from typing import IO, TextIO, BinaryIO, ContextManager, TypeAlias, TypeVar
+from typing import IO, TextIO, BinaryIO, ContextManager
 from collections.abc import Iterable, Iterator
 from contextlib import nullcontext
 
 
-FilePath: TypeAlias = str | os.PathLike
-
-T = TypeVar('T')
+type FilePath = str | os.PathLike[str]
 
 
 def _open_auto(path: FilePath, mode: str, **kwargs):
@@ -108,7 +106,7 @@ def open_compressed(path: FilePath,
 		raise ValueError(f'Unknown compression type {compression!r}') from None
 
 
-class ClosingIterator(Iterator[T]):
+class ClosingIterator[T](Iterator[T]):
 	"""Wraps an iterator which reads from a stream, closes the stream when finished.
 
 	Used to wrap return values from functions which do some sort of lazy IO
